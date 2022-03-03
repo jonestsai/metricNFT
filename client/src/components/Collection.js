@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Container, Table } from 'react-bootstrap';
 
-class Collection extends React.Component {
+export default class Collection extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -28,5 +28,3 @@ class Collection extends React.Component {
     )
   };
 };
-
-export default Collection;
