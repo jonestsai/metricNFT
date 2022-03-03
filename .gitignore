@@ -102,3 +102,15 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Personal notes
+discord/
+helloworld_test/
+temp_notes/
+images/
+setup.txt
+ideas.txt
+cleanup.txt
+notes.txt
+metaboss.exe
+private-key.ppk

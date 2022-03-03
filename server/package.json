@@ -1,0 +1,26 @@
+{
+  "name": "metricnft",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "test": "ts-node src/test.ts",
+    "hash": "ts-node src/hash-list.ts",
+    "snapshot": "ts-node src/snapshot.ts"
+  },
+  "dependencies": {
+    "@metaplex-foundation/mpl-core": "0.0.2",
+    "@metaplex-foundation/mpl-token-metadata": "^1.2.3",
+    "@metaplex/js": "^4.12.0",
+    "@project-serum/anchor": "^0.21.0",
+    "@solana/web3.js": "^1.7.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "node-fetch": "^2.6.1",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.0.0",
+    "typescript": "^4.0.5"
+  }
+}
