@@ -48,7 +48,7 @@ const getSales = async (beforeSignature:any) => {
   // const publicKey = new PublicKey('AxFuniPo7RaDgPH6Gizf4GZmLQFc4M5ipckeeZfkrPNn'); // DeGods
   // const publicKey = new PublicKey('7wzoWjLRJRVKMR7PhGffpXBpBsCqLRks2zb3Cnap8PZ3'); // Nyan Hero
   // const publicKey = new PublicKey('D6wZ5U9onMC578mrKMp5PZtfyc5262426qKsYJW7nT3p'); // SSC
-  const publicKey = new PublicKey('GdtkQajEADGbfSUEBS5zctYrhemXYQkqnrMiGY7n7vAw'); // SSC
+  // const publicKey = new PublicKey('GdtkQajEADGbfSUEBS5zctYrhemXYQkqnrMiGY7n7vAw'); // PRTL
   let result;
 
   // Comment this out when testing few transactions
