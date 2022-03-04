@@ -4,6 +4,7 @@ import { Container, Table } from 'react-bootstrap';
 import Collection from '../components/Collection';
 import Top from '../components/layout/Top';
 import { URLS } from '../Settings';
+import './Home.css';
 
 export default class Home extends React.Component {
   constructor(props) {
