@@ -76,13 +76,13 @@ const save = async (hashList: any, collection: any) => {
     let nftOwner = await getNftOwner(hash);
 
     // Retry several times if there's rpc error
-    while (!nftOwner && retryCount < 100) {
+    while (!nftOwner && retryCount < 50) {
       nftOwner = await getNftOwner(hash);
       retryCount++;
       console.log(retryCount);
 
-      if (retryCount == 100) {
-        throw new Error('Retry count reached 100 times. RPC error.');
+      if (retryCount == 50) {
+        throw new Error('Retry count reached 50 times. RPC error.');
       }
     }
     snapshot[hash] = nftOwner;
