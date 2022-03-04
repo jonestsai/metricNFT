@@ -62,10 +62,10 @@ export default class Home extends React.Component {
               <th scope="col" className="text-end">Floor</th>
               <th scope="col" className="text-end">24h</th>
               <th scope="col" className="text-end pe-3">7d</th>
-              <th scope="col" className="text-end">24h Volume</th>
-              <th scope="col" className="text-end">Total Floor Value</th>
-              <th scope="col" className="text-end">Tokens</th>
-              <th scope="col" className="text-end">Owners</th>
+              <th scope="col" className="text-end pe-1">24h Volume</th>
+              <th scope="col" className="text-end pe-1">Total Floor Value</th>
+              <th scope="col" className="text-end pe-1">Tokens</th>
+              <th scope="col" className="text-end pe-1">Owners</th>
               <th scope="col" className="text-end pe-4">Listed</th>
             </tr>
           </thead>
