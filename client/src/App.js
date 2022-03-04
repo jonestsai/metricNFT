@@ -6,6 +6,20 @@ import logo from './logo.svg';
 import './App.css';
 
 export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+    document.body.style.backgroundColor = "#212529";
+    document.body.style.color = "white";
+  }
+
+  componentWillUnmount() {
+    document.body.style.backgroundColor = null;
+    document.body.style.color = null;
+  }
+
   render() {
     return (
       <div className="App">
