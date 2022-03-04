@@ -14,8 +14,8 @@ export default class Collection extends React.Component {
 
     return (
       <tr>
-        <th scope="row">{row}</th>
-        <td>{name}</td>
+        <td>{row}</td>
+        <th scope="row">{name}</th>
         <td>{parseFloat(floor).toFixed(2)}</td>
         <td>{((floor - _23dfloor)/_23dfloor*100).toFixed(1)}%</td>
         <td>{((floor - _30dfloor)/_30dfloor*100).toFixed(1)}%</td>
