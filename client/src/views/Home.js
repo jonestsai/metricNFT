@@ -52,7 +52,7 @@ export default class Home extends React.Component {
     return (
       <Container fluid>
         <Top />
-        <h3 className="text-start pt-5 pb-3">NFT Prices by Total Floor Value</h3>
+        <h3 className="text-start pt-5 pb-3">NFT Prices by Floor Market Cap</h3>
         <div className="table-responsive-sm">
         <Table variant="dark" hover>
           <thead>
