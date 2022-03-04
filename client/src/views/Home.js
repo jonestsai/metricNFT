@@ -2,7 +2,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Container, Table } from 'react-bootstrap';
 import Collection from '../components/Collection';
-import { URLS } from "../Settings";
+import Top from '../components/layout/Top';
+import { URLS } from '../Settings';
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -48,10 +49,11 @@ export default class Home extends React.Component {
     });
 
     return (
-      <Container>
-        <Table>
+      <Container fluid>
+        <Top />
+        <Table variant="dark" hover>
           <thead>
-            <tr>
+            <tr className="table-secondary">
               <th scope="col">#</th>
               <th scope="col">Collection</th>
               <th scope="col">Floor</th>
