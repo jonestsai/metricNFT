@@ -10,7 +10,8 @@ export default class Collection extends React.Component {
   render() {
     const row = this.props.row;
     // const collection = this.props.collection;
-    const { name, floor, _23dfloor, _30dfloor, _24hvolume, maxsupply, ownerscount, listedcount } = this.props.collection;
+    const { image, name, floor, _23dfloor, _30dfloor, _24hvolume, maxsupply, ownerscount, listedcount } = this.props.collection;
+    
     const _24hChange = (floor - _23dfloor)/_23dfloor * 100;
     const _24hChangeColor = _24hChange < 0 ? 'text-danger' : 'text-success';
     const _7dChange = (floor - _30dfloor)/_30dfloor * 100;
@@ -19,6 +20,7 @@ export default class Collection extends React.Component {
     return (
       <tr>
         <td className="text-white-50">{row}</td>
+        <td><img className = "rounded-circle" height="40" src={require(`../assets/${image}`)} /></td>
         <th scope="row" className="text-start">{name}</th>
         <td className="text-white-50 text-end">{parseFloat(floor).toFixed(2)}</td>
         <td className={`${_24hChangeColor} text-end`}>{(_24hChange).toFixed(1)}%</td>

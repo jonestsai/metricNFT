@@ -57,7 +57,7 @@ app.get('/api', async (req, res) => {
 
   pool.query(`
     SELECT * from (
-      SELECT name, symbol, maxsupply
+      SELECT name, symbol, maxsupply, image
       FROM collection
     ) _collection
     LEFT JOIN (

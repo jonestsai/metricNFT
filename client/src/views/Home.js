@@ -58,6 +58,7 @@ export default class Home extends React.Component {
           <thead>
             <tr className="table-secondary">
               <th scope="col">#</th>
+              <th scope="col"></th>
               <th scope="col" className="text-start">Collection</th>
               <th scope="col" className="text-end">Floor</th>
               <th scope="col" className="text-end">24h</th>
