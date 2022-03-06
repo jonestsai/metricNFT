@@ -1,4 +1,4 @@
-const { getHashList, save } = require('./lib/helpers');
+const { getHashList, save } = require('./lib/helpers-temp');
 
 async function main() {
   const hashList = await getHashList('/home/server/src/collections/aurory/hash-list.txt');
