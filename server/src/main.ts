@@ -162,6 +162,16 @@ const getSales = async (beforeSignature:any) => {
       let preTokenBalances = (transaction!.meta!.preTokenBalances)!.find((preTokenBalance) => {
         return preTokenBalance?.owner === magicEdenAddress || preTokenBalance?.owner === solanartAddress;
       });
+
+      // Get the correct token from SMB marketplace (required starting from 2022-02-15)
+      if (!preTokenBalances) {
+        const notSMBMint = 'So11111111111111111111111111111111111111112';
+        preTokenBalances = (transaction!.meta!.preTokenBalances)!.find((preTokenBalance) => {
+          return preTokenBalance?.mint !== notSMBMint;
+        });
+      }
+
+      // Sale happened from a marketplace other than ME, Solanart, and SMB
       if (!preTokenBalances) {
         preTokenBalances = transaction!.meta!.preTokenBalances![0] as any;
       }
