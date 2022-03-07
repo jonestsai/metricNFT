@@ -19,17 +19,17 @@ export default class Collection extends React.Component {
 
     return (
       <tr>
-        <td className="text-white-50">{row}</td>
-        <td><img className = "rounded-circle" height="40" src={require(`../assets/${image}`)} /></td>
-        <th scope="row" className="text-start">{name}</th>
-        <td className="text-white-50 text-end">{parseFloat(floor).toFixed(2)}</td>
-        <td className={`${_24hChangeColor} text-end`}>{(_24hChange).toFixed(1)}%</td>
-        <td className={`${_7dChangeColor} text-end`}>{(_7dChange).toFixed(1)}%</td>
-        <td className="text-white-50 text-end">{parseFloat(_24hvolume).toFixed(2)}</td>
-        <td className="text-white-50 text-end">{(floor*maxsupply).toFixed(2)}</td>
-        <td className="text-white-50 text-end">{maxsupply}</td>
-        <td className="text-white-50 text-end">{ownerscount}</td>
-        <td className="text-white-50 text-end pe-4">{listedcount}<br/><span className="text-secondary">{(listedcount/maxsupply * 100).toFixed(1)}%</span></td>
+        <td className="text-white-50 align-middle">{row}</td>
+        <td className="align-middle"><img className = "rounded-circle" height="40" src={require(`../assets/${image}`)} /></td>
+        <th scope="row" className="text-start align-middle">{name}</th>
+        <td className="text-white-50 text-end align-middle">{parseFloat(floor).toFixed(2)}</td>
+        <td className={`${_24hChangeColor} text-end align-middle`}>{(_24hChange).toFixed(1)}%</td>
+        <td className={`${_7dChangeColor} text-end align-middle`}>{(_7dChange).toFixed(1)}%</td>
+        <td className="text-white-50 text-end align-middle">{parseFloat(_24hvolume).toFixed(2)}</td>
+        <td className="text-white-50 text-end align-middle">{(floor*maxsupply).toFixed(2)}</td>
+        <td className="text-white-50 text-end align-middle">{maxsupply}</td>
+        <td className="text-white-50 text-end align-middle">{ownerscount}</td>
+        <td className="text-white-50 text-end pe-4 align-middle">{listedcount}<br/><span className="text-secondary">{(listedcount/maxsupply * 100).toFixed(1)}%</span></td>
       </tr>
     )
   };
