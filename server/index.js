@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: ['http://www.metricnft.com', 'http://198.199.117.248:3000'],
+    origin: ['https://www.metricnft.com', 'http://198.199.117.248:3000'],
 }));
 
 app.get('/api', async (req, res) => {
