@@ -50,8 +50,8 @@ app.get('/api', async (req, res) => {
   let leftJoins = '';
 
   // Get the 24h and 7d floor
-  for (let days = 23; days <=32; days+=7) {
-    leftJoins += `LEFT JOIN (SELECT MIN(price) AS _${days}dfloor, CASE ${nameCase} ELSE symbol END AS _symbol FROM sales WHERE datetime > (NOW() - interval '${days} days') AND datetime < (NOW() - interval '${days - 1} days') AND (${collectionQuery}) GROUP BY _symbol) _${days}d ON _snapshot.symbol = _${days}d._symbol `;
+  for (let days = 1; days <= 10; days += 6) {
+    leftJoins += `LEFT JOIN (SELECT MIN(price) AS _${days}dfloor, CASE ${nameCase} ELSE symbol END AS _symbol FROM sales WHERE datetime > (NOW() - interval '${days + 1} days') AND datetime < (NOW() - interval '${days} days') AND (${collectionQuery}) GROUP BY _symbol) _${days}d ON _snapshot.symbol = _${days}d._symbol `;
   }
   // res.status(200).json(leftJoins);
 
@@ -72,7 +72,7 @@ app.get('/api', async (req, res) => {
           ELSE symbol
         END AS _symbol
       FROM sales
-      WHERE datetime > (NOW() - interval '22 days') AND datetime < (NOW() - interval '21 days')
+      WHERE datetime > (NOW() - interval '24 hours') AND datetime < NOW()
         AND (${collectionQuery})
       GROUP BY _symbol
     ) _sales
