@@ -3,7 +3,7 @@ import React from 'react';
 import { Container, Row, Col, Navbar } from 'react-bootstrap';
 import logo from '../../assets/logo.png';
 
-export default class Top extends React.Component {
+export default class Bottom extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -11,11 +11,8 @@ export default class Top extends React.Component {
   render() {
 
     return (
-      <Navbar expand="xs" className="px-4 border-bottom border-gray">
-        <span>
-          <img className="my-3 pe-3" src={logo} alt="Logo" height="50" />
-          <span className="display-6 align-middle"><strong>MetricNFT</strong></span>
-        </span>
+      <div className="mx-4 my-5 text-muted d-flex justify-content-between">
+        <span className="text-start">Copyright © {new Date().getFullYear()} MetricNFT</span>
         <span className="text-end align-middle">
           <a href="https://discord.gg/6Fr697uEAR" target="_blank">
             <svg width="80" height="30" viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +49,7 @@ export default class Top extends React.Component {
             </svg>
           </a>
         </span>
-      </Navbar>
+      </div>
     )
   };
 };

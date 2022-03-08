@@ -2,7 +2,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Container, Table } from 'react-bootstrap';
 import Collection from '../components/Collection';
-import Top from '../components/layout/Top';
 import { URLS } from '../Settings';
 import './Home.css';
 
@@ -51,29 +50,28 @@ export default class Home extends React.Component {
 
     return (
       <Container fluid>
-        <Top />
         <h3 className="text-start pt-5 pb-3">NFT Prices by Floor Market Cap</h3>
         <div className="table-responsive-sm">
-        <Table variant="dark" hover>
-          <thead>
-            <tr className="table-secondary">
-              <th scope="col">#</th>
-              <th scope="col"></th>
-              <th scope="col" className="text-start">Collection</th>
-              <th scope="col" className="text-end">Floor</th>
-              <th scope="col" className="text-end">24h</th>
-              <th scope="col" className="text-end pe-3">7d</th>
-              <th scope="col" className="text-end pe-1">24h Volume</th>
-              <th scope="col" className="text-end pe-1">Floor Market Cap</th>
-              <th scope="col" className="text-end pe-1">Tokens</th>
-              <th scope="col" className="text-end pe-1">Owners</th>
-              <th scope="col" className="text-end pe-4">Listed</th>
-            </tr>
-          </thead>
-          <tbody>
-            {collections}
-          </tbody>
-        </Table>
+          <Table variant="dark" hover>
+            <thead>
+              <tr className="table-secondary">
+                <th scope="col">#</th>
+                <th scope="col"></th>
+                <th scope="col" className="text-start">Collection</th>
+                <th scope="col" className="text-end">Floor</th>
+                <th scope="col" className="text-end">24h</th>
+                <th scope="col" className="text-end pe-3">7d</th>
+                <th scope="col" className="text-end pe-1">24h Volume</th>
+                <th scope="col" className="text-end pe-1">Floor Market Cap</th>
+                <th scope="col" className="text-end pe-1">Tokens</th>
+                <th scope="col" className="text-end pe-1">Owners</th>
+                <th scope="col" className="text-end pe-4">Listed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {collections}
+            </tbody>
+          </Table>
         </div>
       </Container>
     )
