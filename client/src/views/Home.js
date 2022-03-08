@@ -72,6 +72,11 @@ export default class Home extends React.Component {
               {collections}
             </tbody>
           </Table>
+          {this.state.isLoading && (
+            <div className="my-5 text-center">
+              <div className="spinner-border text-light" role="status" />
+            </div>
+          )}
         </div>
       </Container>
     )
