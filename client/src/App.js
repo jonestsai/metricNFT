@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactGA from 'react-ga';
 import { NavLink, Routes, Route } from 'react-router-dom';
 
 import Home from './views/Home';
@@ -11,6 +12,8 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
+    ReactGA.initialize('UA-48992440-3');
+    ReactGA.pageview(window.location.pathname + window.location.search);
     document.body.style.backgroundColor = "#212529";
     document.body.style.color = "white";
   }
