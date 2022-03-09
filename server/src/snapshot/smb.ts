@@ -1,4 +1,4 @@
-const { getHashList, save } = require('./lib/helpers-temp');
+const { getHashList, save } = require('./lib/helpers');
 
 async function main() {
   const hashList = await getHashList('/home/server/src/collections/smb/hash-list.txt');

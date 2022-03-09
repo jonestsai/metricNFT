@@ -43,7 +43,7 @@ const getNftOwner = async (address: any) => {
     };
     let getFilter = [filter, filter2];
     let programAccountsConfig = { filters: getFilter, encoding: "jsonParsed" };
-    let _listOfTokens = await genesysgoConnection.getParsedProgramAccounts(
+    let _listOfTokens = await anchorConnection.getParsedProgramAccounts(
       TOKEN_PUBKEY,
       programAccountsConfig
     );
