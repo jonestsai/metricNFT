@@ -3,7 +3,8 @@ const { getHashList, save } = require('./lib/helpers');
 async function main() {
   const hashList = await getHashList('/home/server/src/collections/thugbirdz/hash-list.txt');
   // console.log(hashList);
-  await save(hashList, 'THUG');
+  const magicEdenAPI = 'https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/thugbirdz?edge_cache=true';
+  await save(hashList, 'THUG', magicEdenAPI);
 }
 
 main().then(

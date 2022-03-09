@@ -2,8 +2,11 @@ export {};
 
 import {
   PublicKey,
+  LAMPORTS_PER_SOL,
 } from '@solana/web3.js';
 const { Pool } = require('pg')
+const puppeteer = require('puppeteer');
+const userAgent = require('user-agents');
 
 const anchor = require("@project-serum/anchor");
 const anchorConnection = new anchor.web3.Connection(
@@ -43,7 +46,7 @@ const getNftOwner = async (address: any) => {
     };
     let getFilter = [filter, filter2];
     let programAccountsConfig = { filters: getFilter, encoding: "jsonParsed" };
-    let _listOfTokens = await genesysgoConnection.getParsedProgramAccounts(
+    let _listOfTokens = await anchorConnection.getParsedProgramAccounts(
       TOKEN_PUBKEY,
       programAccountsConfig
     );
@@ -67,7 +70,7 @@ const getNftOwner = async (address: any) => {
   return res;
 };
 
-const save = async (hashList: any, collection: any) => {
+const save = async (hashList: any, collection: any, magicEdenAPI: any) => {
   const startSnapshotTime = new Date();
   let snapshot = {} as any;
   let retryCount: number = 0;
@@ -140,6 +143,23 @@ const save = async (hashList: any, collection: any) => {
   const endSnapshotTime = new Date();
   console.log(endSnapshotTime);
 
+  let floorPrice: any;
+
+  try {
+    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+    const [page] = await browser.pages();
+
+    await page.setUserAgent(userAgent.toString());
+    await page.goto(magicEdenAPI, { waitUntil: 'networkidle0' });
+    const data = await page.$eval('pre', (element: any) => element.textContent);
+
+    floorPrice = JSON.parse(data)?.results?.floorPrice / LAMPORTS_PER_SOL;
+    console.log(floorPrice);
+    await browser.close();
+  } catch (err) {
+    console.error(err);
+  }
+
   console.log('Save to DB');
   const pool = new Pool({
     user: '***REMOVED***',
@@ -149,8 +169,8 @@ const save = async (hashList: any, collection: any) => {
     port: ***REMOVED***,
   });
   const query = {
-    text: 'INSERT INTO snapshot_test(symbol, starttime, endtime, listedcount, ownerscount, listedmarketplace) VALUES($1, $2, $3, $4, $5, $6)',
-    values: [collection, startSnapshotTime, endSnapshotTime, listedCount, ownersCount, marketplace],
+    text: 'INSERT INTO snapshot_test(symbol, starttime, endtime, listedcount, ownerscount, listedmarketplace, floorprice) VALUES($1, $2, $3, $4, $5, $6, $7)',
+    values: [collection, startSnapshotTime, endSnapshotTime, listedCount, ownersCount, marketplace, floorPrice],
   };
   pool.query(query, (err: any, res: any) => {
     console.log(err, res)

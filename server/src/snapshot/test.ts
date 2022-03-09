@@ -1,9 +1,10 @@
 const { getHashList, save } = require('./lib/helpers-test');
 
 async function main() {
-  const hashList = await getHashList('/home/server/src/collections/thugbirdz/hash-list.txt');
+  const hashList = await getHashList('/home/server/src/collections/mindfolk/hash-list.txt');
   // console.log(hashList);
-  await save(hashList, 'THUG');
+  const magicEdenAPI = 'https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/mindfolk?edge_cache=true';
+  await save(hashList, 'MNDFLK', magicEdenAPI);
 }
 
 main().then(
