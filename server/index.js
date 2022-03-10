@@ -67,7 +67,7 @@ app.get('/api', async (req, res) => {
     ) _snapshot
     ON _collection.symbol = _snapshot.symbol
     LEFT JOIN (
-      SELECT MIN(price) AS floor, SUM(price) AS _24hVolume,
+      SELECT SUM(price) AS _24hVolume,
         CASE ${nameCase}
           ELSE symbol
         END AS _symbol
