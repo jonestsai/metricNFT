@@ -21,7 +21,7 @@ const fs = require('fs');
 const getHashList = async (hashList: any) => {
   const rawdata =  await fs.readFileSync(hashList, 'utf8' , (err: any, data: any) => {
     if (err) {
-      console.error(err);
+      console.log(err);
       return;
     }
   });
@@ -157,7 +157,7 @@ const save = async (hashList: any, collection: any, magicEdenAPI: any) => {
     console.log(floorPrice);
     await browser.close();
   } catch (err) {
-    console.error(err);
+    console.log(err);
   }
 
   console.log('Save to DB');
