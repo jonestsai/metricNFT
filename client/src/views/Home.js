@@ -1,21 +1,31 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { getPythProgramKeyForCluster, PythHttpClient } from '@pythnetwork/client';
+import { Cluster, clusterApiUrl, Connection } from '@solana/web3.js';
 import React from 'react';
-import { Container, Table } from 'react-bootstrap';
+import { Container, Dropdown, DropdownButton, Table } from 'react-bootstrap';
 import Collection from '../components/Collection';
 import { URLS } from '../Settings';
 import './Home.css';
+
+const anchor = require('@project-serum/anchor');
 
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       collections: [],
+      exchangeRates: '',
+      currency: 'SOL',
+      currencyRate: 1,
       isLoading: true,
+      isRatesLoading: true,
     };
   }
 
   async componentDidMount() {
+    document.title = 'MetricNFT';
     await this.fetchCollections();
+    await this.fetchCurrencies();
   }
 
   fetchCollections = async () => {
@@ -37,20 +47,103 @@ export default class Home extends React.Component {
     }
   }
 
+  fetchCurrencies = async () => {
+    if (!this.state.isLoading) {
+      this.setState({ isRatesLoading: true });
+    }
+
+    try {
+      const anchorConnection = new anchor.web3.Connection(
+        'https://solana-api.projectserum.com'
+      );
+      const pythPublicKey = getPythProgramKeyForCluster('mainnet-beta');
+      const pythClient = new PythHttpClient(anchorConnection, pythPublicKey);
+      const data = await pythClient.getData();
+      const { productPrice } = data;
+      const symbols = ['Crypto.SOL/USD', 'Crypto.BTC/USD', 'Crypto.ETH/USD', 'FX.EUR/USD', 'FX.USD/CAD'];
+      const exchangeRates = symbols.reduce((rates, symbol) => ({
+        ...rates,
+        [symbol]: productPrice.get(symbol).price,
+      }), {});
+
+      this.setState({
+        exchangeRates,
+      });
+    } catch (error) {
+      // Do nothing
+    } finally {
+      this.setState({ isRatesLoading: false });
+    }
+  }
+
+  handleCurrencySelect = select => {
+    const { exchangeRates } = this.state;
+    const USD = exchangeRates['Crypto.SOL/USD'];
+    const BTC = USD / exchangeRates['Crypto.BTC/USD'];
+    const ETH = USD / exchangeRates['Crypto.ETH/USD'];
+    const EUR = USD / exchangeRates['FX.EUR/USD'];
+    const CAD = USD * exchangeRates['FX.USD/CAD'];
+    let currencyRate = 1;
+
+    switch (select) {
+      case 'USD':
+        currencyRate = USD;
+        break;
+      case 'BTC':
+        currencyRate = BTC;
+        break;
+      case 'ETH':
+        currencyRate = ETH;
+        break;
+      case 'EUR':
+        currencyRate = EUR;
+        break;
+      case 'CAD':
+        currencyRate = CAD;
+        break;
+    }
+
+    this.setState({ currencyRate, currency: select });
+  }
+
   render() {
-    const collections = this.state.collections.map((collection, index) => {
+    const { currency, currencyRate } = this.state;
+    const collectionsByMC = this.state.collections.sort((a, b) => {
+      return (b.floorprice * b.maxsupply) - (a.floorprice * a.maxsupply);
+    });
+    const collections = collectionsByMC.map((collection, index) => {
       return (
         <Collection
           key={collection.id}
           row={index + 1}
           collection={collection}
+          currency={currency}
+          currencyRate={currencyRate}
         />
       );
     });
 
     return (
       <Container fluid>
-        <h3 className="text-start pt-5 pb-3">NFT Prices by Floor Market Cap</h3>
+        <h3 className="text-start pt-5">NFT Prices by Floor Market Cap</h3>
+        <DropdownButton
+          variant="secondary"
+          menuVariant="dark"
+          title={currency}
+          className="text-end mb-3"
+          onSelect={this.handleCurrencySelect}
+        >
+          <Dropdown.Item eventKey="SOL" active={!!(currency == 'SOL')}>SOL</Dropdown.Item>
+          {!this.state.isRatesLoading && (
+            <div>
+              <Dropdown.Item eventKey="USD" active={!!(currency == 'USD')}>USD</Dropdown.Item>
+              <Dropdown.Item eventKey="EUR" active={!!(currency == 'EUR')}>EUR</Dropdown.Item>
+              <Dropdown.Item eventKey="CAD" active={!!(currency == 'CAD')}>CAD</Dropdown.Item>
+              <Dropdown.Item eventKey="BTC" active={!!(currency == 'BTC')}>BTC</Dropdown.Item>
+              <Dropdown.Item eventKey="ETH" active={!!(currency == 'ETH')}>ETH</Dropdown.Item>
+            </div>
+          )}
+        </DropdownButton>
         <div className="table-responsive-sm">
           <Table variant="dark" hover>
             <thead>
