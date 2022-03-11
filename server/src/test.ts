@@ -20,6 +20,7 @@ const genesysgoConnection = new anchor.web3.Connection(
 );
 
 const fs = require('fs');
+require('dotenv').config();
 
 /**
  * Connection to the network
@@ -117,11 +118,11 @@ const solanaMainRPC = async (address: any) => {
 
 const getDB = async (id: any) => {
   const pool = new Pool({
-    user: '***REMOVED***',
-    host: 'localhost',
-    database: 'metricnft',
-    password: '***REMOVED***',
-    port: ***REMOVED***,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
   });
   const query = {
     text: `SELECT * from snapshot_test WHERE id = ${id}`,
@@ -132,10 +133,10 @@ const getDB = async (id: any) => {
       console.log(err.stack);
     } else {
       console.log(id);
-      console.log(Object.keys(JSON.parse(res.rows[0].owners)).length);
+      // console.log(Object.keys(JSON.parse(res.rows[0].owners)).length);
       console.log(res.rows[0].starttime);
       console.log(res.rows[0].endtime);
-      console.log(JSON.stringify(Object.keys(JSON.parse(res.rows[0].owners))));
+      // console.log(JSON.stringify(Object.keys(JSON.parse(res.rows[0].owners))));
       // console.log(JSON.parse(res.rows[0].owners)['8PcX7pTiD32VBG9be2RRcMK8Ju6GDoF8XiVECEjiEVgk']);
 
       // fs.writeFile('/home/server/src/test.txt', content, err => {

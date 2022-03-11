@@ -4,6 +4,7 @@ import {
   PublicKey,
   LAMPORTS_PER_SOL,
 } from '@solana/web3.js';
+require('dotenv').config();
 const { Pool } = require('pg')
 const puppeteer = require('puppeteer');
 const userAgent = require('user-agents');
@@ -162,11 +163,11 @@ const save = async (hashList: any, collection: any, magicEdenAPI: any) => {
 
   console.log('Save to DB');
   const pool = new Pool({
-    user: '***REMOVED***',
-    host: 'localhost',
-    database: 'metricnft',
-    password: '***REMOVED***',
-    port: ***REMOVED***,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
   });
   const query = {
     text: 'INSERT INTO snapshot_test(symbol, starttime, endtime, listedcount, ownerscount, listedmarketplace, floorprice) VALUES($1, $2, $3, $4, $5, $6, $7)',

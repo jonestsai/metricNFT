@@ -1,3 +1,4 @@
+require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const { Pool } = require('pg');
@@ -11,11 +12,11 @@ app.use(cors({
 
 app.get('/api', async (req, res) => {
   const pool = new Pool({
-    user: '***REMOVED***',
-    host: 'localhost',
-    database: 'metricnft',
-    password: '***REMOVED***',
-    port: ***REMOVED***,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
   });
 
   let nameCase;

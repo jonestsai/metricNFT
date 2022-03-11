@@ -8,6 +8,7 @@ import {
 import { Account } from "@metaplex-foundation/mpl-core";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 
+require('dotenv').config();
 const fetch = require('node-fetch');
 const { Pool } = require('pg');
 
@@ -122,11 +123,11 @@ const save = async (hashList: any, collection: any) => {
 
   console.log('Save to DB');
   const pool = new Pool({
-    user: '***REMOVED***',
-    host: 'localhost',
-    database: 'metricnft',
-    password: '***REMOVED***',
-    port: ***REMOVED***,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
   });
   const query = {
     text: 'INSERT INTO snapshot_test(symbol, starttime, endtime, owners) VALUES($1, $2, $3, $4)',
@@ -142,11 +143,11 @@ const save = async (hashList: any, collection: any) => {
 
 const getDB = async (id: any) => {
   const pool = new Pool({
-    user: '***REMOVED***',
-    host: 'localhost',
-    database: 'metricnft',
-    password: '***REMOVED***',
-    port: ***REMOVED***,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
   });
   const query = {
     text: `SELECT * from snapshot WHERE id = ${id}`,
@@ -171,11 +172,11 @@ const getDB = async (id: any) => {
 
 const updateCount = async (id: any) => {
   const pool = new Pool({
-    user: '***REMOVED***',
-    host: 'localhost',
-    database: 'metricnft',
-    password: '***REMOVED***',
-    port: ***REMOVED***,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
   });
   const query = {
     text: `SELECT * from snapshot WHERE id = ${id}`,

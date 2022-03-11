@@ -8,6 +8,7 @@ import {
 import { Account } from "@metaplex-foundation/mpl-core";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 
+require('dotenv').config();
 const fetch = require('node-fetch');
 const { Pool } = require('pg');
 const fs = require('fs');
@@ -175,11 +176,11 @@ const getSales = async (beforeSignature:any) => {
           // if (fromPostBalance !== 0 && preTokenBalances?.mint) {
             console.log('Save to DB');
             const pool = new Pool({
-              user: '***REMOVED***',
-              host: 'localhost',
-              database: 'metricnft',
-              password: '***REMOVED***',
-              port: ***REMOVED***,
+              user: process.env.DB_USER,
+              host: process.env.DB_HOST,
+              database: process.env.DATABASE,
+              password: process.env.DB_PASSWORD,
+              port: process.env.DB_PORT,
             });
             const query = {
               text: 'INSERT INTO hash_list(id, name, symbol, price, datetime, marketplace, fromaddr, toaddr, fromaddrprebalance, fromaddrpostbalance, toaddrprebalance, toaddrpostbalance, programid, mint) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
@@ -217,11 +218,11 @@ const getSales = async (beforeSignature:any) => {
 
 const getHashList = async (a:any) => {
   const pool = new Pool({
-    user: '***REMOVED***',
-    host: 'localhost',
-    database: 'metricnft',
-    password: '***REMOVED***',
-    port: ***REMOVED***,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
   });
   const query = {
     text: `SELECT * from hash_list WHERE symbol = 'DAPE'`,

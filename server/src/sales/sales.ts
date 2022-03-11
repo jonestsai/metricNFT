@@ -7,6 +7,7 @@ import {
 import { Account } from "@metaplex-foundation/mpl-core";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 
+require('dotenv').config();
 const { Pool } = require('pg');
 
 const { royaltyAddresses } = require('./utils/constants');
@@ -169,12 +170,12 @@ const getSales = async (address: any, beforeSignature: any) => {
           if (fromPostBalance !== 0 && preTokenBalances?.mint) {
             console.log('Save to DB');
             const pool = new Pool({
-              user: '***REMOVED***',
-              host: 'localhost',
+              user: process.env.DB_USER,
+              host: process.env.DB_HOST,
               // host: '198.199.117.248',
-              database: 'metricnft',
-              password: '***REMOVED***',
-              port: ***REMOVED***,
+              database: process.env.DATABASE,
+              password: process.env.DB_PASSWORD,
+              port: process.env.DB_PORT,
             });
             const query = {
               text: 'INSERT INTO sales(id, name, symbol, price, datetime, marketplace, fromaddr, toaddr, fromaddrprebalance, fromaddrpostbalance, toaddrprebalance, toaddrpostbalance, programid, mint) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
