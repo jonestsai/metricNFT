@@ -5,7 +5,7 @@ import {
   LAMPORTS_PER_SOL,
 } from '@solana/web3.js';
 require('dotenv').config();
-const { Pool } = require('pg')
+const { Pool } = require('pg');
 const puppeteer = require('puppeteer');
 const userAgent = require('user-agents');
 
