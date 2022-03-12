@@ -107,7 +107,7 @@ export default class Home extends React.Component {
   }
 
   render() {
-    const { currency, currencyRate } = this.state;
+    const { exchangeRates, currency, currencyRate, isRatesLoading } = this.state;
     const collectionsByMC = this.state.collections.sort((a, b) => {
       return (b.floorprice * b.maxsupply) - (a.floorprice * a.maxsupply);
     });
@@ -134,13 +134,23 @@ export default class Home extends React.Component {
           onSelect={this.handleCurrencySelect}
         >
           <Dropdown.Item eventKey="SOL" active={!!(currency == 'SOL')}>SOL</Dropdown.Item>
-          {!this.state.isRatesLoading && (
+          {!isRatesLoading && (
             <div>
-              <Dropdown.Item eventKey="USD" active={!!(currency == 'USD')}>USD</Dropdown.Item>
-              <Dropdown.Item eventKey="EUR" active={!!(currency == 'EUR')}>EUR</Dropdown.Item>
-              <Dropdown.Item eventKey="CAD" active={!!(currency == 'CAD')}>CAD</Dropdown.Item>
-              <Dropdown.Item eventKey="BTC" active={!!(currency == 'BTC')}>BTC</Dropdown.Item>
-              <Dropdown.Item eventKey="ETH" active={!!(currency == 'ETH')}>ETH</Dropdown.Item>
+              {exchangeRates['Crypto.SOL/USD'] && (
+                <Dropdown.Item eventKey="USD" active={!!(currency == 'USD')}>USD</Dropdown.Item>
+              )}
+              {exchangeRates['FX.EUR/USD'] && (
+                <Dropdown.Item eventKey="EUR" active={!!(currency == 'EUR')}>EUR</Dropdown.Item>
+              )}
+              {exchangeRates['FX.USD/CAD'] && (
+                <Dropdown.Item eventKey="CAD" active={!!(currency == 'CAD')}>CAD</Dropdown.Item>
+              )}
+              {exchangeRates['Crypto.BTC/USD'] && (
+                <Dropdown.Item eventKey="BTC" active={!!(currency == 'BTC')}>BTC</Dropdown.Item>
+              )}
+              {exchangeRates['Crypto.ETH/USD'] && (
+                <Dropdown.Item eventKey="ETH" active={!!(currency == 'ETH')}>ETH</Dropdown.Item>
+              )}
             </div>
           )}
         </DropdownButton>
