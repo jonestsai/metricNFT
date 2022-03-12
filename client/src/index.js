@@ -5,14 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 
-import Top from './components/layout/Top';
-import Bottom from './components/layout/Bottom';
-
 ReactDOM.render(
   <BrowserRouter>
-    <Top />
     <App />
-    <Bottom />
   </BrowserRouter>,
   document.getElementById('root')
 );

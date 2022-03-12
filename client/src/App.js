@@ -2,6 +2,8 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import { NavLink, Routes, Route } from 'react-router-dom';
 
+import Top from './components/layout/Top';
+import Bottom from './components/layout/Bottom';
 import Home from './views/Home';
 import logo from './logo.svg';
 import './App.css';
@@ -27,7 +29,9 @@ export default class App extends React.Component {
     return (
       <div className="App">
         {/*<Navigation />*/}
+        <Top />
         <Main />
+        <Bottom />
       </div>
     );
   }
