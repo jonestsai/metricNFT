@@ -7,7 +7,7 @@ import {
 import { Account } from "@metaplex-foundation/mpl-core";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 
-require('dotenv').config();
+require('dotenv').config({ path: '/home/server/.env' });
 const { Pool } = require('pg');
 
 const { royaltyAddresses } = require('./utils/constants');
