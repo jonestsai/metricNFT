@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Container, Table } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
 
 export default function Collection(props) {
   const { row, collection, currency, currencyRate } = props;
@@ -25,6 +26,12 @@ export default function Collection(props) {
       break;
   }
 
+  const navigate = useNavigate();
+  const handleRowClick = (name) => {
+    const url = name.replace(/ /g, '-').toLowerCase();
+    navigate(`${url}`);
+  } 
+
   const floorPrice = `${currencySymbol}${(floorprice * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
   const _24hChange = _1dfloor ? (floorprice - _1dfloor) / _1dfloor * 100 : 0;
   const _24hChangeColor = _24hChange < 0 ? 'text-danger' : 'text-success';
@@ -34,7 +41,7 @@ export default function Collection(props) {
   const floorMarketCap = `${currencySymbol}${(floorprice * maxsupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
 
   return (
-    <tr>
+    <tr onClick={()=> handleRowClick(name)}>
       <td className="text-white-50 align-middle">{row}</td>
       <td className="align-middle"><img className = "rounded-circle" height="40" src={require(`../assets/${image}`)} /></td>
       <th scope="row" className="text-start align-middle">{name}</th>
