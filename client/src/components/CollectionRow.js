@@ -3,7 +3,7 @@ import React from 'react';
 import { Container, Table } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 
-export default function Collection(props) {
+export default function CollectionRow(props) {
   const { row, collection, currency, currencyRate } = props;
   const { image, name, floorprice, _1dfloor, _7dfloor, _24hvolume, maxsupply, ownerscount, listedcount } = collection;
 

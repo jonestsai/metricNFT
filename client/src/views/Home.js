@@ -3,7 +3,7 @@ import { getPythProgramKeyForCluster, PythHttpClient } from '@pythnetwork/client
 import { Cluster, clusterApiUrl, Connection } from '@solana/web3.js';
 import React from 'react';
 import { Container, Dropdown, DropdownButton, Table } from 'react-bootstrap';
-import Collection from '../components/Collection';
+import CollectionRow from '../components/CollectionRow';
 import { URLS } from '../Settings';
 import './Home.css';
 
@@ -111,9 +111,9 @@ export default class Home extends React.Component {
     const collectionsByMC = this.state.collections.sort((a, b) => {
       return (b.floorprice * b.maxsupply) - (a.floorprice * a.maxsupply);
     });
-    const collections = collectionsByMC.map((collection, index) => {
+    const collectionRows = collectionsByMC.map((collection, index) => {
       return (
-        <Collection
+        <CollectionRow
           key={collection.id}
           row={index + 1}
           collection={collection}
@@ -172,7 +172,7 @@ export default class Home extends React.Component {
               </tr>
             </thead>
             <tbody>
-              {collections}
+              {collectionRows}
             </tbody>
           </Table>
           {this.state.isLoading && (
