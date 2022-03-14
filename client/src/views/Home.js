@@ -48,7 +48,7 @@ export default class Home extends React.Component {
   }
 
   fetchCurrencies = async () => {
-    if (!this.state.isLoading) {
+    if (!this.state.isRatesLoading) {
       this.setState({ isRatesLoading: true });
     }
 
