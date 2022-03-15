@@ -4,6 +4,7 @@ import { NavLink, Routes, Route } from 'react-router-dom';
 
 import Top from './components/layout/Top';
 import Bottom from './components/layout/Bottom';
+import { URLS } from './Settings';
 import Home from './views/Home';
 import logo from './logo.svg';
 import './App.css';
@@ -11,13 +12,18 @@ import './App.css';
 export default class App extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      collections: [],
+      isLoading: true,
+    };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     ReactGA.initialize('UA-48992440-3');
     ReactGA.pageview(window.location.pathname + window.location.search);
     document.body.style.backgroundColor = "#212529";
     document.body.style.color = "white";
+    await this.fetchCollections();
   }
 
   componentWillUnmount() {
@@ -25,12 +31,36 @@ export default class App extends React.Component {
     document.body.style.color = null;
   }
 
+  fetchCollections = async () => {
+    if (!this.state.isLoading) {
+      this.setState({ isLoading: true });
+    }
+
+    try {
+      const response = await fetch(`${URLS.api}`);
+      const collections = await response.json();
+
+      this.setState({
+        collections,
+      });
+    } catch (error) {
+      // Do nothing
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  }
+
   render() {
+    const { collections, isLoading } = this.state;
+
     return (
       <div className="App">
         {/*<Navigation />*/}
         <Top />
-        <Main />
+        <Main
+          collections={collections}
+          isLoading={isLoading}          
+        />
         <Bottom />
       </div>
     );
@@ -62,9 +92,9 @@ const Contact = () => (
   </div>
 );
 
-const Main = () => (
+const Main = ({ collections, isLoading }) => (
   <Routes>
-  <Route path='/' element={<Home />}></Route>
+  <Route path='/' element={<Home collections={collections} isLoading={isLoading} />}></Route>
   <Route path='/about' element={<About />}></Route>
   <Route path='/contact' element={<Contact />}></Route>
   </Routes>

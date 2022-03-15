@@ -13,38 +13,16 @@ export default class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      collections: [],
       exchangeRates: '',
       currency: 'SOL',
       currencyRate: 1,
-      isLoading: true,
       isRatesLoading: true,
     };
   }
 
   async componentDidMount() {
     document.title = 'MetricNFT';
-    await this.fetchCollections();
     await this.fetchCurrencies();
-  }
-
-  fetchCollections = async () => {
-    if (!this.state.isLoading) {
-      this.setState({ isLoading: true });
-    }
-
-    try {
-      const response = await fetch(`${URLS.api}`);
-      const collections = await response.json();
-
-      this.setState({
-        collections,
-      });
-    } catch (error) {
-      // Do nothing
-    } finally {
-      this.setState({ isLoading: false });
-    }
   }
 
   fetchCurrencies = async () => {
@@ -107,8 +85,9 @@ export default class Home extends React.Component {
   }
 
   render() {
+    const { collections, isLoading } = this.props;
     const { exchangeRates, currency, currencyRate, isRatesLoading } = this.state;
-    const collectionsByMC = this.state.collections.sort((a, b) => {
+    const collectionsByMC = collections.sort((a, b) => {
       return (b.floorprice * b.maxsupply) - (a.floorprice * a.maxsupply);
     });
     const collectionRows = collectionsByMC.map((collection, index) => {
@@ -175,7 +154,7 @@ export default class Home extends React.Component {
               {collectionRows}
             </tbody>
           </Table>
-          {this.state.isLoading && (
+          {isLoading && (
             <div className="my-5 text-center">
               <div className="spinner-border text-light" role="status" />
             </div>
