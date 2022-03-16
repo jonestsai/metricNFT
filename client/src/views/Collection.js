@@ -119,7 +119,7 @@ export default class Collection extends React.Component {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
                       <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                      <Tooltip />
+                      <Tooltip content={<ListedCountTooltip />} />
                       <Line dataKey="Total Listed" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
                     </LineChart>
                   </ResponsiveContainer>
@@ -143,7 +143,7 @@ export default class Collection extends React.Component {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
                       <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                      <Tooltip />
+                      <Tooltip content={<OwnersCountTooltip />} />
                       <Line dataKey="Total Owners" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
                     </LineChart>
                   </ResponsiveContainer>
@@ -167,7 +167,7 @@ export default class Collection extends React.Component {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
                   <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                  <Tooltip />
+                  <Tooltip content={<PriceTooltip />} />
                   <Line dataKey="Price" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
                 </LineChart>
               </ResponsiveContainer>
@@ -183,3 +183,42 @@ export default class Collection extends React.Component {
     );
   }
 }
+
+const ListedCountTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-light text-dark rounded opacity-75 p-2">
+        <div className="text-start">{label}</div>
+        <div className="text-start">{`Total Listed: ${payload[0].value}`}</div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const OwnersCountTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-light text-dark rounded opacity-75 p-2">
+        <div className="text-start">{label}</div>
+        <div className="text-start">{`Total Owners: ${payload[0].value}`}</div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const PriceTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-light text-dark rounded opacity-75 p-2">
+        <div className="text-start">{label}</div>
+        <div className="text-start">{`Floor Price: ${payload[0].value}`}</div>
+      </div>
+    );
+  }
+
+  return null;
+};
