@@ -5,6 +5,7 @@ import { NavLink, Routes, Route } from 'react-router-dom';
 import Top from './components/layout/Top';
 import Bottom from './components/layout/Bottom';
 import { URLS } from './Settings';
+import Collection from './views/Collection';
 import Home from './views/Home';
 import logo from './logo.svg';
 import './App.css';
@@ -59,7 +60,7 @@ export default class App extends React.Component {
         <Top />
         <Main
           collections={collections}
-          isLoading={isLoading}          
+          isLoading={isLoading}
         />
         <Bottom />
       </div>
@@ -92,10 +93,20 @@ const Contact = () => (
   </div>
 );
 
-const Main = ({ collections, isLoading }) => (
-  <Routes>
-  <Route path='/' element={<Home collections={collections} isLoading={isLoading} />}></Route>
-  <Route path='/about' element={<About />}></Route>
-  <Route path='/contact' element={<Contact />}></Route>
-  </Routes>
-);
+const Main = ({ collections, isLoading }) => {
+  const collectionRoutes = collections.map((collection, index) => {
+    const { name, slug } = collection;
+    return (
+      <Route key={collection.id} path={slug} element={<Collection name={name} collectionAPI={slug} />}></Route>
+    );
+  });
+
+  return (
+    <Routes>
+      <Route path='/' element={<Home collections={collections} isLoading={isLoading} />}></Route>
+      {collectionRoutes}
+      <Route path='/about' element={<About />}></Route>
+      <Route path='/contact' element={<Contact />}></Route>
+    </Routes>
+  );
+};

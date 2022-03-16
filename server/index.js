@@ -3,6 +3,14 @@ const cors = require('cors');
 const express = require('express');
 const { Pool } = require('pg');
 
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DATABASE,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -11,14 +19,6 @@ app.use(cors({
 }));
 
 app.get('/api', async (req, res) => {
-  const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DATABASE,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-  });
-
   let nameCase;
   let collectionQuery;
 
@@ -80,6 +80,37 @@ app.get('/api', async (req, res) => {
     ON _snapshot.symbol = _sales._symbol
     ${leftJoins}`, (error, results) => {
     if (error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
+app.get('/api/:slug', async (req, res) => {
+  const { slug } = req.params;
+  const { rows } = await pool.query(`SELECT * FROM collection WHERE slug = '${slug}'`);
+
+  const [{ symbol, minprice, namematch }] = rows;
+  const nameCase = namematch ? `CASE WHEN name ~ '${namematch}' THEN '${symbol}' END` : 'symbol';
+  const nameMatchQuery = namematch ? `name ~ '${namematch}'` : `symbol = '${symbol}'`;
+  const collectionQuery = `${nameMatchQuery} AND price > ${minprice}`;
+
+  pool.query(`
+    SELECT DISTINCT ON (starttime::date) starttime::date, listedcount, ownerscount, price
+    FROM snapshot
+    LEFT JOIN (
+      SELECT DISTINCT ON (datetime::date) datetime::date, symbol, price,
+        ${nameCase}
+        AS _symbol
+      FROM sales
+      WHERE ${collectionQuery} AND datetime > (NOW() - interval '26 days') AND datetime < NOW() AND hide IS NOT TRUE
+      ORDER BY datetime desc, price asc
+    ) _sales
+    ON snapshot.starttime::date = _sales.datetime::date
+    WHERE snapshot.symbol = '${symbol}' and starttime > (NOW() - interval '26 days') AND starttime < NOW()
+    ORDER BY starttime`, (error, results) => {
+    if (error) {
+      console.log(error);
       throw error;
     }
     res.status(200).json(results.rows);
