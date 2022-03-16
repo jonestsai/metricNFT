@@ -42,7 +42,7 @@ export default function CollectionRow(props) {
   return (
     <tr>
       <td className="text-white-50 align-middle">{row}</td>
-      <td className="align-middle"><img className = "rounded-circle" height="40" src={require(`../assets/${image}`)} /></td>
+      <td className="align-middle"><img className = "rounded-circle" height="40" src={require(`../assets/${image}`)} role="button" onClick={()=> handleRowClick(slug)} /></td>
       <td className="text-start align-middle"><u role="button" onClick={()=> handleRowClick(slug)}>{name}</u></td>
       <td className="text-white-50 text-end align-middle">{floorPrice}</td>
       <td className={`${_24hChangeColor} text-end align-middle`}>{(_24hChange).toFixed(1)}%</td>
