@@ -96,7 +96,7 @@ app.get('/api/:slug', async (req, res) => {
   const collectionQuery = `${nameMatchQuery} AND price > ${minprice}`;
 
   pool.query(`
-    SELECT DISTINCT ON (starttime::date) starttime::date, listedcount, ownerscount, price
+    SELECT DISTINCT ON (starttime::date) starttime::date, listedcount, ownerscount, floorprice, price
     FROM snapshot
     LEFT JOIN (
       SELECT DISTINCT ON (datetime::date) datetime::date, symbol, price,

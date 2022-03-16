@@ -70,11 +70,11 @@ export default class Collection extends React.Component {
     let updatedPrice;
     return collection.length > 0
       ? collection.map((detail) => {
-        const { starttime, price } = detail;
+        const { starttime, floorprice, price } = detail;
         const datetime = new Date(starttime);
         const date = datetime.getDate();
         const month = datetime.toLocaleString('default', { month: 'short' });
-        updatedPrice = Number(Number(price)?.toFixed(2));
+        updatedPrice = floorprice ? Number(Number(floorprice)?.toFixed(2)) : Number(Number(price)?.toFixed(2));
 
         if (updatedPrice == 0) {
           updatedPrice = lastPrice;
