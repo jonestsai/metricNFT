@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function CollectionRow(props) {
   const { row, collection, currency, currencyRate } = props;
-  const { image, name, floorprice, _1dfloor, _7dfloor, _24hvolume, maxsupply, ownerscount, listedcount } = collection;
+  const { image, name, slug, floorprice, _1dfloor, _7dfloor, _24hvolume, maxsupply, ownerscount, listedcount } = collection;
 
   let currencySymbol = '';
   switch (currency) {
@@ -27,9 +27,8 @@ export default function CollectionRow(props) {
   }
 
   const navigate = useNavigate();
-  const handleRowClick = (name) => {
-    const url = name.replace(/ /g, '-').toLowerCase();
-    navigate(`${url}`);
+  const handleRowClick = (slug) => {
+    navigate(slug);
   } 
 
   const floorPrice = `${currencySymbol}${(floorprice * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
@@ -41,7 +40,7 @@ export default function CollectionRow(props) {
   const floorMarketCap = `${currencySymbol}${(floorprice * maxsupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
 
   return (
-    <tr onClick={()=> handleRowClick(name)}>
+    <tr onClick={()=> handleRowClick(slug)}>
       <td className="text-white-50 align-middle">{row}</td>
       <td className="align-middle"><img className = "rounded-circle" height="40" src={require(`../assets/${image}`)} /></td>
       <th scope="row" className="text-start align-middle">{name}</th>
