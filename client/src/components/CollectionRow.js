@@ -40,10 +40,10 @@ export default function CollectionRow(props) {
   const floorMarketCap = `${currencySymbol}${(floorprice * maxsupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
 
   return (
-    <tr onClick={()=> handleRowClick(slug)}>
+    <tr>
       <td className="text-white-50 align-middle">{row}</td>
       <td className="align-middle"><img className = "rounded-circle" height="40" src={require(`../assets/${image}`)} /></td>
-      <th scope="row" className="text-start align-middle">{name}</th>
+      <td className="text-start align-middle"><u role="button" onClick={()=> handleRowClick(slug)}>{name}</u></td>
       <td className="text-white-50 text-end align-middle">{floorPrice}</td>
       <td className={`${_24hChangeColor} text-end align-middle`}>{(_24hChange).toFixed(1)}%</td>
       <td className={`${_7dChangeColor} text-end align-middle`}>{(_7dChange).toFixed(1)}%</td>
