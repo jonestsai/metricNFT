@@ -1,0 +1,7 @@
+thead th.ascending::after {
+  content: '▾';
+}
+
+thead th.descending::after {
+  content: '▴';
+}

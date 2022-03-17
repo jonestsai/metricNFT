@@ -2,8 +2,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { getPythProgramKeyForCluster, PythHttpClient } from '@pythnetwork/client';
 import { Cluster, clusterApiUrl, Connection } from '@solana/web3.js';
 import React from 'react';
-import { Container, Dropdown, DropdownButton, Table } from 'react-bootstrap';
-import CollectionRow from '../components/CollectionRow';
+import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
+import CollectionTable from '../components/CollectionTable';
 import { URLS } from '../Settings';
 import './Home.css';
 
@@ -90,15 +90,50 @@ export default class Home extends React.Component {
     const collectionsByMC = collections.sort((a, b) => {
       return (b.floorprice * b.maxsupply) - (a.floorprice * a.maxsupply);
     });
-    const collectionRows = collectionsByMC.map((collection, index) => {
+
+    const data = collectionsByMC.map((collection, index) => {
+      const { image, name, slug, floorprice, _1dfloor, _7dfloor, _24hvolume, maxsupply, ownerscount, listedcount } = collection;
+      let currencySymbol = '';
+      switch (currency) {
+        case 'BTC':
+          currencySymbol = '₿';
+          break;
+        case 'ETH':
+          currencySymbol = 'Ξ';
+          break;
+        case 'USD':
+          currencySymbol = '$';
+          break;
+        case 'CAD':
+          currencySymbol = '$';
+          break;
+        case 'EUR':
+          currencySymbol = '€';
+          break;
+      }
+
+      const floorPrice = `${currencySymbol}${(floorprice * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const _24hChange = _1dfloor ? (floorprice - _1dfloor) / _1dfloor * 100 : 0;
+      const _7dChange = _7dfloor ? (floorprice - _7dfloor) / _7dfloor * 100 : 0;
+      const volume = `${currencySymbol}${((_24hvolume || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const floorMarketCap = `${currencySymbol}${(floorprice * maxsupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+
       return (
-        <CollectionRow
-          key={collection.id}
-          row={index + 1}
-          collection={collection}
-          currency={currency}
-          currencyRate={currencyRate}
-        />
+        {
+          id: collection.id,
+          row: index + 1,
+          image,
+          name,
+          slug,
+          floorPrice,
+          _24hChange,
+          _7dChange,
+          volume,
+          floorMarketCap,
+          maxsupply,
+          ownerscount,
+          listedcount,          
+        }
       );
     });
 
@@ -134,26 +169,9 @@ export default class Home extends React.Component {
           )}
         </DropdownButton>
         <div className="table-responsive-sm">
-          <Table variant="dark" hover>
-            <thead>
-              <tr className="table-secondary">
-                <th scope="col">#</th>
-                <th scope="col"></th>
-                <th scope="col" className="text-start">Collection</th>
-                <th scope="col" className="text-end">Floor</th>
-                <th scope="col" className="text-end">24h</th>
-                <th scope="col" className="text-end pe-3">7d</th>
-                <th scope="col" className="text-end pe-1">24h Volume</th>
-                <th scope="col" className="text-end pe-1">Floor Market Cap</th>
-                <th scope="col" className="text-end pe-1">Tokens</th>
-                <th scope="col" className="text-end pe-1">Owners</th>
-                <th scope="col" className="text-end pe-4">Listed</th>
-              </tr>
-            </thead>
-            <tbody>
-              {collectionRows}
-            </tbody>
-          </Table>
+          <CollectionTable
+            collections={data}
+          />
           {isLoading && (
             <div className="my-5 text-center">
               <div className="spinner-border text-light" role="status" />
