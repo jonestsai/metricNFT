@@ -87,11 +87,11 @@ export default class Home extends React.Component {
   render() {
     const { collections, isLoading } = this.props;
     const { exchangeRates, currency, currencyRate, isRatesLoading } = this.state;
-    const collectionsByMC = collections.sort((a, b) => {
+    const collectionsByMC = collections?.sort((a, b) => {
       return (b.floorprice * b.maxsupply) - (a.floorprice * a.maxsupply);
     });
 
-    const data = collectionsByMC.map((collection, index) => {
+    const data = collectionsByMC?.map((collection, index) => {
       const { image, name, slug, floorprice, _1dfloor, _7dfloor, _24hvolume, maxsupply, ownerscount, listedcount } = collection;
       let currencySymbol = '';
       switch (currency) {

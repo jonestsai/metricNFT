@@ -1,71 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactGA from 'react-ga';
-import { NavLink, Routes, Route } from 'react-router-dom';
+import { NavLink, Routes, Route, useLocation } from 'react-router-dom';
 
 import Top from './components/layout/Top';
 import Bottom from './components/layout/Bottom';
 import { URLS } from './Settings';
+import usePageTracking from './utils/usePageTracking';
 import Collection from './views/Collection';
 import Home from './views/Home';
 import logo from './logo.svg';
 import './App.css';
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      collections: [],
-      isLoading: true,
-    };
-  }
+export default function App() {
+  usePageTracking();
 
-  async componentDidMount() {
-    ReactGA.initialize('UA-48992440-3');
-    ReactGA.pageview(window.location.pathname + window.location.search);
+  const [collections, setCollections] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
     document.body.style.backgroundColor = "#212529";
     document.body.style.color = "white";
-    await this.fetchCollections();
-  }
+    fetchCollections();
+  }, []);
 
-  componentWillUnmount() {
-    document.body.style.backgroundColor = null;
-    document.body.style.color = null;
-  }
-
-  fetchCollections = async () => {
-    if (!this.state.isLoading) {
-      this.setState({ isLoading: true });
-    }
+  const fetchCollections = async () => {
+    setIsLoading(true);
 
     try {
       const response = await fetch(`${URLS.api}`);
       const collections = await response.json();
 
-      this.setState({
-        collections,
-      });
+      setCollections(collections);
     } catch (error) {
       // Do nothing
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   }
 
-  render() {
-    const { collections, isLoading } = this.state;
-
-    return (
-      <div className="App">
-        {/*<Navigation />*/}
-        <Top />
-        <Main
-          collections={collections}
-          isLoading={isLoading}
-        />
-        <Bottom />
-      </div>
-    );
-  }
+  return (
+    <div className="App">
+      {/*<Navigation />*/}
+      <Top />
+      <Main
+        collections={collections}
+        isLoading={isLoading}
+      />
+      <Bottom />
+    </div>
+  );
 }
 
 const Navigation = () => (
@@ -94,7 +78,7 @@ const Contact = () => (
 );
 
 const Main = ({ collections, isLoading }) => {
-  const collectionRoutes = collections.map((collection, index) => {
+  const collectionRoutes = collections?.map((collection, index) => {
     const { name, slug } = collection;
     return (
       <Route key={collection.id} path={slug} element={<Collection name={name} collectionAPI={slug} />}></Route>

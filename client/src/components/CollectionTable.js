@@ -51,7 +51,7 @@ export default function CollectionTable(props) {
         </tr>
       </thead>
       <tbody>
-        {items.map((item) => {
+        {items?.map((item) => {
           const { row, image, name, slug, floorPrice, _24hChange, _7dChange, volume, floorMarketCap, maxsupply, ownerscount, listedcount} = item;
           const _24hChangeColor = _24hChange < 0 ? 'text-danger' : 'text-success';
           const _7dChangeColor = _7dChange < 0 ? 'text-danger' : 'text-success';
@@ -83,7 +83,7 @@ const useSortableData = (items, config = null) => {
   const [sortConfig, setSortConfig] = React.useState(config);
 
   const sortedItems = React.useMemo(() => {
-    let sortableItems = [...items];
+    let sortableItems = items ? [...items] : null;
     if (sortConfig !== null) {
       sortableItems.sort((a, b) => {
         let aKey = a[sortConfig.key];
