@@ -92,8 +92,11 @@ export default class Collection extends React.Component {
     const { isLoading, collection } = this.state;
 
     const listedCount = this.getListedCount(collection);
+    const currentListedCount = listedCount ? listedCount[listedCount.length - 1] : null;
     const ownersCount = this.getOwnersCount(collection);
+    const currentOwnersCount = ownersCount ? ownersCount[ownersCount.length - 1] : null;
     const price = this.getPrice(collection);
+    const currentPrice = price ? price[price.length - 1] : null;
 
     return (
       <Container fluid>
@@ -103,7 +106,8 @@ export default class Collection extends React.Component {
             <div className="row">
               <div className="col-lg-6">
                 <div className="chart rounded shadow-lg mb-4">
-                  <h5 className="text-start p-3">Number of Tokens Listed</h5>
+                  <h5 className="text-start px-3 pt-3">Number of Tokens Listed</h5>
+                  <h6 className="text-start px-3 pb-2">{`Current: ${currentListedCount['Total Listed']}`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart
                       width={500}
@@ -127,7 +131,8 @@ export default class Collection extends React.Component {
               </div>
               <div className="col-lg-6">
                 <div className="chart rounded shadow-lg mb-4">
-                  <h5 className="text-start p-3">Number of Owners</h5>
+                  <h5 className="text-start px-3 pt-3">Number of Owners</h5>
+                  <h6 className="text-start px-3 pb-2">{`Current: ${currentOwnersCount['Total Owners']}`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart
                       width={500}
@@ -151,7 +156,8 @@ export default class Collection extends React.Component {
               </div>
             </div>
             <div className="chart rounded shadow-lg mb-5">
-              <h5 className="text-start p-3">Price</h5>
+              <h5 className="text-start px-3 pt-3">Price</h5>
+              <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice['Price']}`}</h6>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart
                   width={500}
