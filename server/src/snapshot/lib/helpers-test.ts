@@ -6,8 +6,6 @@ import {
 } from '@solana/web3.js';
 require('dotenv').config({ path: '/home/server/.env' });
 const { Pool } = require('pg');
-const puppeteer = require('puppeteer');
-const userAgent = require('user-agents');
 
 const anchor = require("@project-serum/anchor");
 const anchorConnection = new anchor.web3.Connection(
@@ -17,6 +15,7 @@ const genesysgoConnection = new anchor.web3.Connection(
   'https://ssc-dao.genesysgo.net/'
 );
 
+const fetch = require('node-fetch');
 const fs = require('fs');
 
 const getHashList = async (hashList: any) => {
@@ -147,16 +146,10 @@ const save = async (hashList: any, collection: any, magicEdenAPI: any) => {
   let floorPrice: any;
 
   try {
-    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
-    const [page] = await browser.pages();
-
-    await page.setUserAgent(userAgent.toString());
-    await page.goto(magicEdenAPI, { waitUntil: 'networkidle0' });
-    const data = await page.$eval('pre', (element: any) => element.textContent);
-
-    floorPrice = JSON.parse(data)?.results?.floorPrice / LAMPORTS_PER_SOL;
+    const response = await fetch(magicEdenAPI);
+    const collection = await response.json();
+    floorPrice = collection.floorPrice / LAMPORTS_PER_SOL;
     console.log(floorPrice);
-    await browser.close();
   } catch (err) {
     console.log(err);
   }

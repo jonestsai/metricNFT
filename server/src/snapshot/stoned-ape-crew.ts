@@ -3,7 +3,7 @@ const { getHashList, save } = require('./lib/helpers');
 async function main() {
   const hashList = await getHashList('/home/server/src/collections/stoned-ape-crew/hash-list.txt');
   // console.log(hashList);
-  const magicEdenAPI = 'https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/stoned_ape_crew?edge_cache=true';
+  const magicEdenAPI = 'https://api-mainnet.magiceden.dev/v2/collections/stoned_ape_crew/stats';
   await save(hashList, 'SAC', magicEdenAPI);
 }
 

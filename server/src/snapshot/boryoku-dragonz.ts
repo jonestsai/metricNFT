@@ -3,7 +3,7 @@ const { getHashList, save } = require('./lib/helpers');
 async function main() {
   const hashList = await getHashList('/home/server/src/collections/boryoku-dragonz/hash-list.txt');
   // console.log(hashList);
-  const magicEdenAPI = 'https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/boryoku_dragonz?edge_cache=true';
+  const magicEdenAPI = 'https://api-mainnet.magiceden.dev/v2/collections/boryoku_dragonz/stats';
   await save(hashList, 'BORYOKU', magicEdenAPI);
 }
 
