@@ -1,3 +1,7 @@
+.wallet-adapter-dropdown-list li:first-child {
+  display: none;
+}
+
 .App {
   text-align: center;
 }
