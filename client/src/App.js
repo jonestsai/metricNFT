@@ -22,6 +22,7 @@ import Bottom from './components/layout/Bottom';
 import { URLS } from './Settings';
 import usePageTracking from './utils/usePageTracking';
 import Collection from './views/Collection';
+import Account from './views/Account';
 import Home from './views/Home';
 import logo from './logo.svg';
 import './App.css';
@@ -135,6 +136,7 @@ const Main = ({ collections, isLoading }) => {
     <Routes>
       <Route path='/' element={<Home collections={collections} isLoading={isLoading} />}></Route>
       {collectionRoutes}
+      <Route path='/account' element={<Account />}></Route>
       <Route path='/about' element={<About />}></Route>
       <Route path='/contact' element={<Contact />}></Route>
     </Routes>

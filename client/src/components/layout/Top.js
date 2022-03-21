@@ -4,7 +4,7 @@ import {
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 import React from 'react';
-import { Container, Row, Col, Navbar } from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
 import logo from '../../assets/logo.png';
 
 export default function Top() {
@@ -12,14 +12,18 @@ export default function Top() {
   console.log(publicKey);
 
   return (
-    <Navbar expand="xs" bg="dark" variant="dark" className="px-4 border-bottom border-gray">
+    <Navbar expand="lg" bg="dark" variant="dark" className="px-4 border-bottom border-gray">
       <Navbar.Brand href="/">
         <img className="my-3 pe-3" src={logo} alt="Logo" height="50" />
         <span className="display-6 align-middle"><strong>MetricNFT</strong></span>
       </Navbar.Brand>
-      <span className="text-end align-middle">
-        <WalletMultiButton />
-      </span>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" />
+      <Navbar.Collapse>
+        <Nav className="ms-auto">
+          <Nav.Link href="account" className="text-white align-self-center mx-3">Account</Nav.Link>
+          <WalletMultiButton />
+        </Nav>
+      </Navbar.Collapse>
     </Navbar>
   )
 };

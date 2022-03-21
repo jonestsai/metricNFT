@@ -2,6 +2,10 @@
   display: none;
 }
 
+.wallet-adapter-dropdown {
+  align-self: center;
+}
+
 .App {
   text-align: center;
 }
