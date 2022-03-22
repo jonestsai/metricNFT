@@ -1,5 +1,4 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useWallet } from '@solana/wallet-adapter-react';
 import {
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
@@ -8,9 +7,6 @@ import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
 import logo from '../../assets/logo.png';
 
 export default function Top() {
-  const { publicKey } = useWallet();
-  console.log(publicKey);
-
   return (
     <Navbar expand="lg" bg="dark" variant="dark" className="px-4 border-bottom border-gray">
       <Navbar.Brand href="/">

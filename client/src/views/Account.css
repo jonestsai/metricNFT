@@ -1,0 +1,11 @@
+ul.account > li > button {
+  color: white;
+}
+
+ul.account > li > button.active {
+  color: var(--bs-gray-700);
+}
+
+ul.account > li > button:hover {
+  color: var(--bs-gray-500);
+}

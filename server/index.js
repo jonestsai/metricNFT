@@ -1,6 +1,7 @@
 require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
+const fetch = require('node-fetch');
 const { Pool } = require('pg');
 
 const pool = new Pool({
@@ -115,6 +116,19 @@ app.get('/api/:slug', async (req, res) => {
     }
     res.status(200).json(results.rows);
   });
+});
+
+app.get('/api/magic-eden/wallets/:walletAddress/tokens', async (req, res) => {
+  const { walletAddress } = req.params;
+  const { offset, limit, listedOnly } = req.query;
+
+  try {
+    const response = await fetch(`https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/tokens?offset=${offset}&limit=${limit}&listedOnly=${listedOnly}`);
+    const tokens = await response.json();
+    res.status(200).json(tokens);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.get('/api/user', (req, res) => {
