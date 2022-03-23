@@ -9,3 +9,7 @@ ul.account > li > button.active {
 ul.account > li > button:hover {
   color: var(--bs-gray-500);
 }
+
+label {
+  color: var(--bs-gray-700);
+}

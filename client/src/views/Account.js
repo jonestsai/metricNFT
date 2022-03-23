@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import React, { useState, useEffect } from 'react';
-import { Container, Tabs, Tab } from 'react-bootstrap';
+import { Button, Container, FloatingLabel, Form, Tab, Tabs } from 'react-bootstrap';
 import { URLS } from '../Settings';
 import './Account.css';
 
@@ -11,8 +11,11 @@ export default function Account() {
   const { publicKey } = useWallet();
 
   const [wallet, setWallet] = useState();
+  const [user, setUser] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [key, setKey] = useState('my-items');
+  const [email, setEmail] = useState();
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     fetchWallet();
@@ -30,6 +33,16 @@ export default function Account() {
       const wallet = await response.json();
       // console.log(wallet);
       setWallet(wallet);
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      const response = await fetch(`${URLS.api}/users/${publicKey.toString()}`);
+      const user = await response.json();
+      // console.log(user);
+      setUser(user);
+      setEmail(user.email);
     } catch (error) {
       console.log(error);
     } finally {
@@ -50,6 +63,37 @@ export default function Account() {
         </div>
       )
     }) : null;
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const data = {
+      wallet_address: publicKey,
+      email: email,
+    };
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${URLS.api}/users/create`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        setIsSaved(true);
+      } else {
+        throw new Error(response.statusText);
+      }
+    } catch (error) {
+      // Fail silently. This action is not important enough to interrupt the user's workflow.
+      // alert('There was an issue saving. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <Container fluid>
@@ -61,18 +105,43 @@ export default function Account() {
           fill
           activeKey={key}
           onSelect={(k) => setKey(k)}
-          className="account mt-5 mb-4"
+          className="account my-5"
         >
           <Tab eventKey="my-items" title="My Items">
             <div className="row row-cols-1 row-cols-md-5 g-4">
               {items}
             </div>
           </Tab>
-          <Tab eventKey="alerts" title="Alerts">
-            <div>Alerts</div>
+          <Tab eventKey="notifications" title="Notifications">
+            <div>Notifications</div>
           </Tab>
           <Tab eventKey="settings" title="Settings">
-            <div>Settings</div>
+            <form className="py-5" onSubmit={handleSubmit}>
+              <div className="row justify-content-md-center">
+                <div className="col-md-4">
+                  <FloatingLabel
+                    controlId="floatingInput"
+                    label="Email address"
+                    className="mb-3"
+                  >
+                    <Form.Control
+                      required
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                    />
+                  </FloatingLabel>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-1 offset-md-4">
+                  <button type="submit" className="btn btn-primary">Save</button>
+                  {isSaved && (
+                    <div className="text-success my-1">Saved!</div>
+                  )}
+                </div>
+              </div>
+            </form>
           </Tab>
         </Tabs>
       )}

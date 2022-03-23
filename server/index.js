@@ -18,6 +18,8 @@ const port = process.env.PORT || 5000;
 app.use(cors({
     origin: ['https://www.metricnft.com', 'http://198.199.117.248:3000'],
 }));
+app.use(express.json());       // to support JSON-encoded bodies
+app.use(express.urlencoded()); // to support URL-encoded bodies
 
 app.get('/api', async (req, res) => {
   let nameCase;
@@ -115,6 +117,34 @@ app.get('/api/:slug', async (req, res) => {
       throw error;
     }
     res.status(200).json(results.rows);
+  });
+});
+
+app.get('/api/users/:walletAddress', (req, res) => {
+  const { walletAddress } = req.params;
+  pool.query(`SELECT * FROM users WHERE wallet_address = '${walletAddress}'`, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+
+    const [user] = results.rows;
+    res.status(200).json(user);
+  });
+});
+
+app.post('/api/users/create', (req, res) => {
+  const { wallet_address, email, phone, discord, twitter } = req.body;
+  const query = {
+    text: 'INSERT INTO users(wallet_address, email, phone, discord, twitter, last_ip, created_at, updated_at, unsubscribed_at, banned_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (wallet_address) DO UPDATE SET email = $11, updated_at = $12',
+    values: [wallet_address, email, phone, discord, twitter, null, new Date(), new Date(), null, null, email, new Date()],
+  };
+  pool.query(query, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results);
   });
 });
 
