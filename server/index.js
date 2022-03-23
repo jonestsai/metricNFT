@@ -122,14 +122,15 @@ app.get('/api/:slug', async (req, res) => {
 
 app.get('/api/users/:walletAddress', (req, res) => {
   const { walletAddress } = req.params;
-  pool.query(`SELECT * FROM users WHERE wallet_address = '${walletAddress}'`, (error, results) => {
+  pool.query(`SELECT * FROM users
+    JOIN notification
+    ON users.wallet_address = notification.wallet_address
+    WHERE users.wallet_address = '${walletAddress}'`, (error, results) => {
     if (error) {
       console.log(error);
       throw error;
     }
-
-    const [user] = results.rows;
-    res.status(200).json(user);
+    res.status(200).json(results.rows);
   });
 });
 
@@ -148,6 +149,21 @@ app.post('/api/users/create', (req, res) => {
   });
 });
 
+app.post('/api/users/notification', (req, res) => {
+  const { wallet_address, symbol, name, image, sign, price } = req.body;
+  const query = {
+    text: 'INSERT INTO notification(wallet_address, collection_symbol, collection_name, collection_image, sign, price, created_at, sent_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
+    values: [wallet_address, symbol, name, image, sign, price, new Date(), null],
+  };
+  pool.query(query, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results);
+  });
+});
+
 app.get('/api/magic-eden/wallets/:walletAddress/tokens', async (req, res) => {
   const { walletAddress } = req.params;
   const { offset, limit, listedOnly } = req.query;
@@ -156,6 +172,44 @@ app.get('/api/magic-eden/wallets/:walletAddress/tokens', async (req, res) => {
     const response = await fetch(`https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/tokens?offset=${offset}&limit=${limit}&listedOnly=${listedOnly}`);
     const tokens = await response.json();
     res.status(200).json(tokens);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.get('/api/magic-eden/collections', (req, res) => {
+  pool.query(`SELECT * FROM magiceden_collection`, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
+// Store collections from Magic Eden API
+app.get('/api/magic-eden/collections/store', async (req, res) => {
+  const { offset, limit } = req.query;
+
+  try {
+    const response = await fetch(`https://api-mainnet.magiceden.dev/v2/collections?offset=${offset}&limit=${limit}`);
+    const collections = await response.json();
+
+    for (collection of collections) {
+      const { symbol, name, description, image, twitter, discord, website, isFlagged, flagMessage, categories } = collection;
+      console.log(symbol);
+      const query = {
+        text: 'INSERT INTO magiceden_collection(symbol, name, description, image, twitter, discord, website, isFlagged, flagMessage, categories) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (symbol) DO NOTHING',
+        values: [symbol, name, description, image, twitter, discord, website, isFlagged, flagMessage, categories],
+      };
+      pool.query(query, (error, results) => {
+        if (error) {
+          console.log(error);
+        }
+      });
+      await new Promise(f => setTimeout(f, 500));
+    }
+    res.status(200).json(results);
   } catch (err) {
     console.log(err);
   }
