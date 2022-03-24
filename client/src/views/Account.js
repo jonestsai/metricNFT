@@ -55,8 +55,9 @@ export default function Account() {
       const response = await fetch(`${URLS.api}/users/${publicKey.toString()}`);
       const userNotifications = await response.json();
       // console.log(userNotifications);
+      const email = userNotifications[0]?.email || '';
       setUserNotifications(userNotifications);
-      setEmail(userNotifications[0].email);
+      setEmail(email);
     } catch (error) {
       console.log(error);
     } finally {
