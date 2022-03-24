@@ -232,7 +232,7 @@ export default function Account() {
                       <tr key={notification.collection_symbol}>
                         <td className="text-white-50 text-start align-middle">{notification.collection_name}</td>
                         <td className="text-white-50 align-middle">{`Price ${notification.sign} ${notification.price}`}</td>
-                        <td className="text-white-50 align-middle">{notification.sent || 'No'}</td>
+                        <td className="text-white-50 align-middle">{notification.sent_at || 'No'}</td>
                       </tr>
                   )})}
                 </tbody>
