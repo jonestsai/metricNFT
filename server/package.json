@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "mailgun.js": "^5.0.3",
     "node-fetch": "^2.6.1",
     "pg": "^8.7.3",
     "puppeteer": "^13.5.0",
