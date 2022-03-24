@@ -91,6 +91,11 @@ export default function Account() {
     const collection = collections.find(c => c.name === collectionOption);
     // console.log(collection);
 
+    if (!email) {
+      alert('Please save your email under Settings');
+      return;
+    }
+
     if (!collection) {
       alert('Collection not found');
       return;
