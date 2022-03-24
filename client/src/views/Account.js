@@ -177,7 +177,7 @@ export default function Account() {
   return (
     <Container fluid>
       {!publicKey && (
-        <h5 className="py-5">Connect wallet to see your profile page.</h5>
+        <h5 className="py-5 text-center">Connect wallet to see your profile page.</h5>
       )}
       {publicKey && (
         <Tabs
