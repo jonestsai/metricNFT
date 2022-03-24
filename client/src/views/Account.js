@@ -205,7 +205,10 @@ export default function Account() {
                 </DropdownButton>
               </div>
               <div className="col-5 col-md-2">
-                <input type="text" aria-label="Price" className="form-control" onChange={e => setPrice(e.target.value)} />
+                <div className="input-group">
+                  <input type="text" aria-label="Price" className="form-control" onChange={e => setPrice(e.target.value)} />
+                  <span className="input-group-text">SOL</span>
+                </div>
               </div>
             </div>
             <div className="row">
@@ -231,7 +234,7 @@ export default function Account() {
                     return (
                       <tr key={notification.collection_symbol}>
                         <td className="text-white-50 text-start align-middle">{notification.collection_name}</td>
-                        <td className="text-white-50 align-middle">{`Price ${notification.sign} ${notification.price}`}</td>
+                        <td className="text-white-50 align-middle">{`Price ${notification.sign} ${notification.price} SOL`}</td>
                         <td className="text-white-50 align-middle">{notification.sent_at || 'No'}</td>
                       </tr>
                   )})}
