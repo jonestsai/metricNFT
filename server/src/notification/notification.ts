@@ -21,7 +21,7 @@ async function main() {
       SELECT * FROM users
       JOIN notification
       ON users.wallet_address = notification.wallet_address
-      WHERE notification.sent_at IS NULL`);
+      WHERE notification.sent_at IS NULL AND users.email <> ''`);
     // console.log(rows);
 
     for (let row of rows) {
