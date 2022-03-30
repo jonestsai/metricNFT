@@ -106,11 +106,11 @@ app.get('/api/:slug', async (req, res) => {
         ${nameCase}
         AS _symbol
       FROM sales
-      WHERE ${collectionQuery} AND datetime > (NOW() - interval '28 days') AND datetime < NOW() AND hide IS NOT TRUE
+      WHERE ${collectionQuery} AND datetime > (NOW() - interval '30 days') AND datetime < NOW() AND hide IS NOT TRUE
       ORDER BY datetime desc, price asc
     ) _sales
     ON snapshot.starttime::date = _sales.datetime::date
-    WHERE snapshot.symbol = '${symbol}' and starttime > (NOW() - interval '28 days') AND starttime < NOW()
+    WHERE snapshot.symbol = '${symbol}' and starttime > (NOW() - interval '30 days') AND starttime < NOW()
     ORDER BY starttime`, (error, results) => {
     if (error) {
       console.log(error);
