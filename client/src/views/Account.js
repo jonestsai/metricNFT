@@ -144,12 +144,10 @@ export default function Account() {
     }
   }
   
-  const handleSaveEmail = async (e) => {
-    e.preventDefault();
-
+  const handleEmail = async (action) => {
     const data = {
       wallet_address: publicKey,
-      email: email,
+      email: action === 'connect' ? email : null,
     };
 
     setIsLoading(true);
@@ -163,7 +161,14 @@ export default function Account() {
       });
 
       if (response.status >= 200 && response.status < 300) {
-        setIsEmailSaved(true);
+        if (action === 'connect') {
+          setIsEmailSaved(true);
+        }
+
+        if (action === 'disconnect') {
+          setEmail('');
+          setIsEmailSaved(false);
+        }
       } else {
         throw new Error(response.statusText);
       }
@@ -249,7 +254,7 @@ export default function Account() {
             )}
           </Tab>
           <Tab eventKey="settings" title="Settings">
-            <form className="py-5" onSubmit={handleSaveEmail}>
+            <form className="py-5" onSubmit={e => e.preventDefault()}>
               <div className="row justify-content-md-center">
                 <div className="col-md-4">
                   <FloatingLabel
@@ -267,11 +272,12 @@ export default function Account() {
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-1 offset-md-4">
-                  <button type="submit" className="btn btn-primary">Save</button>
+                <div className="col-md-4 offset-md-4 d-flex justify-content-between">
+                  <button className="btn btn-primary" onClick={() => handleEmail('connect')}>Save</button>
                   {isEmailSaved && (
                     <div className="text-success my-1">Saved!</div>
                   )}
+                  <button className="btn btn-outline-danger" onClick={() => handleEmail('disconnect')}>Disconnect Email</button>
                 </div>
               </div>
             </form>
