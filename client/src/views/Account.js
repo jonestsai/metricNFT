@@ -273,11 +273,11 @@ export default function Account() {
               </div>
               <div className="row">
                 <div className="col-md-4 offset-md-4 d-flex justify-content-between">
-                  <button className="btn btn-primary" onClick={() => handleEmail('connect')}>Save</button>
+                  <button type="button" className="btn btn-primary" onClick={() => handleEmail('connect')}>Save</button>
                   {isEmailSaved && (
                     <div className="text-success my-1">Saved!</div>
                   )}
-                  <button className="btn btn-outline-danger" onClick={() => handleEmail('disconnect')}>Disconnect Email</button>
+                  <button type="button" className="btn btn-outline-danger" onClick={() => handleEmail('disconnect')}>Disconnect Email</button>
                 </div>
               </div>
             </form>
