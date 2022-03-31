@@ -267,7 +267,7 @@ export default function Account() {
                         <td className="text-white-50 text-start align-middle">{notification.collection_name}</td>
                         <td className="text-white-50 align-middle">{`Price ${notification.sign} ${notification.price} SOL`}</td>
                         <td className="text-white-50 align-middle">{notification.sent_at || 'No'}</td>
-                        <td className="text-white-50 align-middle"><button type="button" class="btn btn-outline-danger" onClick={() => handleDeleteNotification(notification.id)}>✕</button></td>
+                        <td className="text-white-50 align-middle"><button type="button" className="btn btn-outline-danger" onClick={() => handleDeleteNotification(notification.id)}>✕</button></td>
                       </tr>
                   )})}
                 </tbody>
