@@ -3,6 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Dropdown, DropdownButton, FloatingLabel, Form, Table, Tab, Tabs } from 'react-bootstrap';
+import { useSearchParams } from 'react-router-dom';
 import { URLS } from '../Settings';
 import './Account.css';
 
@@ -15,7 +16,8 @@ export default function Account() {
   const [userNotifications, setUserNotifications] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [key, setKey] = useState('my-items');
-  const [collectionOption, setCollectionOption] = useState();
+  const [searchParams] = useSearchParams();
+  const [collectionOption, setCollectionOption] = useState(searchParams.get('collection'));
   const [sign, setSign] = useState('>');
   const [price, setPrice] = useState();
   const [email, setEmail] = useState();
@@ -232,7 +234,7 @@ export default function Account() {
             <form className="py-5" onSubmit={handleSaveNotification}>
             <div className="row input-group mb-3">
               <div className="col-12 col-md-7 mb-1">
-                <input className="form-control" list="datalistOptions" placeholder="Type to search..." onChange={e => setCollectionOption(e.target.value)} />
+                <input className="form-control" list="datalistOptions" value={collectionOption} placeholder="Type to search..." onChange={e => setCollectionOption(e.target.value)} />
                 <datalist id="datalistOptions">
                   {collectionOptions}
                 </datalist>

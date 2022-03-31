@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Table } from 'react-bootstrap';
+import { FaRegBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { isCurrencyString, currencyToNumber } from '../utils/helpers';
 import './CollectionTable.css';
@@ -47,7 +48,8 @@ export default function CollectionTable(props) {
             className={`text-end pe-1 ${getClassNamesFor('ownerscount')}`}>Owners</th>
           <th scope="col" role="button"
             onClick={() => requestSort('listedcount')}
-            className={`text-end pe-4 ${getClassNamesFor('listedcount')}`}>Listed</th>
+            className={`text-end pe-1 ${getClassNamesFor('listedcount')}`}>Listed</th>
+          <th scope="col" className={`text-end pe-3`}></th>
         </tr>
       </thead>
       <tbody>
@@ -57,7 +59,10 @@ export default function CollectionTable(props) {
           const _7dChangeColor = _7dChange < 0 ? 'text-danger' : 'text-success';
           const handleRowClick = (slug) => {
             navigate(slug);
-          } 
+          }
+          const handleNotificationClick = (name) => {
+            navigate(`account?collection=${name}`);
+          }
 
           return (
           <tr key={item.id}>
@@ -71,7 +76,8 @@ export default function CollectionTable(props) {
             <td className="text-white-50 text-end align-middle">{floorMarketCap}</td>
             <td className="text-white-50 text-end align-middle">{maxsupply}</td>
             <td className="text-white-50 text-end align-middle">{ownerscount}</td>
-            <td className="text-white-50 text-end pe-4 align-middle">{listedcount}<br/><span className="text-secondary">{(listedcount/maxsupply * 100).toFixed(1)}%</span></td>
+            <td className="text-white-50 text-end align-middle">{listedcount}<br/><span className="text-secondary">{(listedcount/maxsupply * 100).toFixed(1)}%</span></td>
+            <td className="text-white-50 text-end pe-3 align-middle"><FaRegBell size={20} role="button" onClick={()=> handleNotificationClick(name)} /></td>
            </tr>
          )})}
       </tbody>
