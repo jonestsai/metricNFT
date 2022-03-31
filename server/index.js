@@ -125,7 +125,7 @@ app.get('/api/users/:walletAddress', (req, res) => {
   pool.query(`SELECT * FROM users
     JOIN notification
     ON users.wallet_address = notification.wallet_address
-    WHERE users.wallet_address = '${walletAddress}'`, (error, results) => {
+    WHERE users.wallet_address = '${walletAddress}' AND notification.deleted_at IS NULL`, (error, results) => {
     if (error) {
       console.log(error);
       throw error;
@@ -154,6 +154,21 @@ app.post('/api/users/notification', (req, res) => {
   const query = {
     text: 'INSERT INTO notification(wallet_address, collection_symbol, collection_name, collection_image, sign, price, created_at, sent_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
     values: [wallet_address, symbol, name, image, sign, price, new Date(), null],
+  };
+  pool.query(query, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results);
+  });
+});
+
+app.post('/api/users/notification/delete', (req, res) => {
+  const { id } = req.body;
+  const query = {
+    text: 'UPDATE notification SET deleted_at = $1 WHERE id = $2',
+    values: [new Date(), id],
   };
   pool.query(query, (error, results) => {
     if (error) {

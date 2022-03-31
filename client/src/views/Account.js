@@ -143,6 +143,37 @@ export default function Account() {
       setIsLoading(false);
     }
   }
+
+  const handleDeleteNotification = async (id) => {
+    setIsLoading(true);
+    const data = {
+      id,
+    };
+
+    try {
+      const response = await fetch(`${URLS.api}/users/notification/delete`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        const notifications = userNotifications.filter((notification) => {
+          return notification.id !== id;
+        });
+        setUserNotifications(notifications);
+      } else {
+        throw new Error(response.statusText);
+      }
+    } catch (error) {
+      // Fail silently. This action is not important enough to interrupt the user's workflow.
+      // alert('There was an issue saving. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }
   
   const handleEmail = async (action) => {
     const data = {
@@ -238,6 +269,7 @@ export default function Account() {
                     <th scope="col">Name</th>
                     <th scope="col">Condition</th>
                     <th scope="col">Sent</th>
+                    <th scope="col">Delete</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -247,6 +279,7 @@ export default function Account() {
                         <td className="text-white-50 text-start align-middle">{notification.collection_name}</td>
                         <td className="text-white-50 align-middle">{`Price ${notification.sign} ${notification.price} SOL`}</td>
                         <td className="text-white-50 align-middle">{notification.sent_at || 'No'}</td>
+                        <td className="text-white-50 align-middle"><button type="button" class="btn btn-outline-danger" onClick={() => handleDeleteNotification(notification.id)}>✕</button></td>
                       </tr>
                   )})}
                 </tbody>
