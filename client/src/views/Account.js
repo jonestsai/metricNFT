@@ -15,7 +15,7 @@ export default function Account() {
   const [collections, setCollections] = useState();
   const [userNotifications, setUserNotifications] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [key, setKey] = useState('my-items');
+  const [key, setKey] = useState('notifications');
   const [searchParams] = useSearchParams();
   const [collectionOption, setCollectionOption] = useState(searchParams.get('collection'));
   const [sign, setSign] = useState('>');
