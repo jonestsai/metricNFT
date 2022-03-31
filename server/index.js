@@ -192,6 +192,19 @@ app.get('/api/magic-eden/wallets/:walletAddress/tokens', async (req, res) => {
   }
 });
 
+app.get('/api/magic-eden/wallets/:walletAddress/activities', async (req, res) => {
+  const { walletAddress } = req.params;
+  const { offset, limit } = req.query;
+
+  try {
+    const response = await fetch(`https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/activities?offset=${offset}&limit=${limit}`);
+    const activities = await response.json();
+    res.status(200).json(activities);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 app.get('/api/magic-eden/collections', (req, res) => {
   pool.query(`SELECT * FROM magiceden_collection`, (error, results) => {
     if (error) {

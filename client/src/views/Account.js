@@ -36,9 +36,9 @@ export default function Account() {
     }
 
     try {
-      const response = await fetch(`${URLS.api}/magic-eden/wallets/${publicKey.toString()}/tokens?offset=0&limit=100&listedOnly`);
+      const response = await fetch(`${URLS.api}/magic-eden/wallets/${publicKey.toString()}/activities?offset=0&limit=100`);
       const wallet = await response.json();
-      // console.log(wallet);
+      console.log(wallet);
       setWallet(wallet);
     } catch (error) {
       console.log(error);
@@ -66,20 +66,6 @@ export default function Account() {
       setIsLoading(false);
     }
   }
-
-  const items = wallet?.length > 0
-    ? wallet.map((item) => {
-      return (
-        <div key={item.mintAddress} className="col">
-          <div className="card text-white bg-dark">
-            <img src={item.image} className="card-img-top" />
-            <div className="card-body">
-              <h5 className="card-title">{item.name}</h5>
-            </div>
-          </div>
-        </div>
-      )
-    }) : null;
 
   const collectionOptions = collections?.length > 0
     ? collections.map((collection) => {
@@ -230,11 +216,6 @@ export default function Account() {
           onSelect={(k) => setKey(k)}
           className="account my-5"
         >
-          <Tab eventKey="my-items" title="My Items">
-            <div className="row row-cols-1 row-cols-md-5 g-4">
-              {items}
-            </div>
-          </Tab>
           <Tab eventKey="notifications" title="Notifications">
             <form className="py-5" onSubmit={handleSaveNotification}>
             <div className="row input-group mb-3">
@@ -292,6 +273,33 @@ export default function Account() {
                 </tbody>
               </Table>
             )}
+          </Tab>
+          <Tab eventKey="activities" title="Activities">
+            <Table variant="dark" hover>
+              <thead>
+                <tr className="table-secondary">
+                  <th scope="col">Collection</th>
+                  <th scope="col">Transaction ID</th>
+                  <th scope="col">Transaction Type</th>
+                  <th scope="col">Time</th>
+                  <th scope="col">Total Amount</th>
+                  <th scope="col">Mint Address</th>
+                </tr>
+              </thead>
+              <tbody>
+                {wallet?.length > 0 ? wallet?.map((item) => {
+                  return (
+                    <tr key={item.blockTime}>
+                      <td className="text-white-50 text-start align-middle">{item.collection}</td>
+                      <td className="text-white-50 align-middle"><a className="link-secondary" href={`https://solscan.io/tx/${item.signature}`} target="_blank">{`${item.signature.slice(0, 5)} ... ${item.signature.slice(-3)}`}</a></td>
+                      <td className="text-white-50 align-middle">{item.type}</td>
+                      <td className="text-white-50 align-middle">{new Date(item.blockTime * 1000).toDateString()}</td>
+                      <td className="text-white-50 align-middle">{`${item.price} SOL`}</td>
+                      <td className="text-white-50 align-middle"><a className="link-secondary" href={`https://solscan.io/token/${item.tokenMint}`} target="_blank">{`${item.tokenMint.slice(0, 5)} ... ${item.tokenMint.slice(-3)}`}</a></td>
+                    </tr>
+                )}) : null}
+              </tbody>
+            </Table>
           </Tab>
           <Tab eventKey="settings" title="Settings">
             <form className="py-5" onSubmit={e => e.preventDefault()}>
