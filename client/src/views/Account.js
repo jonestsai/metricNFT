@@ -289,7 +289,7 @@ export default function Account() {
               <tbody>
                 {wallet?.length > 0 ? wallet?.map((item) => {
                   return (
-                    <tr key={item.blockTime}>
+                    <tr key={`${item.signature}${item.type}`}>
                       <td className="text-white-50 text-start align-middle">{item.collection}</td>
                       <td className="text-white-50 align-middle"><a className="link-secondary" href={`https://solscan.io/tx/${item.signature}`} target="_blank">{`${item.signature.slice(0, 5)} ... ${item.signature.slice(-3)}`}</a></td>
                       <td className="text-white-50 align-middle">{item.type}</td>
