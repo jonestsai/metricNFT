@@ -17,7 +17,7 @@ export default function Account() {
   const [isLoading, setIsLoading] = useState(false);
   const [key, setKey] = useState('notifications');
   const [searchParams] = useSearchParams();
-  const [collectionOption, setCollectionOption] = useState(searchParams.get('collection'));
+  const [collectionOption, setCollectionOption] = useState(searchParams.get('collection') || '');
   const [sign, setSign] = useState('>');
   const [price, setPrice] = useState();
   const [email, setEmail] = useState();
