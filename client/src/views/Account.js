@@ -104,6 +104,11 @@ export default function Account() {
       return;
     }
 
+    if (!price) {
+      alert('Please set a price');
+      return;
+    }
+
     const { symbol, name, image } = collection;
     const data = {
       wallet_address: publicKey,
