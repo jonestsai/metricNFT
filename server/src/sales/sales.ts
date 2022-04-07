@@ -12,6 +12,15 @@ const { Pool } = require('pg');
 
 const { royaltyAddresses } = require('./utils/constants');
 
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  // host: '198.199.117.248',
+  database: process.env.DATABASE,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
+
 /**
  * Connection to the network
  */
@@ -21,12 +30,23 @@ async function main() {
   connection = new Connection(clusterApiUrl('mainnet-beta'));
 
   // Get sale transactions and store to sales table
-  for (const address of royaltyAddresses) {
-    await getSales(address, null);
+  for (const address in royaltyAddresses) {
+    const minPrice = await getMinPrice(royaltyAddresses[address]);
+    await getSales(address, null, minPrice);
   }
 }
 
-const getSales = async (address: any, beforeSignature: any) => {
+const getMinPrice = async (symbol: any) => {
+  const { rows } = await pool.query(`
+    SELECT * FROM collection
+    WHERE symbol = '${symbol}'`
+  );
+  const [row] = rows;
+  const { minprice } = row;
+  return Number(minprice);
+}
+
+const getSales = async (address: any, beforeSignature: any, minPrice: any) => {
   const publicKey = new PublicKey(address);
   let result;
 
@@ -154,7 +174,10 @@ const getSales = async (address: any, beforeSignature: any) => {
         preTokenBalances = transaction!.meta!.preTokenBalances![0] as any;
       }
 
-      if (preTokenBalances?.mint) {
+      console.log(price);
+      console.log(minPrice);
+
+      if (preTokenBalances?.mint && price > minPrice) {
         try {
           const tokenAddress = preTokenBalances?.mint;
           const metadataPDA = await Metadata.getPDA(tokenAddress);
@@ -169,14 +192,6 @@ const getSales = async (address: any, beforeSignature: any) => {
           // Save to db
           if (fromPostBalance !== 0 && preTokenBalances?.mint) {
             console.log('Save to DB');
-            const pool = new Pool({
-              user: process.env.DB_USER,
-              host: process.env.DB_HOST,
-              // host: '198.199.117.248',
-              database: process.env.DATABASE,
-              password: process.env.DB_PASSWORD,
-              port: process.env.DB_PORT,
-            });
             const query = {
               text: 'INSERT INTO sales(id, name, symbol, price, datetime, marketplace, fromaddr, toaddr, fromaddrprebalance, fromaddrpostbalance, toaddrprebalance, toaddrpostbalance, programid, mint) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
               values: [tx.signature, metadata!.name, metadata!.symbol, price, datetime, marketplace, fromAddress, toAddress, fromPreBalance/LAMPORTS_PER_SOL, fromPostBalance/LAMPORTS_PER_SOL, toPreBalance/LAMPORTS_PER_SOL, toPostBalance/LAMPORTS_PER_SOL, accountKeys[accountKeys.length - 1], tokenAddress],
@@ -204,7 +219,7 @@ const getSales = async (address: any, beforeSignature: any) => {
   // Comment this out for testing few transactions
   if (count == 1000) {
     count = 0;
-    await getSales(address, lastSignature);
+    await getSales(address, lastSignature, minPrice);
   }
 }
 
