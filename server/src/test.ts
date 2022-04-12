@@ -27,6 +27,14 @@ require('dotenv').config();
  */
 let connection: Connection;
 
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DATABASE,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
+
 async function main() {
   connection = new Connection(clusterApiUrl('mainnet-beta'));
 
@@ -46,7 +54,69 @@ async function main() {
   // await solanaMainRPC('9jdNJL6Gqf4poAKPxSoZv5h9vXHznHSwrjJGvCPMsV9e');
   // await genesysgoRPC('HyyUwkpUvfePrTKCnxBdopf31tXtEHTMfDbbNGySTvmL');
   // const db = await getDB(3);
+
+  // Update sales table to have mint token info
+  // await updateSales();
 }
+
+// const updateSales = async () => {
+//   let connection: Connection;
+//   connection = new Connection(clusterApiUrl('mainnet-beta'));
+//   const { rows } = await pool.query(`
+//     SELECT * FROM sales
+//     where mint is null and price > 0.1
+//     order by datetime asc`);
+//   // console.log(rows);
+
+//   for (let row of rows) {
+//     const { id } = row;
+//     console.log(id);
+//     let transaction = await connection.getTransaction(id); // signature
+//     // console.log(transaction);
+
+//     // Try one more time if transaction is null (it fails randomly)
+//     if (!transaction) {
+//       transaction = await connection.getTransaction(id); // signature
+//     }
+
+//     // Try one more time if transaction is null (it fails randomly)
+//     if (!transaction) {
+//       transaction = await connection.getTransaction(id); // signature
+//     }
+
+//     // Try one more time if transaction is null (it fails randomly)
+//     if (!transaction) {
+//       transaction = await connection.getTransaction(id); // signature
+//     }
+
+//     const magicEdenAddress = 'GUfCR9mK6azb9vcpsxgXyj7XRPAKJd4KMHTTVvtncGgp';
+//     const solanartAddress = '3D49QorJyNaL4rcpiynbuS3pRH4Y7EXEM6v6ZGaqfFGK';
+//     let preTokenBalances = (transaction!.meta!.preTokenBalances)!.find((preTokenBalance) => {
+//       return preTokenBalance?.owner === magicEdenAddress || preTokenBalance?.owner === solanartAddress;
+//     });
+
+//     // Get the correct token from SMB marketplace (required starting from 2022-02-15)
+//     if (!preTokenBalances) {
+//       const notSMBMint = 'So11111111111111111111111111111111111111112';
+//       preTokenBalances = (transaction!.meta!.preTokenBalances)!.find((preTokenBalance) => {
+//         return preTokenBalance?.mint !== notSMBMint;
+//       });
+//     }
+
+//     // Sale happened from a marketplace other than ME, Solanart, and SMB
+//     if (!preTokenBalances) {
+//       preTokenBalances = transaction!.meta!.preTokenBalances![0] as any;
+//     }
+
+//     const tokenAddress = preTokenBalances?.mint;
+
+//     pool.query(`UPDATE sales SET mint = '${tokenAddress}' WHERE id = '${id}'`, (err: any, res: any) => {
+//       console.log(err, res)
+//       // pool.end()
+//     });
+//     await new Promise(f => setTimeout(f, 500));
+//   }
+// };
 
 const genesysgoRPC = async (address: any) => {
   const TOKEN_PUBKEY = new PublicKey(
@@ -117,13 +187,6 @@ const solanaMainRPC = async (address: any) => {
 }
 
 const getDB = async (id: any) => {
-  const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DATABASE,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-  });
   const query = {
     text: `SELECT * from snapshot_test WHERE id = ${id}`,
   };
