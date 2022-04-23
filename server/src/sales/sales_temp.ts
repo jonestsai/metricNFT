@@ -10,7 +10,7 @@ import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 require('dotenv').config({ path: '/home/server/.env' });
 const { Pool } = require('pg');
 
-const { royaltyAddresses } = require('./utils/constants');
+const { royaltyAddresses } = require('./utils/constants_temp');
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -195,7 +195,7 @@ const getSales = async (address: any, beforeSignature: any, minPrice: any) => {
           if (fromPostBalance !== 0 && preTokenBalances?.mint) {
             console.log('Save to DB');
             const query = {
-              text: 'INSERT INTO sales(id, name, symbol, price, datetime, marketplace, fromaddr, toaddr, fromaddrprebalance, fromaddrpostbalance, toaddrprebalance, toaddrpostbalance, programid, mint) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
+              text: 'INSERT INTO sales_backup(id, name, symbol, price, datetime, marketplace, fromaddr, toaddr, fromaddrprebalance, fromaddrpostbalance, toaddrprebalance, toaddrpostbalance, programid, mint) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
               values: [tx.signature, metadata!.name, metadata!.symbol, price, datetime, marketplace, fromAddress, toAddress, fromPreBalance/LAMPORTS_PER_SOL, fromPostBalance/LAMPORTS_PER_SOL, toPreBalance/LAMPORTS_PER_SOL, toPostBalance/LAMPORTS_PER_SOL, accountKeys[accountKeys.length - 1], tokenAddress],
             };
             const results = await pool.query(query);
