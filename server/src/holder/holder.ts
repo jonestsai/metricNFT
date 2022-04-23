@@ -24,8 +24,6 @@ const pool = new Pool({
 async function main() {
   // Update holders
   await updateHolders();
-
-  // const sales = await getSales('DAPE');
 }
 
 const updateHolders = async () => {
@@ -62,24 +60,6 @@ const updateHolders = async () => {
     }
   }
 };
-
-// const getSales = async (collection: any) => {
-//   const { rows } = await pool.query(`
-//     SELECT * FROM sales
-//     JOIN collection ON sales.symbol = collection.symbol
-//     WHERE sales.symbol = '${collection}' AND sales.price > collection.minprice
-//     ORDER BY sales.datetime ASC`);
-//   // console.log(rows);
-
-//   for (let row of rows) {
-//     const { mint, toaddr, datetime } = row;
-//     console.log(mint);
-//     pool.query(`UPDATE holder_temp SET owner_address = '${toaddr}', updated_at = '${datetime}' WHERE token_address = '${mint}'`, (err: any, res: any) => {
-//       console.log(err, res)
-//     });
-//     await new Promise(f => setTimeout(f, 500));
-//   }
-// };
 
 const getNftOwner = async (address: any) => {
   const TOKEN_PUBKEY = new PublicKey(
