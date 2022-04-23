@@ -214,7 +214,7 @@ const getSales = async (address: any, beforeSignature: any, minPrice: any) => {
             for (let holder of holders) {
               console.log(`Token Address: ${holder!.tokenAddress}`);
               console.log(`New Holder Address: ${holder!.toAddress}`);
-              pool.query(`UPDATE holder_temp SET owner_address = '${holder!.toAddress}', updated_at = NOW() WHERE token_address = '${holder!.tokenAddress}'`, (err: any, res: any) => {
+              pool.query(`UPDATE holder SET owner_address = '${holder!.toAddress}', updated_at = NOW() WHERE token_address = '${holder!.tokenAddress}'`, (err: any, res: any) => {
                 console.log(err, res)
               });
               await new Promise(f => setTimeout(f, 500));
