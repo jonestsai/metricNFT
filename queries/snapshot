@@ -1,0 +1,19 @@
+SELECT collection_symbol, COUNT(distinct owner_address) as owners, 
+magiceden_api,
+COUNT(*) FILTER (WHERE owner_address = 'GUfCR9mK6azb9vcpsxgXyj7XRPAKJd4KMHTTVvtncGgp'
+				 OR owner_address = '1BWutmTvYPwDtmw9abTkS4Ssr8no61spGAvW1X6NDix'
+				 OR owner_address = '3D49QorJyNaL4rcpiynbuS3pRH4Y7EXEM6v6ZGaqfFGK'
+				 OR owner_address = 'F4ghBzHFNgJxV4wEQDchU5i7n4XWWMBSaq7CuswGiVsr'
+				 OR owner_address = '4pUQS4Jo2dsfWzt3VgHXy3H6RYnEDd11oWPiaM2rdAPw'
+				 OR owner_address = '73tF8uN3BwVzUzwETv59WNAafuEBct2zTgYbYXLggQiU'
+				 OR owner_address = '7Ppgch9d4XRAygVNJP4bDkc7V6htYXGfghX4zzG9r4cH') AS listed,
+COUNT(*) FILTER (WHERE owner_address = 'GUfCR9mK6azb9vcpsxgXyj7XRPAKJd4KMHTTVvtncGgp') AS magicEden,
+COUNT(*) FILTER (WHERE owner_address = '1BWutmTvYPwDtmw9abTkS4Ssr8no61spGAvW1X6NDix') AS magicEdenV2,
+COUNT(*) FILTER (WHERE owner_address = '3D49QorJyNaL4rcpiynbuS3pRH4Y7EXEM6v6ZGaqfFGK') AS solanart,
+COUNT(*) FILTER (WHERE owner_address = 'F4ghBzHFNgJxV4wEQDchU5i7n4XWWMBSaq7CuswGiVsr') AS digitalEyes,
+COUNT(*) FILTER (WHERE owner_address = '4pUQS4Jo2dsfWzt3VgHXy3H6RYnEDd11oWPiaM2rdAPw') AS alphaArt,
+COUNT(*) FILTER (WHERE owner_address = '73tF8uN3BwVzUzwETv59WNAafuEBct2zTgYbYXLggQiU') AS FTX,
+COUNT(*) FILTER (WHERE owner_address = '7Ppgch9d4XRAygVNJP4bDkc7V6htYXGfghX4zzG9r4cH') AS SMB
+from holder
+join collection on holder.collection_symbol = collection.symbol
+group by collection_symbol, magiceden_api
