@@ -12,6 +12,7 @@ const royaltyAddresses = {
   'CDgbhX61QFADQAeeYKP5BQ7nnzDyMkkR3NEhYF2ETn1k': 'TAIYO', // Taiyo
   'AvkbtawpmMSy571f71WsWEn41ATHg5iHw27LoYJdk8QA': 'THUG', // Thugbirdz
   'CzrE3LhijwcmvsXZa8YavqgR9EzW3UGqoSWZKwGpZVqM': 'THUG', // Thugbirdz2
+  '9Da5CoqR8H4YGWEYK6jtcTU69rr6XEkffadN8UFjJkeA': 'CoC', // CoC
 };
 
 module.exports = {
