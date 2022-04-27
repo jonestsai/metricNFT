@@ -13,6 +13,7 @@ const royaltyAddresses = {
   'AvkbtawpmMSy571f71WsWEn41ATHg5iHw27LoYJdk8QA': 'THUG', // Thugbirdz
   'CzrE3LhijwcmvsXZa8YavqgR9EzW3UGqoSWZKwGpZVqM': 'THUG', // Thugbirdz2
   '9Da5CoqR8H4YGWEYK6jtcTU69rr6XEkffadN8UFjJkeA': 'CoC', // CoC
+  '7zL7HVn85F5yFT6XM3BsJcQF7PBcNE7R2BT5GyfunpKe': 'OKB', // OKB
 };
 
 module.exports = {
