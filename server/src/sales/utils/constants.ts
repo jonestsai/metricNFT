@@ -14,6 +14,7 @@ const royaltyAddresses = {
   'CzrE3LhijwcmvsXZa8YavqgR9EzW3UGqoSWZKwGpZVqM': 'THUG', // Thugbirdz2
   '9Da5CoqR8H4YGWEYK6jtcTU69rr6XEkffadN8UFjJkeA': 'CoC', // CoC
   '7zL7HVn85F5yFT6XM3BsJcQF7PBcNE7R2BT5GyfunpKe': 'OKB', // OKB
+  'BSLiqdvTiCLSkpRasjBBJQqNHRLuvp4vP2qyzKALjs9W': 'BSL', // BSL
 };
 
 module.exports = {

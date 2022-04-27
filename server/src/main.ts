@@ -52,7 +52,8 @@ const getSales = async (beforeSignature:any) => {
   // const publicKey = new PublicKey('GdtkQajEADGbfSUEBS5zctYrhemXYQkqnrMiGY7n7vAw'); // PRTL
   // const publicKey = new PublicKey('PUFFgnKKhQ23vp8uSPwdzrUhEr7WpLmjM85NB1FQgpb'); // SAC
   // const publicKey = new PublicKey('9Da5CoqR8H4YGWEYK6jtcTU69rr6XEkffadN8UFjJkeA'); // CoC
-  const publicKey = new PublicKey('7zL7HVn85F5yFT6XM3BsJcQF7PBcNE7R2BT5GyfunpKe'); // OKB
+  // const publicKey = new PublicKey('7zL7HVn85F5yFT6XM3BsJcQF7PBcNE7R2BT5GyfunpKe'); // OKB
+  const publicKey = new PublicKey('BSLiqdvTiCLSkpRasjBBJQqNHRLuvp4vP2qyzKALjs9W'); // Blocksmith Labs
   let result;
 
   // Comment this out when testing few transactions

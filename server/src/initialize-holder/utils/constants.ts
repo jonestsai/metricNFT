@@ -12,7 +12,8 @@ const hashLists = {
   // '/home/server/src/collections/taiyo-robotics/hash-list.txt': 'TAIYO', // Taiyo
   // '/home/server/src/collections/thugbirdz/hash-list.txt': 'THUG', // Thugbirdz
   // '/home/server/src/collections/cets-on-creck/hash-list.txt': 'CoC', // Cets on Creck
-  '/home/server/src/collections/okay-bears/hash-list.txt': 'OKB', // Okay Bears
+  // '/home/server/src/collections/okay-bears/hash-list.txt': 'OKB', // Okay Bears
+  '/home/server/src/collections/blocksmith-labs/hash-list.txt': 'BSL', // Blocksmith Labs
 };
 
 module.exports = {
