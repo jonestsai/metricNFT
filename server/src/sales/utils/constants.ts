@@ -17,6 +17,7 @@ const royaltyAddresses = {
   'BSLiqdvTiCLSkpRasjBBJQqNHRLuvp4vP2qyzKALjs9W': 'BSL', // BSL
   'Em4DcHQwUxhHfEWhz8aZABXU6nUADTGFBPKHoBhKZr9h': 'SOLGods', // SOLGods
   '6WQPJrQBHwXGNiAffuYt5v96FzS3c4W6Hfi7dvoNkNX4': 'CWM', // Catalina Whale Mixer
+  '3pMvTLUA9NzZQd4gi725p89mvND1wRNQM3C8XEv1hTdA': 'FFF', // Famous Fox Federation
 };
 
 module.exports = {

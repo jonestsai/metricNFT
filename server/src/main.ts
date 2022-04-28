@@ -55,7 +55,8 @@ const getSales = async (beforeSignature:any) => {
   // const publicKey = new PublicKey('7zL7HVn85F5yFT6XM3BsJcQF7PBcNE7R2BT5GyfunpKe'); // OKB
   // const publicKey = new PublicKey('BSLiqdvTiCLSkpRasjBBJQqNHRLuvp4vP2qyzKALjs9W'); // Blocksmith Labs
   // const publicKey = new PublicKey('Em4DcHQwUxhHfEWhz8aZABXU6nUADTGFBPKHoBhKZr9h'); // SOLGods
-  const publicKey = new PublicKey('6WQPJrQBHwXGNiAffuYt5v96FzS3c4W6Hfi7dvoNkNX4'); // Catalina Whale Mixer
+  // const publicKey = new PublicKey('6WQPJrQBHwXGNiAffuYt5v96FzS3c4W6Hfi7dvoNkNX4'); // Catalina Whale Mixer
+  const publicKey = new PublicKey('3pMvTLUA9NzZQd4gi725p89mvND1wRNQM3C8XEv1hTdA'); // Famous Fox Federation
   let result;
 
   // Comment this out when testing few transactions
