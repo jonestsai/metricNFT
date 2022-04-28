@@ -16,6 +16,7 @@ const royaltyAddresses = {
   '7zL7HVn85F5yFT6XM3BsJcQF7PBcNE7R2BT5GyfunpKe': 'OKB', // OKB
   'BSLiqdvTiCLSkpRasjBBJQqNHRLuvp4vP2qyzKALjs9W': 'BSL', // BSL
   'Em4DcHQwUxhHfEWhz8aZABXU6nUADTGFBPKHoBhKZr9h': 'SOLGods', // SOLGods
+  '6WQPJrQBHwXGNiAffuYt5v96FzS3c4W6Hfi7dvoNkNX4': 'CWM', // Catalina Whale Mixer
 };
 
 module.exports = {

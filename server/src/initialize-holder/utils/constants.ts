@@ -14,7 +14,8 @@ const hashLists = {
   // '/home/server/src/collections/cets-on-creck/hash-list.txt': 'CoC', // Cets on Creck
   // '/home/server/src/collections/okay-bears/hash-list.txt': 'OKB', // Okay Bears
   // '/home/server/src/collections/blocksmith-labs/hash-list.txt': 'BSL', // Blocksmith Labs
-  '/home/server/src/collections/solgods/hash-list.txt': 'SOLGods', // SOLGods
+  // '/home/server/src/collections/solgods/hash-list.txt': 'SOLGods', // SOLGods
+  '/home/server/src/collections/catalina-whale-mixer/hash-list.txt': 'CWM', // Catalina Whale Mixer
 };
 
 module.exports = {
