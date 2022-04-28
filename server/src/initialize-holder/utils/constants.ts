@@ -17,7 +17,8 @@ const hashLists = {
   // '/home/server/src/collections/solgods/hash-list.txt': 'SOLGods', // SOLGods
   // '/home/server/src/collections/catalina-whale-mixer/hash-list.txt': 'CWM', // Catalina Whale Mixer
   // '/home/server/src/collections/famous-fox-federation/hash-list.txt': 'FFF', // Famous Fox Federation
-  '/home/server/src/collections/bohemia/hash-list.txt': 'BOHEMIA', // Bohemia
+  // '/home/server/src/collections/bohemia/hash-list.txt': 'BOHEMIA', // Bohemia
+  '/home/server/src/collections/astrals/hash-list.txt': 'ASTRALS', // Astrals
 };
 
 module.exports = {

@@ -19,6 +19,7 @@ const royaltyAddresses = {
   '6WQPJrQBHwXGNiAffuYt5v96FzS3c4W6Hfi7dvoNkNX4': 'CWM', // Catalina Whale Mixer
   '3pMvTLUA9NzZQd4gi725p89mvND1wRNQM3C8XEv1hTdA': 'FFF', // Famous Fox Federation
   '74q6RGYyDsjNAjynqyx6P5SGh9HimS1p9TSLb1Z8RTM8': 'BOHEMIA', // Bohemia
+  'AfVySHXxTrf5vvLMRCNdfeWmE9h6QFsxzxJ2fgJj7VrQ': 'ASTRALS', // Astrals
 };
 
 module.exports = {
