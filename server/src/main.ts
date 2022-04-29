@@ -59,7 +59,8 @@ const getSales = async (beforeSignature:any) => {
   // const publicKey = new PublicKey('3pMvTLUA9NzZQd4gi725p89mvND1wRNQM3C8XEv1hTdA'); // Famous Fox Federation
   // const publicKey = new PublicKey('74q6RGYyDsjNAjynqyx6P5SGh9HimS1p9TSLb1Z8RTM8'); // Bohemia
   // const publicKey = new PublicKey('AfVySHXxTrf5vvLMRCNdfeWmE9h6QFsxzxJ2fgJj7VrQ'); // Astrals
-  const publicKey = new PublicKey('TSk7aNjyggudgUXzDsdTUmB7uMoNRnpRpXpDPuGfRtE'); // Tombstoned High Society
+  // const publicKey = new PublicKey('TSk7aNjyggudgUXzDsdTUmB7uMoNRnpRpXpDPuGfRtE'); // Tombstoned High Society
+  const publicKey = new PublicKey('trshC9cTgL3BPXoAbp5w9UfnUMWEJx5G61vUijXPMLH'); // Degen Trash Pandas
   let result;
 
   // Comment this out when testing few transactions

@@ -21,6 +21,7 @@ const royaltyAddresses = {
   '74q6RGYyDsjNAjynqyx6P5SGh9HimS1p9TSLb1Z8RTM8': 'BOHEMIA', // Bohemia
   'AfVySHXxTrf5vvLMRCNdfeWmE9h6QFsxzxJ2fgJj7VrQ': 'ASTRALS', // Astrals
   'TSk7aNjyggudgUXzDsdTUmB7uMoNRnpRpXpDPuGfRtE': 'TSHS', // Tombstoned High Society
+  'trshC9cTgL3BPXoAbp5w9UfnUMWEJx5G61vUijXPMLH': 'DTP', // Degen Trash Pandas
 };
 
 module.exports = {
