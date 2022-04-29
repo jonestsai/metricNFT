@@ -22,6 +22,7 @@ const royaltyAddresses = {
   'AfVySHXxTrf5vvLMRCNdfeWmE9h6QFsxzxJ2fgJj7VrQ': 'ASTRALS', // Astrals
   'TSk7aNjyggudgUXzDsdTUmB7uMoNRnpRpXpDPuGfRtE': 'TSHS', // Tombstoned High Society
   'trshC9cTgL3BPXoAbp5w9UfnUMWEJx5G61vUijXPMLH': 'DTP', // Degen Trash Pandas
+  'RTp26f9wY2fXxeWRE7FkS9iVrsuxgdUJfDYH8GgoBH9': 'GRIM', // Grim Syndicate
 };
 
 module.exports = {
