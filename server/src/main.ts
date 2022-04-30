@@ -62,7 +62,8 @@ const getSales = async (beforeSignature:any) => {
   // const publicKey = new PublicKey('TSk7aNjyggudgUXzDsdTUmB7uMoNRnpRpXpDPuGfRtE'); // Tombstoned High Society
   // const publicKey = new PublicKey('trshC9cTgL3BPXoAbp5w9UfnUMWEJx5G61vUijXPMLH'); // Degen Trash Pandas
   // const publicKey = new PublicKey('RTp26f9wY2fXxeWRE7FkS9iVrsuxgdUJfDYH8GgoBH9'); // Grim Syndicate
-  const publicKey = new PublicKey('FDL3AT32bAAHEC9wujkesnHCvBEQWnmUVuDMJ7T8NJSw'); // Quantum Traders
+  // const publicKey = new PublicKey('FDL3AT32bAAHEC9wujkesnHCvBEQWnmUVuDMJ7T8NJSw'); // Quantum Traders
+  const publicKey = new PublicKey('pEsKYABNARLiDFYrjbjHDieD5h6gHrvYf9Vru62NX9k'); // Pesky Penguins
   let result;
 
   // Comment this out when testing few transactions
