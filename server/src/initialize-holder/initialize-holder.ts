@@ -50,14 +50,20 @@ const initializeHolders = async (hashList: any, collection: any) => {
     let nftOwner = await getNftOwner(hash);
 
     // Retry several times if there's rpc error
-    while (!nftOwner && retryCount < 50) {
+    while (!nftOwner && retryCount < 3) {
       nftOwner = await getNftOwner(hash);
       retryCount++;
       console.log(retryCount);
 
-      if (retryCount == 50) {
-        throw new Error('Retry count reached 50 times. RPC error.');
+      if (retryCount == 3) {
+        // throw new Error('Retry count reached 3 times. RPC error or no owner.');
+        console.log('Retry count reached 3 times. RPC error or no owner.');
+        break;
       }
+    }
+
+    if (!nftOwner) {
+      continue;
     }
 
     const metadataPDA = await Metadata.getPDA(hash);
