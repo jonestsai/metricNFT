@@ -75,11 +75,26 @@ const saveSnapshot = async () => {
     marketplace = JSON.stringify(marketplace);
     console.log(marketplace);
 
+    let retryCount: number = 0;
     let floorPrice: any;
 
     try {
-      const response = await fetch(magiceden_api);
-      const collection = await response.json();
+      let response = await fetch(magiceden_api);
+      let collection = await response.json();
+
+      // Retry several times if there's error fetching collection
+      while (!collection.floorPrice && retryCount < 5) {
+        response = await fetch(magiceden_api);
+        collection = await response.json();
+        retryCount++;
+        console.log(retryCount);
+
+        if (retryCount == 5) {
+          console.log('Retry count reached 5 times. Error fetching collection from MagicEden.');
+          break;
+        }
+      }
+
       floorPrice = collection.floorPrice / LAMPORTS_PER_SOL;
       console.log(floorPrice);
     } catch (err) {
