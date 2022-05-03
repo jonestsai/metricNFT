@@ -25,7 +25,8 @@ const hashLists = {
   // '/home/server/src/collections/quantum-traders/hash-list.txt': 'QT', // Quantum Traders
   // '/home/server/src/collections/pesky-penguins/hash-list.txt': 'NOOT', // Pesky Penquins
   // '/home/server/src/collections/defi-pirates/hash-list.txt': 'DP', // DeFi Pirates
-  '/home/server/src/collections/degenerate-ape-kindergarten/hash-list.txt': 'DEGG', // Degenerate Ape Kindergarten
+  // '/home/server/src/collections/degenerate-ape-kindergarten/hash-list.txt': 'DEGG', // Degenerate Ape Kindergarten
+  '/home/server/src/collections/jungle-cats/hash-list.txt': 'JCATS', // Jungle Cats
 };
 
 module.exports = {

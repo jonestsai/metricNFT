@@ -27,6 +27,7 @@ const royaltyAddresses = {
   'pEsKYABNARLiDFYrjbjHDieD5h6gHrvYf9Vru62NX9k': 'NOOT', // Pesky Penguins
   '9UwSF2gPqzssisA94NoQgzEyDmW2KPGAGBi4o34FK6pH': 'DP', // Defi Pirates
   'AMomyD8PjPLDgxfjh12SGyFXVS6UrNKjdXrwC444dnbe': 'DEGG', // Degenerate Ape Kindergarten
+  'JCTZQ7fzLkS9j3z4bmwmsJuqzpDyqxLB2NwdGdajk2Wm': 'JCATS', // Jungle Cats
 };
 
 module.exports = {

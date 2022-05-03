@@ -65,7 +65,8 @@ const getSales = async (beforeSignature:any) => {
   // const publicKey = new PublicKey('FDL3AT32bAAHEC9wujkesnHCvBEQWnmUVuDMJ7T8NJSw'); // Quantum Traders
   // const publicKey = new PublicKey('pEsKYABNARLiDFYrjbjHDieD5h6gHrvYf9Vru62NX9k'); // Pesky Penguins
   // const publicKey = new PublicKey('9UwSF2gPqzssisA94NoQgzEyDmW2KPGAGBi4o34FK6pH'); // Defi Pirates
-  const publicKey = new PublicKey('AMomyD8PjPLDgxfjh12SGyFXVS6UrNKjdXrwC444dnbe'); // Degenerate Ape Kindergarten
+  // const publicKey = new PublicKey('AMomyD8PjPLDgxfjh12SGyFXVS6UrNKjdXrwC444dnbe'); // Degenerate Ape Kindergarten
+  const publicKey = new PublicKey('JCTZQ7fzLkS9j3z4bmwmsJuqzpDyqxLB2NwdGdajk2Wm'); // Jungle Cats
   let result;
 
   // Comment this out when testing few transactions
