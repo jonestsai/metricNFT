@@ -103,6 +103,9 @@ dist
 # TernJS port file
 .tern-port
 
+# SQL backup
+*.sql
+
 # Personal notes
 discord/
 helloworld_test/
