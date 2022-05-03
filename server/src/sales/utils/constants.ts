@@ -26,6 +26,7 @@ const royaltyAddresses = {
   'FDL3AT32bAAHEC9wujkesnHCvBEQWnmUVuDMJ7T8NJSw': 'QT', // Quantum Traders
   'pEsKYABNARLiDFYrjbjHDieD5h6gHrvYf9Vru62NX9k': 'NOOT', // Pesky Penguins
   '9UwSF2gPqzssisA94NoQgzEyDmW2KPGAGBi4o34FK6pH': 'DP', // Defi Pirates
+  'AMomyD8PjPLDgxfjh12SGyFXVS6UrNKjdXrwC444dnbe': 'DEGG', // Degenerate Ape Kindergarten
 };
 
 module.exports = {

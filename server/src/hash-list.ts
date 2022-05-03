@@ -22,8 +22,8 @@ async function main() {
   connection = new Connection(clusterApiUrl('mainnet-beta'));
 
   // Get sale transactions and store to sales table
-  await getSales('jJGKFK9wfczNjRaB2LpuSKVZww6TqtBwGAFkp8Uie56Fyp69hjryQBokqiMvQu6dXnkyK2dRKDsEv9GzXsFCbwm');
-  // await getHashList(null);
+  // await getSales('3bZfRZDA38DagWTjNrGFpw9WvcKnUme3nBhG9UatZkvcDMgZfiDuKxpzYdEm854X7mFB3AUuDGGa5cuaMiMbJmwG');
+  await getHashList(null);
 }
 
 /*
@@ -40,7 +40,8 @@ const getSales = async (beforeSignature:any) => {
   // const publicKey = new PublicKey('CzrE3LhijwcmvsXZa8YavqgR9EzW3UGqoSWZKwGpZVqM'); // Thugbirdz2
   // const publicKey = new PublicKey('DRGNjvBvnXNiQz9dTppGk1tAsVxtJsvhEmojEfBU3ezf'); // Boryoku Dragonz
   // const publicKey = new PublicKey('DC2mkgwhy56w3viNtHDjJQmc7SGu2QX785bS4aexojwX'); // DAA hash_list
-  const publicKey = new PublicKey('9uBX3ASjxWvNBAD1xjbVaKA74mWGZys3RGSF7DdeDD3F'); // SMB hash_list
+  // const publicKey = new PublicKey('9uBX3ASjxWvNBAD1xjbVaKA74mWGZys3RGSF7DdeDD3F'); // SMB hash_list
+  const publicKey = new PublicKey('daaLrDfvcT4joui5axwR2gCkGAroruJFzyVsacU926g'); // DEGG hash_list
   let result;
 
   // Comment this out when testing few transactions
@@ -225,7 +226,10 @@ const getHashList = async (a:any) => {
     port: process.env.DB_PORT,
   });
   const query = {
-    text: `SELECT * from hash_list WHERE symbol = 'DAPE'`,
+    text: `
+      SELECT distinct mint FROM hash_list
+      WHERE symbol = 'DEGG' and fromaddrprebalance = 0
+    `,
   };
 
   const results = await pool.query(query, (err: any, res: any) => {
