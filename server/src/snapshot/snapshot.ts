@@ -21,6 +21,7 @@ async function main() {
 }
 
 const saveSnapshot = async () => {
+  const startSnapshotTime = new Date();
   const { magicEden, magicEdenV2, solanart, digitalEyes, alphaArt, FTX, SMB } = marketplaceAddresses;
   const { rows } = await pool.query(`
     SELECT collection_symbol, magiceden_api,
@@ -46,7 +47,6 @@ const saveSnapshot = async () => {
   console.log(rows);
 
   for (let row of rows) {
-    const startSnapshotTime = new Date();
     const {
       collection_symbol,
       magiceden_api,
