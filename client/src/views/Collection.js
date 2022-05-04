@@ -133,9 +133,9 @@ export default class Collection extends React.Component {
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div class="card-header">Floor Mkt Cap</div>
+              <div class="card-header">24h Sales</div>
               <div class="card-body">
-                <h4 class="card-title">{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+                <h4 class="card-title">{_24hSales}</h4>
               </div>
             </div>
           </div>
@@ -149,9 +149,9 @@ export default class Collection extends React.Component {
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div class="card-header">24h Sales</div>
+              <div class="card-header">Floor Mkt Cap</div>
               <div class="card-body">
-                <h4 class="card-title">{_24hSales}</h4>
+                <h4 class="card-title">{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
               </div>
             </div>
           </div>
