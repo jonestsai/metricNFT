@@ -88,26 +88,81 @@ export default class Collection extends React.Component {
   };
 
   render() {
-    const { name } = this.props;
+    const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, _24hVolume, _24hSales } = this.props;
     const { isLoading, collection } = this.state;
 
     const listedCount = this.getListedCount(collection);
-    const currentListedCount = listedCount ? listedCount[listedCount.length - 1] : null;
     const ownersCount = this.getOwnersCount(collection);
-    const currentOwnersCount = ownersCount ? ownersCount[ownersCount.length - 1] : null;
     const price = this.getPrice(collection);
-    const currentPrice = price ? price[price.length - 1] : null;
 
     return (
       <Container fluid>
-        <h3 className="text-start py-4">{name}</h3>
+        <div className="row py-4 d-flex align-items-center">
+          <div className="col-2 col-md-1">
+            <img className = "rounded-circle img-fluid" height="50" src={require(`../assets/${image}`)} />
+          </div>
+          <div className="col-10 col-md-11">
+            <h3 className="text-start">{name}</h3>
+            <h4 className="text-start">{currentPrice} SOL</h4>
+          </div>
+        </div>
+        <div className="row pb-4">
+          <div className="col-lg-2">
+            <div className="card bg-gray text-center">
+              <div class="card-header"># of Tokens</div>
+              <div class="card-body">
+                <h4 class="card-title">{numberOfTokens}</h4>
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-2">
+            <div className="card bg-gray text-center">
+              <div class="card-header"># of Listings</div>
+              <div class="card-body">
+                <h4 class="card-title">{currentListedCount}</h4>
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-2">
+            <div className="card bg-gray text-center">
+              <div class="card-header"># of Owners</div>
+              <div class="card-body">
+                <h4 class="card-title">{currentOwnersCount}</h4>
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-2">
+            <div className="card bg-gray text-center">
+              <div class="card-header">Floor Mkt Cap</div>
+              <div class="card-body">
+                <h4 class="card-title">{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-2">
+            <div className="card bg-gray text-center">
+              <div class="card-header">24h Volume</div>
+              <div class="card-body">
+                <h4 class="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-2">
+            <div className="card bg-gray text-center">
+              <div class="card-header">24h Sales</div>
+              <div class="card-body">
+                <h4 class="card-title">{_24hSales}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
         {!isLoading && (
           <div>
             <div className="row">
               <div className="col-lg-6">
-                <div className="chart rounded shadow-lg mb-4">
+                <div className="bg-gray rounded shadow-lg mb-4">
                   <h5 className="text-start px-3 pt-3">Number of Tokens Listed</h5>
-                  <h6 className="text-start px-3 pb-2">{`Current: ${currentListedCount['Total Listed']}`}</h6>
+                  <h6 className="text-start px-3 pb-2">{`Current: ${currentListedCount}`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart
                       width={500}
@@ -130,9 +185,9 @@ export default class Collection extends React.Component {
                 </div>
               </div>
               <div className="col-lg-6">
-                <div className="chart rounded shadow-lg mb-4">
+                <div className="bg-gray rounded shadow-lg mb-4">
                   <h5 className="text-start px-3 pt-3">Number of Owners</h5>
-                  <h6 className="text-start px-3 pb-2">{`Current: ${currentOwnersCount['Total Owners']}`}</h6>
+                  <h6 className="text-start px-3 pb-2">{`Current: ${currentOwnersCount}`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart
                       width={500}
@@ -155,9 +210,9 @@ export default class Collection extends React.Component {
                 </div>
               </div>
             </div>
-            <div className="chart rounded shadow-lg mb-5">
+            <div className="bg-gray rounded shadow-lg mb-5">
               <h5 className="text-start px-3 pt-3">Price</h5>
-              <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice['Price']}`}</h6>
+              <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice} SOL`}</h6>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart
                   width={500}

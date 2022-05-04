@@ -126,9 +126,21 @@ const Contact = () => (
 
 const Main = ({ collections, isLoading }) => {
   const collectionRoutes = collections?.map((collection, index) => {
-    const { name, slug } = collection;
+    const { name, slug, image, floorprice, listedcount, ownerscount, maxsupply, _24hvolume, _24hsales } = collection;
     return (
-      <Route key={collection.id} path={slug} element={<Collection name={name} collectionAPI={slug} />}></Route>
+      <Route key={collection.id} path={slug} element={
+        <Collection
+          name={name}
+          collectionAPI={slug}
+          image={image}
+          currentPrice={floorprice}
+          currentListedCount={listedcount}
+          currentOwnersCount={ownerscount}
+          numberOfTokens={maxsupply}
+          _24hVolume={_24hvolume}
+          _24hSales={_24hsales}
+        />
+      }></Route>
     );
   });
 
