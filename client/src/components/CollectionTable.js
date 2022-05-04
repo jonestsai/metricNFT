@@ -39,7 +39,7 @@ export default function CollectionTable(props) {
             className={`text-end pe-1 ${getClassNamesFor('volume')}`}>24h Volume</th>
           <th scope="col" role="button"
             onClick={() => requestSort('floorMarketCap')}
-            className={`text-end pe-1 ${getClassNamesFor('floorMarketCap')}`}>Floor Market Cap</th>
+            className={`text-end pe-1 ${getClassNamesFor('floorMarketCap')}`}>Floor Mkt Cap</th>
           <th scope="col" role="button"
             onClick={() => requestSort('maxsupply')}
             className={`text-end pe-1 ${getClassNamesFor('maxsupply')}`}>Tokens</th>
