@@ -106,8 +106,8 @@ export default class Collection extends React.Component {
             <h4 className="text-start">{currentPrice} SOL</h4>
           </div>
         </div>
-        <div className="row pb-4">
-          <div className="col-lg-2">
+        <div className="row g-md-4 pb-4">
+          <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
               <div class="card-header"># of Tokens</div>
               <div class="card-body">
@@ -115,7 +115,7 @@ export default class Collection extends React.Component {
               </div>
             </div>
           </div>
-          <div className="col-lg-2">
+          <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
               <div class="card-header"># of Listings</div>
               <div class="card-body">
@@ -123,7 +123,7 @@ export default class Collection extends React.Component {
               </div>
             </div>
           </div>
-          <div className="col-lg-2">
+          <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
               <div class="card-header"># of Owners</div>
               <div class="card-body">
@@ -131,7 +131,7 @@ export default class Collection extends React.Component {
               </div>
             </div>
           </div>
-          <div className="col-lg-2">
+          <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
               <div class="card-header">Floor Mkt Cap</div>
               <div class="card-body">
@@ -139,7 +139,7 @@ export default class Collection extends React.Component {
               </div>
             </div>
           </div>
-          <div className="col-lg-2">
+          <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
               <div class="card-header">24h Volume</div>
               <div class="card-body">
@@ -147,7 +147,7 @@ export default class Collection extends React.Component {
               </div>
             </div>
           </div>
-          <div className="col-lg-2">
+          <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
               <div class="card-header">24h Sales</div>
               <div class="card-body">
