@@ -79,21 +79,8 @@ const saveSnapshot = async () => {
     let floorPrice: any;
 
     try {
-      let response = await fetch(magiceden_api);
-      let collection = await response.json();
-
-      // Retry several times if there's error fetching collection
-      while (!collection.floorPrice && retryCount < 5) {
-        response = await fetch(magiceden_api);
-        collection = await response.json();
-        retryCount++;
-        console.log(retryCount);
-
-        if (retryCount == 5) {
-          console.log('Retry count reached 5 times. Error fetching collection from MagicEden.');
-          break;
-        }
-      }
+      const response = await fetchRetry(magiceden_api, 5);
+      const collection = await response.json();
 
       floorPrice = collection.floorPrice / LAMPORTS_PER_SOL;
       console.log(floorPrice);
@@ -115,6 +102,17 @@ const saveSnapshot = async () => {
     await new Promise(f => setTimeout(f, 500));
   }
 }
+
+const fetchRetry: any = async (url: any, numOfRetries: any) => {
+  try {
+    return await fetch(url);
+  } catch(err) {
+    if (numOfRetries === 0) {
+      throw err;
+    }
+    return await fetchRetry(url, numOfRetries - 1);
+  }
+};
 
 main().then(
   () => process.exit(),
