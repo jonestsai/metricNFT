@@ -71,7 +71,7 @@ app.get('/api', async (req, res) => {
     ) _snapshot
     ON _collection.symbol = _snapshot.symbol
     LEFT JOIN (
-      SELECT SUM(price) AS _24hVolume,
+      SELECT SUM(price) AS _24hVolume, COUNT(*) AS _24hSales,
         CASE ${nameCase}
           ELSE symbol
         END AS _symbol
