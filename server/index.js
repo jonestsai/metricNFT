@@ -94,7 +94,6 @@ app.get('/api/:slug', async (req, res) => {
   const { rows } = await pool.query(`SELECT * FROM collection WHERE slug = '${slug}'`);
 
   const [{ symbol, minprice, namematch }] = rows;
-  const nameCase = namematch ? `CASE WHEN name ~ '${namematch}' THEN '${symbol}' END` : 'symbol';
   const nameMatchQuery = namematch ? `name ~ '${namematch}'` : `symbol = '${symbol}'`;
   const collectionQuery = `${nameMatchQuery} AND price > ${minprice}`;
 
@@ -102,9 +101,7 @@ app.get('/api/:slug', async (req, res) => {
     SELECT DISTINCT ON (starttime::date) starttime::date, listedcount, ownerscount, floorprice, price
     FROM snapshot
     LEFT JOIN (
-      SELECT DISTINCT ON (datetime::date) datetime::date, symbol, price,
-        ${nameCase}
-        AS _symbol
+      SELECT DISTINCT ON (datetime::date) datetime::date, price
       FROM sales
       WHERE ${collectionQuery} AND datetime > (NOW() - interval '30 days') AND datetime < NOW() AND hide IS NOT TRUE
       ORDER BY datetime desc, price asc
