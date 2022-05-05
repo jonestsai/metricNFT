@@ -66,7 +66,8 @@ const getSales = async (beforeSignature:any) => {
   // const publicKey = new PublicKey('pEsKYABNARLiDFYrjbjHDieD5h6gHrvYf9Vru62NX9k'); // Pesky Penguins
   // const publicKey = new PublicKey('9UwSF2gPqzssisA94NoQgzEyDmW2KPGAGBi4o34FK6pH'); // Defi Pirates
   // const publicKey = new PublicKey('AMomyD8PjPLDgxfjh12SGyFXVS6UrNKjdXrwC444dnbe'); // Degenerate Ape Kindergarten
-  const publicKey = new PublicKey('JCTZQ7fzLkS9j3z4bmwmsJuqzpDyqxLB2NwdGdajk2Wm'); // Jungle Cats
+  // const publicKey = new PublicKey('JCTZQ7fzLkS9j3z4bmwmsJuqzpDyqxLB2NwdGdajk2Wm'); // Jungle Cats
+  const publicKey = new PublicKey('3497cwzfTv54tUqi5X1GHoDPARKiedapFPNZN1HZbd3T'); // Communi3
   let result;
 
   // Comment this out when testing few transactions
