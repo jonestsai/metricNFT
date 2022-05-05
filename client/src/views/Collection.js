@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Container } from 'react-bootstrap';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { URLS } from '../Settings';
 import './Collection.css';
 
@@ -87,6 +87,19 @@ export default class Collection extends React.Component {
       : null;
   };
 
+  getSalesVolume = (collection) => {
+    return collection.length > 0
+      ? collection.map((detail) => {
+        const { starttime, _24hvolume, _24hsales } = detail;
+        const datetime = new Date(starttime);
+        const date = datetime.getDate();
+        const month = datetime.toLocaleString('default', { month: 'short' });
+
+        return { date: `${date}. ${month}`, 'Sales': Number(_24hsales), 'Volume': Number(_24hvolume) };
+      })
+      : null;
+  };
+
   render() {
     const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, _24hVolume, _24hSales } = this.props;
     const { isLoading, collection } = this.state;
@@ -94,6 +107,7 @@ export default class Collection extends React.Component {
     const listedCount = this.getListedCount(collection);
     const ownersCount = this.getOwnersCount(collection);
     const price = this.getPrice(collection);
+    const salesVolume = this.getSalesVolume(collection);
 
     return (
       <Container fluid>
@@ -210,28 +224,60 @@ export default class Collection extends React.Component {
                 </div>
               </div>
             </div>
-            <div className="bg-gray rounded shadow-lg mb-5">
-              <h5 className="text-start px-3 pt-3">Price</h5>
-              <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice} SOL`}</h6>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart
-                  width={500}
-                  height={300}
-                  data={price}
-                  margin={{
-                    top: 10,
-                    right: 30,
-                    left: 0,
-                    bottom: 0,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
-                  <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                  <Tooltip content={<PriceTooltip />} />
-                  <Line dataKey="Price" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
-                </LineChart>
-              </ResponsiveContainer>
+            <div className="row">
+              <div className="col-lg-6">
+                <div className="bg-gray rounded shadow-lg mb-5">
+                  <h5 className="text-start px-3 pt-3">Price</h5>
+                  <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice} SOL`}</h6>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart
+                      width={500}
+                      height={300}
+                      data={price}
+                      margin={{
+                        top: 10,
+                        right: 30,
+                        left: 0,
+                        bottom: 0,
+                      }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                      <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                      <Tooltip content={<PriceTooltip />} />
+                      <Line dataKey="Price" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              <div className="col-lg-6">
+                <div className="bg-gray rounded shadow-lg mb-5">
+                  <h5 className="text-start px-3 pt-3">Sales & Volume</h5>
+                  <h6 className="text-start px-3 pb-2">{`Current: ${_24hSales} sales & ${Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} volume`}</h6>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <ComposedChart
+                      width={500}
+                      height={300}
+                      data={salesVolume}
+                      barCategoryGap="28%"
+                      margin={{
+                        top: 10,
+                        right: 30,
+                        left: 0,
+                        bottom: 0,
+                      }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                      <YAxis yAxisId="sales" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                      <YAxis yAxisId="volume" orientation="right" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                      <Tooltip content={<SalesVolumeTooltip />} />
+                      <Area yAxisId="volume" dataKey="Volume" type="monotone" isAnimationActive={false} fill="#4b95d1" stroke="#4b95d1" />
+                      <Bar yAxisId="sales" dataKey="Sales" isAnimationActive={false} fill="#61cdbb" />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -277,6 +323,20 @@ const PriceTooltip = ({ active, payload, label }) => {
       <div className="bg-light text-dark rounded opacity-75 p-2">
         <div className="text-start">{label}</div>
         <div className="text-start">{`Floor Price: ${payload[0].value}`}</div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const SalesVolumeTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-light text-dark rounded opacity-75 p-2">
+        <div className="text-start">{label}</div>
+        <div className="text-start">{`Sales: ${payload[1].value}`}</div>
+        <div className="text-start">{`Volume: ${Number(payload[0].value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`}</div>
       </div>
     );
   }
