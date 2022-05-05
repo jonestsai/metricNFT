@@ -98,7 +98,7 @@ app.get('/api/:slug', async (req, res) => {
   const collectionQuery = `${nameMatchQuery} AND price > ${minprice}`;
 
   pool.query(`
-    SELECT DISTINCT ON (starttime::date) starttime::date, listedcount, ownerscount, floorprice, price, _24hsales
+    SELECT DISTINCT ON (starttime::date) starttime::date, listedcount, ownerscount, floorprice, price, _24hvolume, _24hsales
     FROM snapshot
     LEFT JOIN (
       SELECT DISTINCT ON (datetime::date) datetime::date, price
@@ -108,7 +108,7 @@ app.get('/api/:slug', async (req, res) => {
     ) _price
     ON snapshot.starttime::date = _price.datetime::date
     LEFT JOIN (
-      SELECT datetime::date, COUNT(*) AS _24hsales
+      SELECT datetime::date, SUM(price) AS _24hvolume, COUNT(*) AS _24hsales
       FROM sales
       WHERE ${collectionQuery} AND datetime > (NOW() - interval '30 days') AND datetime < NOW() AND hide IS NOT TRUE
       GROUP BY datetime::date
