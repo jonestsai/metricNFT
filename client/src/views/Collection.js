@@ -148,7 +148,7 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">24h Sales</div>
               <div className="card-body">
-                <h4 className="card-title">{_24hSales}</h4>
+                <h4 className="card-title">{_24hSales || 0}</h4>
               </div>
             </div>
           </div>
