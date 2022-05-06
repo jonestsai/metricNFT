@@ -27,7 +27,8 @@ const hashLists = {
   // '/home/server/src/collections/defi-pirates/hash-list.txt': 'DP', // DeFi Pirates
   // '/home/server/src/collections/degenerate-ape-kindergarten/hash-list.txt': 'DEGG', // Degenerate Ape Kindergarten
   // '/home/server/src/collections/jungle-cats/hash-list.txt': 'JCATS', // Jungle Cats
-  '/home/server/src/collections/communi3-mad-scientists/hash-list.txt': 'C3', // Communi3: Mad Scientists
+  // '/home/server/src/collections/communi3-mad-scientists/hash-list.txt': 'C3', // Communi3: Mad Scientists
+  '/home/server/src/collections/space-heads/hash-list.txt': 'C3', // Space Heads
 };
 
 module.exports = {
