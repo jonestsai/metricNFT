@@ -44,8 +44,8 @@ export default class Collection extends React.Component {
       ? collection.map((detail) => {
         const { starttime, listedcount } = detail;
         const datetime = new Date(starttime);
-        const date = datetime.getDate();
-        const month = datetime.toLocaleString('default', { month: 'short' });
+        const date = datetime.getUTCDate();
+        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
 
         return { date: `${date}. ${month}`, 'Total Listed': Number(listedcount) };
       })
@@ -57,8 +57,8 @@ export default class Collection extends React.Component {
       ? collection.map((detail) => {
         const { starttime, ownerscount } = detail;
         const datetime = new Date(starttime);
-        const date = datetime.getDate();
-        const month = datetime.toLocaleString('default', { month: 'short' });
+        const date = datetime.getUTCDate();
+        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
 
         return { date: `${date}. ${month}`, 'Total Owners': Number(ownerscount) };
       })
@@ -72,8 +72,8 @@ export default class Collection extends React.Component {
       ? collection.map((detail) => {
         const { starttime, floorprice, price } = detail;
         const datetime = new Date(starttime);
-        const date = datetime.getDate();
-        const month = datetime.toLocaleString('default', { month: 'short' });
+        const date = datetime.getUTCDate();
+        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
         updatedPrice = floorprice ? Number(Number(floorprice)?.toFixed(2)) : Number(Number(price)?.toFixed(2));
 
         if (updatedPrice == 0) {
@@ -92,9 +92,8 @@ export default class Collection extends React.Component {
       ? collection.map((detail) => {
         const { starttime, _24hvolume, _24hsales } = detail;
         const datetime = new Date(starttime);
-        const date = datetime.getDate();
-        const month = datetime.toLocaleString('default', { month: 'short' });
-
+        const date = datetime.getUTCDate();
+        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
         return { date: `${date}. ${month}`, 'Sales': Number(_24hsales), 'Volume': Number(_24hvolume) };
       })
       : null;
