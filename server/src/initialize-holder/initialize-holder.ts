@@ -30,6 +30,7 @@ async function main() {
   for (const list in hashLists) {
     const hashList = await getHashList(list);
     await initializeHolders(hashList, hashLists[list]);
+    // await updateHolders(hashList, hashLists[list]);
   }
 }
 
@@ -144,6 +145,15 @@ const getAccountInfo = async (metadataPDA: any) => {
     await new Promise(f => setTimeout(f, 500));
   }
   return accountInfo;
+}
+
+const updateHolders = async (hashList: any, collection: any) => {
+  for (let hash of hashList) {
+    pool.query(`UPDATE holder SET collection_symbol = '${collection}' WHERE token_address = '${hash}'`, (err: any, res: any) => {
+      console.log(err, res)
+    });
+    await new Promise(f => setTimeout(f, 500));
+  }
 }
 
 main().then(
