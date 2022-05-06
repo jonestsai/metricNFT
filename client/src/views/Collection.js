@@ -122,49 +122,49 @@ export default class Collection extends React.Component {
         <div className="row g-md-4 pb-4">
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div class="card-header"># of Tokens</div>
-              <div class="card-body">
-                <h4 class="card-title">{numberOfTokens}</h4>
+              <div className="card-header"># of Tokens</div>
+              <div className="card-body">
+                <h4 className="card-title">{numberOfTokens}</h4>
               </div>
             </div>
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div class="card-header"># of Listings</div>
-              <div class="card-body">
-                <h4 class="card-title">{currentListedCount}</h4>
+              <div className="card-header"># of Listings</div>
+              <div className="card-body">
+                <h4 className="card-title">{currentListedCount}</h4>
               </div>
             </div>
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div class="card-header"># of Owners</div>
-              <div class="card-body">
-                <h4 class="card-title">{currentOwnersCount}</h4>
+              <div className="card-header"># of Owners</div>
+              <div className="card-body">
+                <h4 className="card-title">{currentOwnersCount}</h4>
               </div>
             </div>
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div class="card-header">24h Sales</div>
-              <div class="card-body">
-                <h4 class="card-title">{_24hSales}</h4>
+              <div className="card-header">24h Sales</div>
+              <div className="card-body">
+                <h4 className="card-title">{_24hSales}</h4>
               </div>
             </div>
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div class="card-header">24h Volume</div>
-              <div class="card-body">
-                <h4 class="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+              <div className="card-header">24h Volume</div>
+              <div className="card-body">
+                <h4 className="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div class="card-header">Floor Mkt Cap</div>
-              <div class="card-body">
-                <h4 class="card-title">{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+              <div className="card-header">Floor Mkt Cap</div>
+              <div className="card-body">
+                <h4 className="card-title">{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
               </div>
             </div>
           </div>
