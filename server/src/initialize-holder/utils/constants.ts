@@ -28,7 +28,10 @@ const hashLists = {
   // '/home/server/src/collections/degenerate-ape-kindergarten/hash-list.txt': 'DEGG', // Degenerate Ape Kindergarten
   // '/home/server/src/collections/jungle-cats/hash-list.txt': 'JCATS', // Jungle Cats
   // '/home/server/src/collections/communi3-mad-scientists/hash-list.txt': 'C3', // Communi3: Mad Scientists
-  '/home/server/src/collections/space-heads/hash-list.txt': 'SH', // Space Heads
+  // '/home/server/src/collections/space-heads/hash-list.txt': 'SH', // Space Heads
+  // '/home/server/src/collections/mous-in-da-hous/hash-list.txt': 'MIDH', // MOUS IN DA HOUS
+  // '/home/server/src/collections/the-stoned-frogs/hash-list.txt': 'TSF', // The Stoned Frogs
+  '/home/server/src/collections/og-atadians/hash-list.txt': 'ATD', // OG Atadians
 };
 
 module.exports = {

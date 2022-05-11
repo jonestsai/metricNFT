@@ -30,6 +30,9 @@ const royaltyAddresses = {
   'JCTZQ7fzLkS9j3z4bmwmsJuqzpDyqxLB2NwdGdajk2Wm': 'JCATS', // Jungle Cats
   '3497cwzfTv54tUqi5X1GHoDPARKiedapFPNZN1HZbd3T': 'C3', // Communi3
   '5c186p4RW1nuLZrYHgxv4m1vBPtfkSP7hQTZbqPLdaXH': 'SH', // Space Heads
+  'Br9TQj8DJVFgwocvwc2h47Kms9zjwpaDukuP4ZRmp29s': 'MIDH', // MOUS IN DA HOUS
+  'EgFY9PKziUJeKBwsQAH9zuvKyZLvx37gqtxmj5QtN1CX': 'TSF', // The Stoned Frogs
+  'rVTWZ3PyCf3PAAJzVcXgs3v6xkFFfCK2M5tQSZ2MUBh': 'ATD', // OG Atadians
 };
 
 module.exports = {
