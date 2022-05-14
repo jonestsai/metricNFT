@@ -31,7 +31,8 @@ const hashLists = {
   // '/home/server/src/collections/space-heads/hash-list.txt': 'SH', // Space Heads
   // '/home/server/src/collections/mous-in-da-hous/hash-list.txt': 'MIDH', // MOUS IN DA HOUS
   // '/home/server/src/collections/the-stoned-frogs/hash-list.txt': 'TSF', // The Stoned Frogs
-  '/home/server/src/collections/og-atadians/hash-list.txt': 'ATD', // OG Atadians
+  // '/home/server/src/collections/og-atadians/hash-list.txt': 'ATD', // OG Atadians
+  '/home/server/src/collections/the-bridged/hash-list.txt': 'OMNI', // The Bridged
 };
 
 module.exports = {

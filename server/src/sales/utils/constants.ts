@@ -33,6 +33,7 @@ const royaltyAddresses = {
   'Br9TQj8DJVFgwocvwc2h47Kms9zjwpaDukuP4ZRmp29s': 'MIDH', // MOUS IN DA HOUS
   'EgFY9PKziUJeKBwsQAH9zuvKyZLvx37gqtxmj5QtN1CX': 'TSF', // The Stoned Frogs
   'rVTWZ3PyCf3PAAJzVcXgs3v6xkFFfCK2M5tQSZ2MUBh': 'ATD', // OG Atadians
+  'HZ95a2ADYQbKERW8Ts939MQtyy44UFB84oPQMb6rUaqC': 'OMNI', // The Bridged
 };
 
 module.exports = {
