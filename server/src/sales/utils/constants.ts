@@ -34,6 +34,7 @@ const royaltyAddresses = {
   'EgFY9PKziUJeKBwsQAH9zuvKyZLvx37gqtxmj5QtN1CX': 'TSF', // The Stoned Frogs
   'rVTWZ3PyCf3PAAJzVcXgs3v6xkFFfCK2M5tQSZ2MUBh': 'ATD', // OG Atadians
   'HZ95a2ADYQbKERW8Ts939MQtyy44UFB84oPQMb6rUaqC': 'OMNI', // The Bridged
+  '7UwyLLTytXvALcRR7uJa6YxKLSB6MGYxDULZPdtgxN1z': 'LIZARD', // Reptilian Renegade (Lizards)
 };
 
 module.exports = {
