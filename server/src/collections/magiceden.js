@@ -50,7 +50,6 @@ const storeMagicEdenCollection = async () => {
       }
       collectionCount = newCollectionCount;
     }
-    res.status(200).json(results);
   } catch (error) {
     console.log(error);
   }
