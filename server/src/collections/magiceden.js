@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '/home/server/.env' });
 const fetch = require('node-fetch');
 const { Pool } = require('pg');
 
@@ -11,19 +11,29 @@ const pool = new Pool({
 });
 
 async function main() {
-  await storeMagicEdenCollection();
+  const magicedenCollections = await getMagicedenCollections();
+  await storeMagicEdenCollection(magicedenCollections);
 }
 
-const storeMagicEdenCollection = async () => {
+const getMagicedenCollections = async () => {
   const offset = 0;
   const limit = 500;
-  let collectionCount = 0;
-  let stopCount = 0;
 
   try {
     const response = await fetch(`https://api-mainnet.magiceden.dev/v2/collections?offset=${offset}&limit=${limit}`);
     const collections = await response.json();
 
+    return collections;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const storeMagicEdenCollection = async (collections) => {
+  let collectionCount = 0;
+  let stopCount = 0;
+
+  try {
     for (collection of collections) {
       const { symbol, name, description, image, twitter, discord, website, isFlagged, flagMessage, categories } = collection;
       console.log(symbol);
