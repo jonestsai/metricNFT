@@ -11,11 +11,13 @@ const pool = new Pool({
 });
 
 async function main() {
+  const newCollections = await getNewCollections();
+  await storeMagicEdenCollection(newCollections);
   const magicedenCollections = await getMagicedenCollections();
-  await storeMagicEdenCollection(magicedenCollections);
+  await magicedenCollectionsSnapshot(magicedenCollections);
 }
 
-const getMagicedenCollections = async () => {
+const getNewCollections = async () => {
   const offset = 0;
   const limit = 500;
 
@@ -74,6 +76,47 @@ const getCollectionCount = async () => {
 
 const stopThresholdReached = (stopCount, count) => {
   return stopCount === count;
+}
+
+const getMagicedenCollections = async () => {
+  try {
+    const { rows } = await pool.query(`SELECT symbol, name FROM magiceden_collection`);
+
+    return rows;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const magicedenCollectionsSnapshot = async (collections) => {
+  for (collection of collections) {
+    const { symbol } = collection;
+    console.log(symbol);
+    const collectionStats = await getMagicedenCollectionStats(symbol);
+    const { floorPrice, listedCount, avgPrice24hr, volumeAll } = collectionStats;
+    const startSnapshotTime = new Date();
+    const query = {
+      text: 'INSERT INTO magiceden_snapshot(symbol, start_time, floor_price, listed_count, avg_price_24hr, volume_all) VALUES($1, $2, $3, $4, $5, $6)',
+      values: [symbol, startSnapshotTime, floorPrice, listedCount, avgPrice24hr, volumeAll],
+    };
+    pool.query(query, (error, results) => {
+      if (error) {
+        console.log(error);
+      }
+    });
+    await new Promise(f => setTimeout(f, 1000));
+  }
+}
+
+const getMagicedenCollectionStats = async (symbol) => {
+  try {
+    const response = await fetch(`https://api-mainnet.magiceden.dev/v2/collections/${symbol}/stats`);
+    const stats = await response.json();
+
+    return stats;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 main().then(
