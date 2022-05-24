@@ -270,6 +270,19 @@ const newTweet = async (tokenAddress, name, price, id) => {
       ]);
       await client.v1.tweet(`👌🐻 ${name}\n\n💵 SOLD for ${price} SOL\n\n🛒 https://magiceden.io/item-details/${tokenAddress}\n\n🧾 https://solscan.io/tx/${id}\n\n#WAGBO #OkayBears #OkBears #SolanaNFTs #Solana`, { media_ids: mediaIds });
     }
+    if (name.startsWith('Trippin')) {
+      const client = new TwitterApi({
+        appKey: process.env.appKeyTrippinApe,
+        appSecret: process.env.appSecretTrippinApe,
+        accessToken: process.env.accessTokenTrippinApe,
+        accessSecret: process.env.accessSecretTrippinApe,
+      });
+      const mediaIds = await Promise.all([
+        // file path
+        client.v1.uploadMedia('./img.jpg'),
+      ]);
+      await client.v1.tweet(`${name}\n\n💵 SOLD for ${price} SOL\n\n🛒 https://magiceden.io/item-details/${tokenAddress}\n\n🧾 https://solscan.io/tx/${id}\n\n#TrippinApeNFT #TAT #TrippinApeTribe #Trippinape`, { media_ids: mediaIds });
+    }
     if (name.startsWith('Mad Scientist')) {
       const client = new TwitterApi({
         appKey: process.env.appKeyCommuni3,
