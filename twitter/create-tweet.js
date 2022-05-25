@@ -270,6 +270,7 @@ const newTweet = async (tokenAddress, name, price, id) => {
       ]);
       await client.v1.tweet(`👌🐻 ${name}\n\n💵 SOLD for ${price} SOL\n\n🛒 https://magiceden.io/item-details/${tokenAddress}\n\n🧾 https://solscan.io/tx/${id}\n\n#WAGBO #OkayBears #OkBears #SolanaNFTs #Solana`, { media_ids: mediaIds });
     }
+    // if (name.startsWith('Trippin') && Number(price) > 65) {
     if (name.startsWith('Trippin')) {
       const client = new TwitterApi({
         appKey: process.env.appKeyTrippinApe,
