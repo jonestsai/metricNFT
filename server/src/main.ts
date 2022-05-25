@@ -73,7 +73,8 @@ const getSales = async (beforeSignature:any) => {
   // const publicKey = new PublicKey('EgFY9PKziUJeKBwsQAH9zuvKyZLvx37gqtxmj5QtN1CX'); // The Stoned Frogs
   // const publicKey = new PublicKey('rVTWZ3PyCf3PAAJzVcXgs3v6xkFFfCK2M5tQSZ2MUBh'); // OG Atadians
   // const publicKey = new PublicKey('HZ95a2ADYQbKERW8Ts939MQtyy44UFB84oPQMb6rUaqC'); // The Bridged
-  const publicKey = new PublicKey('7UwyLLTytXvALcRR7uJa6YxKLSB6MGYxDULZPdtgxN1z'); // Reptilian Renegade (Lizards)
+  // const publicKey = new PublicKey('7UwyLLTytXvALcRR7uJa6YxKLSB6MGYxDULZPdtgxN1z'); // Reptilian Renegade (Lizards)
+  const publicKey = new PublicKey('MF6wYTno1WMneM2bGaSDdFBJm8dehB2sQ1Dq8PBmpbc'); // Trippin' Ape Tribe
   let result;
 
   // Comment this out when testing few transactions
