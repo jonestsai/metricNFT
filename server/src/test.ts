@@ -216,6 +216,30 @@ const getDB = async (id: any) => {
   await new Promise(f => setTimeout(f, 500));
 }
 
+// Get Rarible collections example code
+const getRaribleCollections = async () => {
+  let continuation;
+  let data;
+  let collections = [];
+
+  try {
+    do {
+      const response = await fetch(`https://api.rarible.org/v0.1/collections/all?blockchains=ETHEREUM&continuation=${continuation}&size=1000`);
+      data = await response.json();
+      const activeCollections = data.collections.filter(collection => collection.bestBidOrder);
+      // console.log(activeCollections);
+      collections = [...collections, ...activeCollections];
+      console.log(collections);
+      continuation = data.continuation;
+      await new Promise(f => setTimeout(f, 500));
+    } while (data.collections.length !== 0);
+
+    return collections;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 main().then(
   () => process.exit(),
   err => {
