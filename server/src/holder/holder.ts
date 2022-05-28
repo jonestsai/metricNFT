@@ -46,9 +46,15 @@ const updateHolders = async () => {
       console.log(token_address);
       await new Promise(f => setTimeout(f, 500));
 
-      if (retryCount == 50) {
-        throw new Error('Retry count reached 50 times. RPC error.');
+      if (retryCount == 3) {
+        // throw new Error('Retry count reached 3 times. RPC error.');
+        console.log('Retry count reached 3 times. RPC error or no owner.');
+        break;
       }
+    }
+
+    if (!nftOwner) {
+      continue;
     }
 
     if (owner_address !== nftOwner) {
