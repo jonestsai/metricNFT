@@ -16,7 +16,7 @@ const pool = new Pool({
 });
 
 async function main() {
-  // await storeCollections();
+  await storeCollections();
   await snapshotCollectionStats();
 }
 
