@@ -254,3 +254,34 @@ app.get('/api/user', (req, res) => {
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
+
+app.get('/api/dev/:slug', async (req, res) => {
+  const { slug } = req.params;
+  const { rows } = await pool.query(`SELECT * FROM collection WHERE slug = '${slug}'`);
+
+  const [{ symbol, minprice, namematch }] = rows;
+  const nameMatchQuery = namematch ? `name ~ '${namematch}'` : `symbol = '${symbol}'`;
+  const collectionQuery = `${nameMatchQuery} AND price > ${minprice}`;
+
+  pool.query(`
+    SELECT date_trunc('hour', starttime) as date_hour, listedcount, ownerscount, floorprice, _24hvolume, _24hsales
+    FROM snapshot
+    LEFT JOIN (
+      SELECT date_hour, _24hvolume, _24hsales
+      FROM (
+        SELECT datetime::date, date_trunc('hour', datetime) as date_hour, SUM(price) AS _24hvolume, COUNT(*) AS _24hsales
+        FROM sales
+        WHERE ${collectionQuery} AND datetime > (NOW() - interval '1 days') AND datetime < NOW() AND hide IS NOT TRUE
+        GROUP BY date_hour, datetime::date
+      ) s
+    ) _sales
+    ON date_trunc('hour', snapshot.starttime) = _sales.date_hour
+    WHERE snapshot.symbol = '${symbol}' and starttime > (NOW() - interval '1 days') AND starttime < NOW()
+    ORDER BY starttime`, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
