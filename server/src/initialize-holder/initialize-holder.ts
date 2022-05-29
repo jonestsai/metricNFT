@@ -11,7 +11,7 @@ const { hashLists } = require('./utils/constants');
 
 const anchor = require("@project-serum/anchor");
 const anchorConnection = new anchor.web3.Connection(
-  "https://ssc-dao.genesysgo.net/"
+  'https://rpc.ankr.com/solana'
 );
 
 const fetch = require('node-fetch');
