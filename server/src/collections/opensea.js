@@ -90,7 +90,7 @@ const getNewSlugs = async (slugs) => {
 }
 
 const getCollectionSlugs = async () => {
-  const { rows } = await pool.query('SELECT slug FROM opensea_collection');
+  const { rows } = await pool.query('SELECT slug FROM opensea_collection WHERE hide IS NULL');
   let collectionSlugs = [];
   for (const row of rows) {
     collectionSlugs.push(row.slug);
