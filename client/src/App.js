@@ -47,7 +47,7 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${URLS.api}`);
+      const response = await fetch(`${URLS.api}/dev/home`);
       const collections = await response.json();
 
       setCollections(collections);
