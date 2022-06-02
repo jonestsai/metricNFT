@@ -127,7 +127,7 @@ const Contact = () => (
 
 const Main = ({ collections, isLoading }) => {
   const collectionRoutes = collections?.map((collection, index) => {
-    const { howrare_image, collection_image, name, symbol, floor_price, _24hvolume, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count } = collection;
+    const { howrare_image, collection_image, name, symbol, floor_price, _24hvolume, volume_all, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count } = collection;
     const image = howrare_image ? `https://howrare.is${howrare_image}` : require(`./assets/${collection_image}`);
     const maxSupply = collection_max_supply || howrare_max_supply;
     const ownersCount = howrare_holders || holders;
@@ -142,6 +142,7 @@ const Main = ({ collections, isLoading }) => {
           currentListedCount={listed_count}
           currentOwnersCount={ownersCount}
           numberOfTokens={maxSupply}
+          volumeAll={volume_all / LAMPORTS_PER_SOL}
           _24hVolume={_24hvolume / LAMPORTS_PER_SOL}
         />
       }></Route>

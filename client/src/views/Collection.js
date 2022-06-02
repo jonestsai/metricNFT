@@ -102,7 +102,7 @@ export default class Collection extends React.Component {
   };
 
   render() {
-    const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, _24hVolume, _24hSales } = this.props;
+    const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, _24hVolume, volumeAll } = this.props;
     const { isLoading, collection } = this.state;
 
     const listedCount = this.getListedCount(collection);
@@ -148,17 +148,17 @@ export default class Collection extends React.Component {
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div className="card-header">24h Sales</div>
+              <div className="card-header">24h Volume</div>
               <div className="card-body">
-                <h4 className="card-title">{_24hSales || 0}</h4>
+                <h4 className="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div className="card-header">24h Volume</div>
+              <div className="card-header">Total Volume</div>
               <div className="card-body">
-                <h4 className="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                <h4 className="card-title">{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
