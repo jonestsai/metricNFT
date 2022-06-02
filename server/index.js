@@ -321,27 +321,44 @@ app.get('/api/dev/home', async (req, res) => {
 
 app.get('/api/dev/:slug', async (req, res) => {
   const { slug } = req.params;
-  const { rows } = await pool.query(`SELECT * FROM collection WHERE slug = '${slug}'`);
-
-  const [{ symbol, minprice, namematch }] = rows;
-  const nameMatchQuery = namematch ? `name ~ '${namematch}'` : `symbol = '${symbol}'`;
-  const collectionQuery = `${nameMatchQuery} AND price > ${minprice}`;
 
   pool.query(`
-    SELECT date_trunc('hour', starttime) as date_hour, listedcount, ownerscount, floorprice, _24hvolume, _24hsales
-    FROM snapshot
+    SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
+      FROM magiceden_snapshot
     LEFT JOIN (
-      SELECT date_hour, _24hvolume, _24hsales
-      FROM (
-        SELECT datetime::date, date_trunc('hour', datetime) as date_hour, SUM(price) AS _24hvolume, COUNT(*) AS _24hsales
-        FROM sales
-        WHERE ${collectionQuery} AND datetime > (NOW() - interval '1 days') AND datetime < NOW() AND hide IS NOT TRUE
-        GROUP BY date_hour, datetime::date
-      ) s
-    ) _sales
-    ON date_trunc('hour', snapshot.starttime) = _sales.date_hour
-    WHERE snapshot.symbol = '${symbol}' and starttime > (NOW() - interval '1 days') AND starttime < NOW()
-    ORDER BY starttime`, (error, results) => {
+      SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
+      FROM howrare_snapshot
+      JOIN (
+        SELECT name, magiceden_symbol
+        FROM howrare_collection
+      ) _howrare_collection
+      ON howrare_snapshot.name = _howrare_collection.name
+      WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '30 days') AND start_time < NOW()
+      ORDER BY howrare_snapshot.start_time::date
+    ) _howrare_snapshot
+    ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
+    LEFT JOIN (
+      SELECT DISTINCT ON (snapshot.starttime::date) snapshot.starttime::date, ownerscount AS holders
+      FROM snapshot
+      JOIN (
+        SELECT symbol, magiceden_symbol
+      FROM collection
+      ) _collection
+      ON snapshot.symbol = _collection.symbol
+      WHERE magiceden_symbol = '${slug}' AND starttime > (NOW() - interval '30 days') AND starttime < NOW()
+      ORDER BY snapshot.starttime::date
+    ) _snapshot
+    ON magiceden_snapshot.start_time::date = _snapshot.starttime::date
+    LEFT JOIN (
+      SELECT DISTINCT ON (start_time::date) start_time::date,
+        volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
+      FROM magiceden_snapshot
+      WHERE symbol = '${slug}'
+      ORDER BY start_time::date
+    ) _24hvolume
+    ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date
+    WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
+    ORDER BY magiceden_snapshot.start_time::date`, (error, results) => {
     if (error) {
       console.log(error);
       throw error;
