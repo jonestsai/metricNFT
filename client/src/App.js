@@ -21,6 +21,7 @@ import Top from './components/layout/Top';
 import Bottom from './components/layout/Bottom';
 import { URLS } from './Settings';
 import usePageTracking from './utils/usePageTracking';
+import { LAMPORTS_PER_SOL } from './utils/constants';
 import Collection from './views/Collection';
 import Account from './views/Account';
 import Home from './views/Home';
@@ -47,7 +48,7 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${URLS.api}`);
+      const response = await fetch(`${URLS.api}/dev/home`);
       const collections = await response.json();
 
       setCollections(collections);
@@ -126,19 +127,23 @@ const Contact = () => (
 
 const Main = ({ collections, isLoading }) => {
   const collectionRoutes = collections?.map((collection, index) => {
-    const { name, slug, image, floorprice, listedcount, ownerscount, maxsupply, _24hvolume, _24hsales } = collection;
+    const { howrare_image, collection_image, name, symbol, floor_price, _24hvolume, volume_all, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count } = collection;
+    const image = howrare_image ? `https://howrare.is${howrare_image}` : require(`./assets/${collection_image}`);
+    const maxSupply = collection_max_supply || howrare_max_supply;
+    const ownersCount = howrare_holders || holders;
+
     return (
-      <Route key={collection.id} path={slug} element={
+      <Route key={collection.id} path={symbol} element={
         <Collection
           name={name}
-          collectionAPI={slug}
+          collectionAPI={symbol}
           image={image}
-          currentPrice={floorprice}
-          currentListedCount={listedcount}
-          currentOwnersCount={ownerscount}
-          numberOfTokens={maxsupply}
-          _24hVolume={_24hvolume}
-          _24hSales={_24hsales}
+          currentPrice={floor_price / LAMPORTS_PER_SOL}
+          currentListedCount={listed_count}
+          currentOwnersCount={ownersCount}
+          numberOfTokens={maxSupply}
+          volumeAll={volume_all / LAMPORTS_PER_SOL}
+          _24hVolume={_24hvolume / LAMPORTS_PER_SOL}
         />
       }></Route>
     );

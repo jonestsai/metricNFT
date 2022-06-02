@@ -41,24 +41,24 @@ export default function CollectionTable(props) {
             onClick={() => requestSort('floorMarketCap')}
             className={`text-end pe-1 ${getClassNamesFor('floorMarketCap')}`}>Floor Mkt Cap</th>
           <th scope="col" role="button"
-            onClick={() => requestSort('maxsupply')}
-            className={`text-end pe-1 ${getClassNamesFor('maxsupply')}`}>Tokens</th>
+            onClick={() => requestSort('maxSupply')}
+            className={`text-end pe-1 ${getClassNamesFor('maxSupply')}`}>Tokens</th>
           <th scope="col" role="button"
-            onClick={() => requestSort('ownerscount')}
-            className={`text-end pe-1 ${getClassNamesFor('ownerscount')}`}>Owners</th>
+            onClick={() => requestSort('holders')}
+            className={`text-end pe-1 ${getClassNamesFor('holders')}`}>Owners</th>
           <th scope="col" role="button"
-            onClick={() => requestSort('listedcount')}
-            className={`text-end pe-1 ${getClassNamesFor('listedcount')}`}>Listed</th>
+            onClick={() => requestSort('listedCount')}
+            className={`text-end pe-1 ${getClassNamesFor('listedCount')}`}>Listed</th>
           <th scope="col" className={`text-end pe-3`}></th>
         </tr>
       </thead>
       <tbody>
         {items?.map((item) => {
-          const { row, image, name, slug, floorPrice, _24hChange, _7dChange, volume, floorMarketCap, maxsupply, ownerscount, listedcount} = item;
+          const { row, image, name, symbol, floorPrice, _24hChange, _7dChange, volume, floorMarketCap, maxSupply, holders, listedCount} = item;
           const _24hChangeColor = _24hChange < 0 ? 'text-danger' : 'text-success';
           const _7dChangeColor = _7dChange < 0 ? 'text-danger' : 'text-success';
-          const handleRowClick = (slug) => {
-            navigate(slug);
+          const handleRowClick = (symbol) => {
+            navigate(symbol);
           }
           const handleNotificationClick = (name) => {
             navigate(`account?collection=${name}`);
@@ -67,16 +67,16 @@ export default function CollectionTable(props) {
           return (
           <tr key={item.id}>
             <td className="text-white-50 align-middle">{row}</td>
-            <td className="align-middle"><img className = "rounded-circle" height="40" src={require(`../assets/${image}`)} role="button" onClick={()=> handleRowClick(slug)} /></td>
-            <td className="text-start align-middle"><u role="button" onClick={()=> handleRowClick(slug)}>{name}</u></td>
+            <td className="align-middle"><img className = "rounded-circle" height="40" src={image} role="button" onClick={()=> handleRowClick(symbol)} /></td>
+            <td className="text-start align-middle"><u role="button" onClick={()=> handleRowClick(symbol)}>{name}</u></td>
             <td className="text-white-50 text-end align-middle">{floorPrice}</td>
             <td className={`${_24hChangeColor} text-end align-middle`}>{(_24hChange).toFixed(1)}%</td>
             <td className={`${_7dChangeColor} text-end align-middle`}>{(_7dChange).toFixed(1)}%</td>
             <td className="text-white-50 text-end align-middle">{volume}</td>
             <td className="text-white-50 text-end align-middle">{floorMarketCap}</td>
-            <td className="text-white-50 text-end align-middle">{maxsupply}</td>
-            <td className="text-white-50 text-end align-middle">{ownerscount}</td>
-            <td className="text-white-50 text-end align-middle">{listedcount}<br/><span className="text-secondary">{(listedcount/maxsupply * 100).toFixed(1)}%</span></td>
+            <td className="text-white-50 text-end align-middle">{maxSupply}</td>
+            <td className="text-white-50 text-end align-middle">{holders}</td>
+            <td className="text-white-50 text-end align-middle">{listedCount}<br/><span className="text-secondary">{(listedCount/maxSupply * 100).toFixed(1)}%</span></td>
             <td className="text-white-50 text-end pe-3 align-middle"><FaRegBell size={20} role="button" onClick={()=> handleNotificationClick(name)} /></td>
            </tr>
          )})}

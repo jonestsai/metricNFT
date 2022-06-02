@@ -255,29 +255,110 @@ app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
 
-app.get('/api/dev/:slug', async (req, res) => {
-  const { slug } = req.params;
-  const { rows } = await pool.query(`SELECT * FROM collection WHERE slug = '${slug}'`);
+app.get('/api/dev/home', async (req, res) => {
+  let leftJoins = '';
 
-  const [{ symbol, minprice, namematch }] = rows;
-  const nameMatchQuery = namematch ? `name ~ '${namematch}'` : `symbol = '${symbol}'`;
-  const collectionQuery = `${nameMatchQuery} AND price > ${minprice}`;
+  // Get the 24h and 7d floor
+  for (let days = 1; days <= 10; days += 6) {
+    leftJoins += `LEFT JOIN (SELECT MIN(floor_price) AS _${days}dfloor, symbol AS _${days}dsymbol FROM magiceden_snapshot WHERE start_time > (NOW() - interval '${days + 1} days') AND start_time < (NOW() - interval '${days} days') GROUP BY symbol) _${days}d ON _magiceden_collection.symbol = _${days}d._${days}dsymbol `;
+  }
 
   pool.query(`
-    SELECT date_trunc('hour', starttime) as date_hour, listedcount, ownerscount, floorprice, _24hvolume, _24hsales
-    FROM snapshot
+    SELECT * FROM (
+      SELECT name, symbol
+      FROM magiceden_collection
+    ) _magiceden_collection
     LEFT JOIN (
-      SELECT date_hour, _24hvolume, _24hsales
+      SELECT logo AS howrare_image, name AS howrare_name, magiceden_symbol, items AS howrare_max_supply
+      FROM howrare_collection
+    ) _howrare_collection
+    ON _magiceden_collection.symbol = _howrare_collection.magiceden_symbol
+    LEFT JOIN (
+      SELECT symbol, image AS collection_image, magiceden_symbol, maxsupply AS collection_max_supply
+      FROM collection
+    ) _collection
+    ON _magiceden_collection.symbol = _collection.magiceden_symbol
+    LEFT JOIN (
+      SELECT DISTINCT ON (symbol) *
+      FROM magiceden_snapshot
+      ORDER BY symbol, start_time DESC
+    ) _magiceden_snapshot
+    ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
+    LEFT JOIN (
+      SELECT DISTINCT ON (name) name AS howrare_snapshot_name, holders AS howrare_holders, start_time
+      FROM howrare_snapshot
+      ORDER BY howrare_snapshot_name, start_time DESC
+    ) _howrare_snapshot
+    ON _howrare_collection.howrare_name = _howrare_snapshot.howrare_snapshot_name
+    LEFT JOIN (
+      SELECT DISTINCT ON (symbol) symbol, ownerscount AS holders, starttime
+      FROM snapshot
+      ORDER BY symbol, starttime DESC
+    ) _snapshot
+    ON _collection.symbol = _snapshot.symbol
+    LEFT JOIN (
+      SELECT symbol,
+        SUM(CASE _magiceden_snapshot.row
+          WHEN 1 THEN volume_all
+          WHEN 2 THEN -volume_all
+          ELSE 0
+        END) AS _24hvolume
       FROM (
-        SELECT datetime::date, date_trunc('hour', datetime) as date_hour, SUM(price) AS _24hvolume, COUNT(*) AS _24hsales
-        FROM sales
-        WHERE ${collectionQuery} AND datetime > (NOW() - interval '1 days') AND datetime < NOW() AND hide IS NOT TRUE
-        GROUP BY date_hour, datetime::date
-      ) s
-    ) _sales
-    ON date_trunc('hour', snapshot.starttime) = _sales.date_hour
-    WHERE snapshot.symbol = '${symbol}' and starttime > (NOW() - interval '1 days') AND starttime < NOW()
-    ORDER BY starttime`, (error, results) => {
+        SELECT *, ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY start_time desc) AS row
+        FROM magiceden_snapshot) _magiceden_snapshot
+      WHERE _magiceden_snapshot.row <= 2
+      GROUP BY symbol
+    ) _24hvolume
+    ON _magiceden_snapshot.symbol = _24hvolume.symbol
+    ${leftJoins}
+    WHERE _collection.magiceden_symbol IS NOT null OR _howrare_collection.howrare_image IS NOT null`, (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
+app.get('/api/dev/:slug', async (req, res) => {
+  const { slug } = req.params;
+
+  pool.query(`
+    SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
+      FROM magiceden_snapshot
+    LEFT JOIN (
+      SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
+      FROM howrare_snapshot
+      JOIN (
+        SELECT name, magiceden_symbol
+        FROM howrare_collection
+      ) _howrare_collection
+      ON howrare_snapshot.name = _howrare_collection.name
+      WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '30 days') AND start_time < NOW()
+      ORDER BY howrare_snapshot.start_time::date
+    ) _howrare_snapshot
+    ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
+    LEFT JOIN (
+      SELECT DISTINCT ON (snapshot.starttime::date) snapshot.starttime::date, ownerscount AS holders
+      FROM snapshot
+      JOIN (
+        SELECT symbol, magiceden_symbol
+      FROM collection
+      ) _collection
+      ON snapshot.symbol = _collection.symbol
+      WHERE magiceden_symbol = '${slug}' AND starttime > (NOW() - interval '30 days') AND starttime < NOW()
+      ORDER BY snapshot.starttime::date
+    ) _snapshot
+    ON magiceden_snapshot.start_time::date = _snapshot.starttime::date
+    LEFT JOIN (
+      SELECT DISTINCT ON (start_time::date) start_time::date,
+        volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
+      FROM magiceden_snapshot
+      WHERE symbol = '${slug}'
+      ORDER BY start_time::date
+    ) _24hvolume
+    ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date
+    WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
+    ORDER BY magiceden_snapshot.start_time::date`, (error, results) => {
     if (error) {
       console.log(error);
       throw error;
