@@ -1,0 +1,1 @@
+export const LAMPORTS_PER_SOL = 1000000000;

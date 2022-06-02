@@ -4,6 +4,7 @@ import { Cluster, clusterApiUrl, Connection } from '@solana/web3.js';
 import React from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import CollectionTable from '../components/CollectionTable';
+import { LAMPORTS_PER_SOL } from '../utils/constants';
 import { URLS } from '../Settings';
 import './Home.css';
 
@@ -95,8 +96,7 @@ export default class Home extends React.Component {
 
     const data = collectionsByMC?.map((collection, index) => {
       const { howrare_image, collection_image, name, symbol, floor_price, _1dfloor, _7dfloor, _24hvolume, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count } = collection;
-      const lamportsPerSOL = 1000000000;
-      const floorPriceInSOL = floor_price / lamportsPerSOL;
+      const floorPriceInSOL = floor_price / LAMPORTS_PER_SOL;
       let currencySymbol = '';
       switch (currency) {
         case 'BTC':
@@ -119,7 +119,7 @@ export default class Home extends React.Component {
       const floorPrice = `${currencySymbol}${(floorPriceInSOL * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
       const _24hChange = _1dfloor ? (floor_price - _1dfloor) / _1dfloor * 100 : 0;
       const _7dChange = _7dfloor ? (floor_price - _7dfloor) / _7dfloor * 100 : 0;
-      const volume = `${currencySymbol}${((_24hvolume / lamportsPerSOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const volume = `${currencySymbol}${((_24hvolume / LAMPORTS_PER_SOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
       const maxSupply = collection_max_supply || howrare_max_supply;
       const floorMarketCap = `${currencySymbol}${(floorPriceInSOL * maxSupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
 
