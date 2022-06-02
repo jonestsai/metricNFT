@@ -254,7 +254,7 @@ export default class Collection extends React.Component {
               <div className="col-lg-6">
                 <div className="bg-gray rounded shadow-lg mb-5">
                   <h5 className="text-start px-3 pt-3">Sales Volume</h5>
-                  <h6 className="text-start px-3 pb-2">{`Current: ${Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} volume`}</h6>
+                  <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} SOL`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <ComposedChart
                       width={500}
