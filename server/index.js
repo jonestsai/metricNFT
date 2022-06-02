@@ -260,7 +260,7 @@ app.get('/api/dev/home', async (req, res) => {
 
   // Get the 24h and 7d floor
   for (let days = 1; days <= 10; days += 6) {
-    leftJoins += `LEFT JOIN (SELECT MIN(floor_price) AS _${days}dfloor, symbol FROM magiceden_snapshot WHERE start_time > (NOW() - interval '${days + 1} days') AND start_time < (NOW() - interval '${days} days') GROUP BY symbol) _${days}d ON _magiceden_snapshot.symbol = _${days}d.symbol `;
+    leftJoins += `LEFT JOIN (SELECT MIN(floor_price) AS _${days}dfloor, symbol AS _${days}dsymbol FROM magiceden_snapshot WHERE start_time > (NOW() - interval '${days + 1} days') AND start_time < (NOW() - interval '${days} days') GROUP BY symbol) _${days}d ON _magiceden_collection.symbol = _${days}d._${days}dsymbol `;
   }
 
   pool.query(`
