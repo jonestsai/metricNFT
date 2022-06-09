@@ -51,6 +51,12 @@ app.get('/api', async (req, res) => {
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
+      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, listed_count AS live_listed_count, volume_all AS live_volume_all
+      FROM magiceden_hourly_snapshot
+      ORDER BY symbol, start_time DESC
+    ) _magiceden_hourly_snapshot
+    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol
+    LEFT JOIN (
       SELECT DISTINCT ON (name) name AS howrare_snapshot_name, holders AS howrare_holders, start_time
       FROM howrare_snapshot
       ORDER BY howrare_snapshot_name, start_time DESC
@@ -293,6 +299,12 @@ app.get('/api/dev/home', async (req, res) => {
       ORDER BY symbol, start_time DESC
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
+    LEFT JOIN (
+      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, listed_count AS live_listed_count, volume_all AS live_volume_all
+      FROM magiceden_hourly_snapshot
+      ORDER BY symbol, start_time DESC
+    ) _magiceden_hourly_snapshot
+    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol
     LEFT JOIN (
       SELECT DISTINCT ON (name) name AS howrare_snapshot_name, holders AS howrare_holders, start_time
       FROM howrare_snapshot

@@ -95,8 +95,9 @@ export default class Home extends React.Component {
     });
 
     const data = collectionsByMC?.map((collection, index) => {
-      const { howrare_image, collection_image, name, symbol, floor_price, _1dfloor, _7dfloor, _24hvolume, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count } = collection;
-      const floorPriceInSOL = floor_price / LAMPORTS_PER_SOL;
+      const { howrare_image, collection_image, name, symbol, floor_price, live_floor_price, _1dfloor, _7dfloor, _24hvolume, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count, live_listed_count } = collection;
+      const floorPrice = live_floor_price || floor_price;
+      const floorPriceInSOL = floorPrice / LAMPORTS_PER_SOL;
       let currencySymbol = '';
       switch (currency) {
         case 'BTC':
@@ -116,12 +117,13 @@ export default class Home extends React.Component {
           break;
       }
 
-      const floorPrice = `${currencySymbol}${(floorPriceInSOL * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
-      const _24hChange = _1dfloor ? (floor_price - _1dfloor) / _1dfloor * 100 : 0;
-      const _7dChange = _7dfloor ? (floor_price - _7dfloor) / _7dfloor * 100 : 0;
+      const floorPriceText = `${currencySymbol}${(floorPriceInSOL * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const _24hChange = _1dfloor ? (floorPrice - _1dfloor) / _1dfloor * 100 : 0;
+      const _7dChange = _7dfloor ? (floorPrice - _7dfloor) / _7dfloor * 100 : 0;
       const volume = `${currencySymbol}${((_24hvolume / LAMPORTS_PER_SOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
       const maxSupply = collection_max_supply || howrare_max_supply;
       const floorMarketCap = `${currencySymbol}${(floorPriceInSOL * maxSupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const listedCount = live_listed_count || listed_count;
 
       return (
         {
@@ -130,14 +132,14 @@ export default class Home extends React.Component {
           image: howrare_image ? `https://howrare.is${howrare_image}` : require(`../assets/${collection_image}`),
           name,
           symbol,
-          floorPrice,
+          floorPrice: floorPriceText,
           _24hChange,
           _7dChange,
           volume,
           floorMarketCap,
           maxSupply,
           holders: howrare_holders || holders,
-          listedCount: listed_count,          
+          listedCount,          
         }
       );
     });

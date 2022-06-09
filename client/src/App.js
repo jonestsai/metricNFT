@@ -127,8 +127,11 @@ const Contact = () => (
 
 const Main = ({ collections, isLoading }) => {
   const collectionRoutes = collections?.map((collection, index) => {
-    const { howrare_image, collection_image, name, symbol, floor_price, _24hvolume, volume_all, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count } = collection;
+    const { howrare_image, collection_image, name, symbol, floor_price, _24hvolume, volume_all, live_floor_price, live_volume_all, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count, live_listed_count } = collection;
     const image = howrare_image ? `https://howrare.is${howrare_image}` : require(`./assets/${collection_image}`);
+    const floorPrice = live_floor_price || floor_price;
+    const listedCount = live_listed_count || listed_count;
+    const volumeAll = live_volume_all || volume_all;
     const maxSupply = collection_max_supply || howrare_max_supply;
     const ownersCount = howrare_holders || holders;
 
@@ -138,11 +141,11 @@ const Main = ({ collections, isLoading }) => {
           name={name}
           collectionAPI={symbol}
           image={image}
-          currentPrice={floor_price / LAMPORTS_PER_SOL}
-          currentListedCount={listed_count}
+          currentPrice={floorPrice / LAMPORTS_PER_SOL}
+          currentListedCount={listedCount}
           currentOwnersCount={ownersCount}
           numberOfTokens={maxSupply}
-          volumeAll={volume_all / LAMPORTS_PER_SOL}
+          volumeAll={volumeAll / LAMPORTS_PER_SOL}
           _24hVolume={_24hvolume / LAMPORTS_PER_SOL}
         />
       }></Route>
