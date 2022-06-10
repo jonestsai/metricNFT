@@ -15,37 +15,22 @@ const PaginationComponent = ({
       setTotalPages(Math.ceil(total / itemsPerPage));
   }, [total, itemsPerPage]);
 
-  const paginationItems = useMemo(() => {
-    const pages = [];
-
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(
-        <Pagination.Item
-          key={i}
-          active={i === currentPage}
-          onClick={() => onPageChange(i)}
-        >
-          {i}
-        </Pagination.Item>
-      );
-    }
-
-    return pages;
-  }, [totalPages, currentPage, onPageChange]);
-
   if (totalPages === 0) return null;
 
   return (
-    <Pagination className="d-flex justify-content-center">
+    <Pagination className="d-flex justify-content-center" size="lg">
       <Pagination.Prev
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-      />
-      {paginationItems}
+      >
+        Previous
+      </Pagination.Prev>
       <Pagination.Next
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-      />
+      >
+        Next
+      </Pagination.Next>
     </Pagination>
   );
 };
