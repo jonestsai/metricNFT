@@ -4,7 +4,8 @@ import { Cluster, clusterApiUrl, Connection } from '@solana/web3.js';
 import React from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import CollectionTable from '../components/CollectionTable';
-import { LAMPORTS_PER_SOL } from '../utils/constants';
+import Pagination from '../components/Pagination';
+import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE } from '../utils/constants';
 import { URLS } from '../Settings';
 import './Home.css';
 
@@ -18,6 +19,7 @@ export default class Home extends React.Component {
       currency: 'SOL',
       currencyRate: 1,
       isRatesLoading: true,
+      currentPage: 1,
     };
   }
 
@@ -85,16 +87,24 @@ export default class Home extends React.Component {
     this.setState({ currencyRate, currency: select });
   }
 
+  setCurrentPage = (page) => {
+    this.setState({ currentPage: page });
+  }
+
   render() {
     const { collections, isLoading } = this.props;
-    const { exchangeRates, currency, currencyRate, isRatesLoading } = this.state;
+    const { exchangeRates, currency, currencyRate, isRatesLoading, currentPage } = this.state;
     const collectionsByMC = collections?.sort((a, b) => {
       const aMaxSupply = a.collection_max_supply || a.howrare_max_supply;
       const bMaxSupply = b.collection_max_supply || b.howrare_max_supply;
       return (b.floor_price * bMaxSupply) - (a.floor_price * aMaxSupply);
     });
+    const filteredResult = collectionsByMC?.slice(
+      (currentPage - 1) * COLLECTIONS_PER_PAGE,
+      (currentPage - 1) * COLLECTIONS_PER_PAGE + COLLECTIONS_PER_PAGE
+    );
 
-    const data = collectionsByMC?.map((collection, index) => {
+    const data = filteredResult?.map((collection, index) => {
       const { howrare_image, collection_image, name, symbol, floor_price, live_floor_price, _1dfloor, _7dfloor, _24hvolume, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count, live_listed_count } = collection;
       const floorPrice = live_floor_price || floor_price;
       const floorPriceInSOL = floorPrice / LAMPORTS_PER_SOL;
@@ -128,7 +138,7 @@ export default class Home extends React.Component {
       return (
         {
           id: collection.id,
-          row: index + 1,
+          row: (currentPage - 1) * COLLECTIONS_PER_PAGE + index + 1,
           image: howrare_image ? `https://howrare.is${howrare_image}` : require(`../assets/${collection_image}`),
           name,
           symbol,
@@ -179,6 +189,14 @@ export default class Home extends React.Component {
           <CollectionTable
             collections={data}
           />
+          <div className="pt-3">
+            <Pagination
+              total={collections?.length}
+              itemsPerPage={COLLECTIONS_PER_PAGE}
+              currentPage={currentPage}
+              onPageChange={(page) => this.setCurrentPage(page)}
+            />
+          </div>
           {isLoading && (
             <div className="my-5 text-center">
               <div className="spinner-border text-light" role="status" />

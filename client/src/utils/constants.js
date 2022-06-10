@@ -1,1 +1,2 @@
 export const LAMPORTS_PER_SOL = 1000000000;
+export const COLLECTIONS_PER_PAGE = 100;
