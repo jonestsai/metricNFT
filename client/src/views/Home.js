@@ -187,19 +187,19 @@ export default class Home extends React.Component {
           <CollectionTable
             collections={data}
           />
-          <div className="pt-3">
-            <Pagination
-              total={collections?.length}
-              itemsPerPage={COLLECTIONS_PER_PAGE}
-              currentPage={currentPage}
-              onPageChange={(page) => this.setCurrentPage(page)}
-            />
-          </div>
           {isLoading && (
             <div className="my-5 text-center">
               <div className="spinner-border text-light" role="status" />
             </div>
           )}
+        </div>
+        <div className="pt-3">
+          <Pagination
+            total={collections?.length}
+            itemsPerPage={COLLECTIONS_PER_PAGE}
+            currentPage={currentPage}
+            onPageChange={(page) => this.setCurrentPage(page)}
+          />
         </div>
       </Container>
     )
