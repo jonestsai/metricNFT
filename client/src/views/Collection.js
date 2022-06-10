@@ -27,7 +27,7 @@ export default class Collection extends React.Component {
     const { collectionAPI } = this.props;
 
     try {
-      const response = await fetch(`${URLS.api}/${collectionAPI}`);
+      const response = await fetch(`${URLS.api}/dev/${collectionAPI}`);
       const collection = await response.json();
 
       this.setState({
@@ -56,11 +56,11 @@ export default class Collection extends React.Component {
   getOwnersCount = (collection) => {
     return collection.length > 0
       ? collection.map((detail) => {
-        const { start_time, howrare_holders, holders } = detail;
+        const { start_time, unique_holders, howrare_holders } = detail;
         const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
         const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        const ownersCount = howrare_holders || holders;
+        const ownersCount = howrare_holders || unique_holders;
 
         return { date: `${date}. ${month}`, 'Total Owners': Number(ownersCount) };
       })

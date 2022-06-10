@@ -337,18 +337,6 @@ app.get('/api/dev/:slug', async (req, res) => {
     ) _howrare_snapshot
     ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
     LEFT JOIN (
-      SELECT DISTINCT ON (snapshot.starttime::date) snapshot.starttime::date, ownerscount AS holders
-      FROM snapshot
-      JOIN (
-        SELECT symbol, magiceden_symbol
-      FROM collection
-      ) _collection
-      ON snapshot.symbol = _collection.symbol
-      WHERE magiceden_symbol = '${slug}' AND starttime > (NOW() - interval '30 days') AND starttime < NOW()
-      ORDER BY snapshot.starttime::date
-    ) _snapshot
-    ON magiceden_snapshot.start_time::date = _snapshot.starttime::date
-    LEFT JOIN (
       SELECT DISTINCT ON (start_time::date) start_time::date,
         volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
       FROM magiceden_snapshot
