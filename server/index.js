@@ -31,19 +31,9 @@ app.get('/api', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT name, symbol
+      SELECT name, symbol, image
       FROM magiceden_collection
     ) _magiceden_collection
-    LEFT JOIN (
-      SELECT logo AS howrare_image, name AS howrare_name, magiceden_symbol, items AS howrare_max_supply
-      FROM howrare_collection
-    ) _howrare_collection
-    ON _magiceden_collection.symbol = _howrare_collection.magiceden_symbol
-    LEFT JOIN (
-      SELECT symbol, image AS collection_image, magiceden_symbol, maxsupply AS collection_max_supply
-      FROM collection
-    ) _collection
-    ON _magiceden_collection.symbol = _collection.magiceden_symbol
     LEFT JOIN (
       SELECT DISTINCT ON (symbol) *
       FROM magiceden_snapshot
@@ -56,18 +46,6 @@ app.get('/api', async (req, res) => {
       ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
     ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol
-    LEFT JOIN (
-      SELECT DISTINCT ON (name) name AS howrare_snapshot_name, holders AS howrare_holders, start_time
-      FROM howrare_snapshot
-      ORDER BY howrare_snapshot_name, start_time DESC
-    ) _howrare_snapshot
-    ON _howrare_collection.howrare_name = _howrare_snapshot.howrare_snapshot_name
-    LEFT JOIN (
-      SELECT DISTINCT ON (symbol) symbol, ownerscount AS holders, starttime
-      FROM snapshot
-      ORDER BY symbol, starttime DESC
-    ) _snapshot
-    ON _collection.symbol = _snapshot.symbol
     LEFT JOIN (
       SELECT symbol,
         SUM(CASE _magiceden_snapshot.row
@@ -83,7 +61,7 @@ app.get('/api', async (req, res) => {
     ) _24hvolume
     ON _magiceden_snapshot.symbol = _24hvolume.symbol
     ${leftJoins}
-    WHERE _collection.magiceden_symbol IS NOT null OR _howrare_collection.howrare_image IS NOT null`, (error, results) => {
+    WHERE _magiceden_snapshot.floor_price IS NOT NULL AND _magiceden_snapshot.total_supply IS NOT NULL AND _magiceden_snapshot.unique_holders > 50`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -109,18 +87,6 @@ app.get('/api/:slug', async (req, res) => {
       ORDER BY howrare_snapshot.start_time::date
     ) _howrare_snapshot
     ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
-    LEFT JOIN (
-      SELECT DISTINCT ON (snapshot.starttime::date) snapshot.starttime::date, ownerscount AS holders
-      FROM snapshot
-      JOIN (
-        SELECT symbol, magiceden_symbol
-      FROM collection
-      ) _collection
-      ON snapshot.symbol = _collection.symbol
-      WHERE magiceden_symbol = '${slug}' AND starttime > (NOW() - interval '30 days') AND starttime < NOW()
-      ORDER BY snapshot.starttime::date
-    ) _snapshot
-    ON magiceden_snapshot.start_time::date = _snapshot.starttime::date
     LEFT JOIN (
       SELECT DISTINCT ON (start_time::date) start_time::date,
         volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
