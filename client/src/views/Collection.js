@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LAMPORTS_PER_SOL } from '../utils/constants';
 import { URLS } from '../Settings';
 import './Collection.css';
 
@@ -42,12 +43,12 @@ export default class Collection extends React.Component {
   getListedCount = (collection) => {
     return collection.length > 0
       ? collection.map((detail) => {
-        const { starttime, listedcount } = detail;
-        const datetime = new Date(starttime);
+        const { start_time, listed_count } = detail;
+        const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
         const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
 
-        return { date: `${date}. ${month}`, 'Total Listed': Number(listedcount) };
+        return { date: `${date}. ${month}`, 'Total Listed': Number(listed_count) };
       })
       : null;
   };
@@ -55,12 +56,13 @@ export default class Collection extends React.Component {
   getOwnersCount = (collection) => {
     return collection.length > 0
       ? collection.map((detail) => {
-        const { starttime, ownerscount } = detail;
-        const datetime = new Date(starttime);
+        const { start_time, unique_holders, howrare_holders } = detail;
+        const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
         const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
+        const ownersCount = howrare_holders || unique_holders;
 
-        return { date: `${date}. ${month}`, 'Total Owners': Number(ownerscount) };
+        return { date: `${date}. ${month}`, 'Total Owners': Number(ownersCount) };
       })
       : null;
   };
@@ -70,11 +72,11 @@ export default class Collection extends React.Component {
     let updatedPrice;
     return collection.length > 0
       ? collection.map((detail) => {
-        const { starttime, floorprice, price } = detail;
-        const datetime = new Date(starttime);
+        const { start_time, floor_price } = detail;
+        const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
         const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        updatedPrice = floorprice ? Number(Number(floorprice)?.toFixed(2)) : Number(Number(price)?.toFixed(2));
+        updatedPrice = Number(Number(floor_price / LAMPORTS_PER_SOL)?.toFixed(2));
 
         if (updatedPrice == 0) {
           updatedPrice = lastPrice;
@@ -90,17 +92,17 @@ export default class Collection extends React.Component {
   getSalesVolume = (collection) => {
     return collection.length > 0
       ? collection.map((detail) => {
-        const { starttime, _24hvolume, _24hsales } = detail;
-        const datetime = new Date(starttime);
+        const { start_time, _24hvolume } = detail;
+        const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
         const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        return { date: `${date}. ${month}`, 'Sales': Number(_24hsales), 'Volume': Number(_24hvolume) };
+        return { date: `${date}. ${month}`, 'Volume': Number(_24hvolume / LAMPORTS_PER_SOL) };
       })
       : null;
   };
 
   render() {
-    const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, _24hVolume, _24hSales } = this.props;
+    const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, _24hVolume, volumeAll } = this.props;
     const { isLoading, collection } = this.state;
 
     const listedCount = this.getListedCount(collection);
@@ -112,7 +114,7 @@ export default class Collection extends React.Component {
       <Container fluid>
         <div className="row py-4 d-flex align-items-center">
           <div className="col-2 col-md-1">
-            <img className = "rounded-circle img-fluid" height="50" src={require(`../assets/${image}`)} />
+            <img className = "rounded-circle img-fluid" height="50" src={image} />
           </div>
           <div className="col-10 col-md-11">
             <h3 className="text-start">{name}</h3>
@@ -146,17 +148,17 @@ export default class Collection extends React.Component {
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div className="card-header">24h Sales</div>
+              <div className="card-header">24h Volume</div>
               <div className="card-body">
-                <h4 className="card-title">{_24hSales || 0}</h4>
+                <h4 className="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
           <div className="col-md-4 col-lg-2">
             <div className="card bg-gray text-center">
-              <div className="card-header">24h Volume</div>
+              <div className="card-header">Total Volume</div>
               <div className="card-body">
-                <h4 className="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                <h4 className="card-title">{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
@@ -251,8 +253,8 @@ export default class Collection extends React.Component {
               </div>
               <div className="col-lg-6">
                 <div className="bg-gray rounded shadow-lg mb-5">
-                  <h5 className="text-start px-3 pt-3">Sales & Volume</h5>
-                  <h6 className="text-start px-3 pb-2">{`Current: ${_24hSales} sales & ${Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} volume`}</h6>
+                  <h5 className="text-start px-3 pt-3">Sales Volume</h5>
+                  <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} SOL`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <ComposedChart
                       width={500}
@@ -268,11 +270,11 @@ export default class Collection extends React.Component {
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
-                      <YAxis yAxisId="sales" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                      <YAxis yAxisId="volume" orientation="right" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                      {/*<YAxis yAxisId="sales" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />*/}
+                      <YAxis yAxisId="volume" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
                       <Tooltip content={<SalesVolumeTooltip />} />
                       <Area yAxisId="volume" dataKey="Volume" type="monotone" isAnimationActive={false} fill="#4b95d1" stroke="#4b95d1" />
-                      <Bar yAxisId="sales" dataKey="Sales" isAnimationActive={false} fill="#61cdbb" />
+                      {/*<Bar yAxisId="sales" dataKey="Sales" isAnimationActive={false} fill="#61cdbb" />*/}
                     </ComposedChart>
                   </ResponsiveContainer>
                 </div>
@@ -334,7 +336,6 @@ const SalesVolumeTooltip = ({ active, payload, label }) => {
     return (
       <div className="bg-light text-dark rounded opacity-75 p-2">
         <div className="text-start">{label}</div>
-        <div className="text-start">{`Sales: ${payload[1].value}`}</div>
         <div className="text-start">{`Volume: ${Number(payload[0].value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`}</div>
       </div>
     );

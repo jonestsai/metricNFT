@@ -21,6 +21,7 @@ import Top from './components/layout/Top';
 import Bottom from './components/layout/Bottom';
 import { URLS } from './Settings';
 import usePageTracking from './utils/usePageTracking';
+import { LAMPORTS_PER_SOL } from './utils/constants';
 import Collection from './views/Collection';
 import Account from './views/Account';
 import Home from './views/Home';
@@ -126,19 +127,25 @@ const Contact = () => (
 
 const Main = ({ collections, isLoading }) => {
   const collectionRoutes = collections?.map((collection, index) => {
-    const { name, slug, image, floorprice, listedcount, ownerscount, maxsupply, _24hvolume, _24hsales } = collection;
+    const { image, name, symbol, floor_price, _24hvolume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
+    const floorPrice = live_floor_price || floor_price;
+    const listedCount = live_listed_count || listed_count;
+    const volumeAll = live_volume_all || volume_all;
+    const maxSupply = total_supply;
+    const ownersCount = unique_holders;
+
     return (
-      <Route key={collection.id} path={slug} element={
+      <Route key={collection.id} path={symbol} element={
         <Collection
           name={name}
-          collectionAPI={slug}
+          collectionAPI={symbol}
           image={image}
-          currentPrice={floorprice}
-          currentListedCount={listedcount}
-          currentOwnersCount={ownerscount}
-          numberOfTokens={maxsupply}
-          _24hVolume={_24hvolume}
-          _24hSales={_24hsales}
+          currentPrice={floorPrice / LAMPORTS_PER_SOL}
+          currentListedCount={listedCount}
+          currentOwnersCount={ownersCount}
+          numberOfTokens={maxSupply}
+          volumeAll={volumeAll / LAMPORTS_PER_SOL}
+          _24hVolume={_24hvolume / LAMPORTS_PER_SOL}
         />
       }></Route>
     );

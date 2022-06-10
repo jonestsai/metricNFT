@@ -4,6 +4,8 @@ import { Cluster, clusterApiUrl, Connection } from '@solana/web3.js';
 import React from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import CollectionTable from '../components/CollectionTable';
+import Pagination from '../components/Pagination';
+import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
 import './Home.css';
 
@@ -17,6 +19,7 @@ export default class Home extends React.Component {
       currency: 'SOL',
       currencyRate: 1,
       isRatesLoading: true,
+      currentPage: 1,
     };
   }
 
@@ -84,15 +87,25 @@ export default class Home extends React.Component {
     this.setState({ currencyRate, currency: select });
   }
 
+  setCurrentPage = (page) => {
+    this.setState({ currentPage: page });
+  }
+
   render() {
     const { collections, isLoading } = this.props;
-    const { exchangeRates, currency, currencyRate, isRatesLoading } = this.state;
+    const { exchangeRates, currency, currencyRate, isRatesLoading, currentPage } = this.state;
     const collectionsByMC = collections?.sort((a, b) => {
-      return (b.floorprice * b.maxsupply) - (a.floorprice * a.maxsupply);
+      return (b.floor_price * b.total_supply) - (a.floor_price * a.total_supply);
     });
+    const filteredResult = collectionsByMC?.slice(
+      (currentPage - 1) * COLLECTIONS_PER_PAGE,
+      (currentPage - 1) * COLLECTIONS_PER_PAGE + COLLECTIONS_PER_PAGE
+    );
 
-    const data = collectionsByMC?.map((collection, index) => {
-      const { image, name, slug, floorprice, _1dfloor, _7dfloor, _24hvolume, maxsupply, ownerscount, listedcount } = collection;
+    const data = filteredResult?.map((collection, index) => {
+      const { image, name, symbol, floor_price, live_floor_price, _1dfloor, _7dfloor, _24hvolume, total_supply, unique_holders, listed_count, live_listed_count } = collection;
+      const floorPrice = live_floor_price || floor_price;
+      const floorPriceInSOL = floorPrice / LAMPORTS_PER_SOL;
       let currencySymbol = '';
       switch (currency) {
         case 'BTC':
@@ -112,27 +125,29 @@ export default class Home extends React.Component {
           break;
       }
 
-      const floorPrice = `${currencySymbol}${(floorprice * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
-      const _24hChange = _1dfloor ? (floorprice - _1dfloor) / _1dfloor * 100 : 0;
-      const _7dChange = _7dfloor ? (floorprice - _7dfloor) / _7dfloor * 100 : 0;
-      const volume = `${currencySymbol}${((_24hvolume || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
-      const floorMarketCap = `${currencySymbol}${(floorprice * maxsupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const floorPriceText = `${currencySymbol}${(floorPriceInSOL * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const _24hChange = _1dfloor ? (floorPrice - _1dfloor) / _1dfloor * 100 : 0;
+      const _7dChange = _7dfloor ? (floorPrice - _7dfloor) / _7dfloor * 100 : 0;
+      const volume = `${currencySymbol}${((_24hvolume / LAMPORTS_PER_SOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const maxSupply = total_supply;
+      const floorMarketCap = `${currencySymbol}${(floorPriceInSOL * maxSupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const listedCount = live_listed_count || listed_count;
 
       return (
         {
           id: collection.id,
-          row: index + 1,
-          image,
+          row: (currentPage - 1) * COLLECTIONS_PER_PAGE + index + 1,
+          image: `${MAGICEDEN_IMAGE_URL}${image}`,
           name,
-          slug,
-          floorPrice,
+          symbol,
+          floorPrice: floorPriceText,
           _24hChange,
           _7dChange,
           volume,
           floorMarketCap,
-          maxsupply,
-          ownerscount,
-          listedcount,          
+          maxSupply,
+          holders: unique_holders,
+          listedCount,          
         }
       );
     });
@@ -177,6 +192,14 @@ export default class Home extends React.Component {
               <div className="spinner-border text-light" role="status" />
             </div>
           )}
+        </div>
+        <div className="pt-3">
+          <Pagination
+            total={collections?.length}
+            itemsPerPage={COLLECTIONS_PER_PAGE}
+            currentPage={currentPage}
+            onPageChange={(page) => this.setCurrentPage(page)}
+          />
         </div>
       </Container>
     )

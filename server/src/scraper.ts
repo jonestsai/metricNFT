@@ -33,6 +33,13 @@ async function main() {
     price = JSON.parse(data)?.results?.floorPrice / LAMPORTS_PER_SOL;
     console.log(price);
 
+    await page.goto('https://api-mainnet.magiceden.io/rpc/getCollectionHolderStats/degods', { waitUntil: 'networkidle0' });
+    data = await page.$eval('pre', (element: any) => element.textContent);
+    const totalSupply = JSON.parse(data)?.results?.totalSupply;
+    const uniqueHolders = JSON.parse(data)?.results?.uniqueHolders;
+    console.log(totalSupply);
+    console.log(uniqueHolders);
+
     // Get Opensea slugs
     await page.goto('https://opensea.io/rankings?chain=ethereum&sortBy=total_volume', { waitUntil: 'networkidle0' });
     await page.waitForTimeout(30000);

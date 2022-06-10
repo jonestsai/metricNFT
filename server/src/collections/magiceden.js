@@ -1,6 +1,11 @@
 require('dotenv').config({ path: '/home/server/.env' });
 const fetch = require('node-fetch');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const userAgent = require('user-agents');
 const { Pool } = require('pg');
+
+puppeteer.use(StealthPlugin());
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -89,15 +94,32 @@ const getMagicedenCollections = async () => {
 }
 
 const magicedenCollectionsSnapshot = async (collections) => {
+  let collectionHolderStats;
+  let totalSupply;
+  let uniqueHolders;
+  let isError;
   for (collection of collections) {
     const { symbol } = collection;
     console.log(symbol);
     const collectionStats = await getMagicedenCollectionStats(symbol);
     const { floorPrice, listedCount, avgPrice24hr, volumeAll } = collectionStats;
+    collectionHolderStats = await getCollectionHolderStats(symbol);
+    ({ totalSupply, uniqueHolders, isError } = collectionHolderStats);
+
+    // Retry getCollectionHolderStats if return is null
+    if (!totalSupply && !uniqueHolders && isError) {
+      collectionHolderStats = await getCollectionHolderStats(symbol);
+      ({ totalSupply, uniqueHolders, isError } = collectionHolderStats);
+    }
+    if (!totalSupply && !uniqueHolders && isError) {
+      collectionHolderStats = await getCollectionHolderStats(symbol);
+      ({ totalSupply, uniqueHolders, isError } = collectionHolderStats);
+    }
+
     const startSnapshotTime = new Date();
     const query = {
-      text: 'INSERT INTO magiceden_snapshot(symbol, start_time, floor_price, listed_count, avg_price_24hr, volume_all) VALUES($1, $2, $3, $4, $5, $6)',
-      values: [symbol, startSnapshotTime, floorPrice, listedCount, avgPrice24hr, volumeAll],
+      text: 'INSERT INTO magiceden_snapshot(symbol, start_time, floor_price, listed_count, avg_price_24hr, volume_all, total_supply, unique_holders) VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
+      values: [symbol, startSnapshotTime, floorPrice, listedCount, avgPrice24hr, volumeAll, totalSupply, uniqueHolders],
     };
     pool.query(query, (error, results) => {
       if (error) {
@@ -116,6 +138,24 @@ const getMagicedenCollectionStats = async (symbol) => {
     return stats;
   } catch (error) {
     console.log(error);
+  }
+}
+
+const getCollectionHolderStats = async (symbol) => {
+  try {
+    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+    const [page] = await browser.pages();
+    await page.setUserAgent(userAgent.toString());
+    await page.goto(`https://api-mainnet.magiceden.io/rpc/getCollectionHolderStats/${symbol}`, { waitUntil: 'networkidle0' });
+    const data = await page.$eval('pre', (element) => element.textContent);
+    const totalSupply = JSON.parse(data)?.results?.totalSupply;
+    const uniqueHolders = JSON.parse(data)?.results?.uniqueHolders;
+    await browser.close();
+
+    return { totalSupply, uniqueHolders, isError: false };
+  } catch (error) {
+    console.log(error);
+    return { totalSupply: null, uniqueHolders: null, isError: true };
   }
 }
 

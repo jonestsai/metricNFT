@@ -22,66 +22,46 @@ app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
 
 app.get('/api', async (req, res) => {
-  let nameCase;
-  let collectionQuery;
-
-  try {
-    const { rows } = await pool.query(`SELECT * from collection`);
-
-    nameCase = rows.reduce((expression, row) => {
-      const { symbol, namematch } = row;
-      const nameCaseExpression = namematch ? `WHEN name ~ '${namematch}' THEN '${symbol}' ` : '';
-
-      return `${expression}${nameCaseExpression}`;
-    }, '');
-    // res.status(200).json(nameCase);
-
-    collectionQuery = rows.reduce((query, row, index) => {
-      const { symbol, minprice, namematch } = row;
-      const nameMatchQuery = namematch ? `name ~ '${namematch}'` : `symbol = '${symbol}'`;
-
-      if (index === rows.length - 1) {
-        return `${query}(${nameMatchQuery} AND price > ${minprice})`;
-      }
-
-      return `${query}(${nameMatchQuery} AND price > ${minprice}) OR `;
-    }, '');
-    // res.status(200).json(collectionQuery);
-  } catch (err) {
-    console.log(err.stack);
-  }
-
   let leftJoins = '';
 
   // Get the 24h and 7d floor
   for (let days = 1; days <= 10; days += 6) {
-    leftJoins += `LEFT JOIN (SELECT MIN(floorprice) AS _${days}dfloor, symbol FROM snapshot WHERE starttime > (NOW() - interval '${days + 1} days') AND starttime < (NOW() - interval '${days} days') GROUP BY symbol) _${days}d ON _snapshot.symbol = _${days}d.symbol `;
+    leftJoins += `LEFT JOIN (SELECT MIN(floor_price) AS _${days}dfloor, symbol AS _${days}dsymbol FROM magiceden_snapshot WHERE start_time > (NOW() - interval '${days + 1} days') AND start_time < (NOW() - interval '${days} days') GROUP BY symbol) _${days}d ON _magiceden_collection.symbol = _${days}d._${days}dsymbol `;
   }
-  // res.status(200).json(leftJoins);
 
   pool.query(`
-    SELECT * from (
-      SELECT name, symbol, maxsupply, image, slug
-      FROM collection
-    ) _collection
+    SELECT * FROM (
+      SELECT name, symbol, image
+      FROM magiceden_collection
+    ) _magiceden_collection
     LEFT JOIN (
       SELECT DISTINCT ON (symbol) *
-      FROM snapshot
-      ORDER BY symbol, starttime DESC
-    ) _snapshot
-    ON _collection.symbol = _snapshot.symbol
+      FROM magiceden_snapshot
+      ORDER BY symbol, start_time DESC
+    ) _magiceden_snapshot
+    ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
-      SELECT SUM(price) AS _24hVolume, COUNT(*) AS _24hSales,
-        CASE ${nameCase}
-          ELSE symbol
-        END AS _symbol
-      FROM sales
-      WHERE datetime > (NOW() - interval '24 hours') AND datetime < NOW()
-        AND (${collectionQuery})
-      GROUP BY _symbol
-    ) _sales
-    ON _snapshot.symbol = _sales._symbol
-    ${leftJoins}`, (error, results) => {
+      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, listed_count AS live_listed_count, volume_all AS live_volume_all
+      FROM magiceden_hourly_snapshot
+      ORDER BY symbol, start_time DESC
+    ) _magiceden_hourly_snapshot
+    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol
+    LEFT JOIN (
+      SELECT symbol,
+        SUM(CASE _magiceden_snapshot.row
+          WHEN 1 THEN volume_all
+          WHEN 2 THEN -volume_all
+          ELSE 0
+        END) AS _24hvolume
+      FROM (
+        SELECT *, ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY start_time desc) AS row
+        FROM magiceden_snapshot) _magiceden_snapshot
+      WHERE _magiceden_snapshot.row <= 2
+      GROUP BY symbol
+    ) _24hvolume
+    ON _magiceden_snapshot.symbol = _24hvolume.symbol
+    ${leftJoins}
+    WHERE _magiceden_snapshot.floor_price IS NOT NULL AND _magiceden_snapshot.total_supply IS NOT NULL AND _magiceden_snapshot.unique_holders > 50`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -91,31 +71,32 @@ app.get('/api', async (req, res) => {
 
 app.get('/api/:slug', async (req, res) => {
   const { slug } = req.params;
-  const { rows } = await pool.query(`SELECT * FROM collection WHERE slug = '${slug}'`);
-
-  const [{ symbol, minprice, namematch }] = rows;
-  const nameMatchQuery = namematch ? `name ~ '${namematch}'` : `symbol = '${symbol}'`;
-  const collectionQuery = `${nameMatchQuery} AND price > ${minprice}`;
 
   pool.query(`
-    SELECT DISTINCT ON (starttime::date) starttime::date, listedcount, ownerscount, floorprice, price, _24hvolume, _24hsales
-    FROM snapshot
+    SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
+      FROM magiceden_snapshot
     LEFT JOIN (
-      SELECT DISTINCT ON (datetime::date) datetime::date, price
-      FROM sales
-      WHERE ${collectionQuery} AND datetime > (NOW() - interval '30 days') AND datetime < NOW() AND hide IS NOT TRUE
-      ORDER BY datetime desc, price asc
-    ) _price
-    ON snapshot.starttime::date = _price.datetime::date
+      SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
+      FROM howrare_snapshot
+      JOIN (
+        SELECT name, magiceden_symbol
+        FROM howrare_collection
+      ) _howrare_collection
+      ON howrare_snapshot.name = _howrare_collection.name
+      WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '30 days') AND start_time < NOW()
+      ORDER BY howrare_snapshot.start_time::date
+    ) _howrare_snapshot
+    ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
     LEFT JOIN (
-      SELECT datetime::date, SUM(price) AS _24hvolume, COUNT(*) AS _24hsales
-      FROM sales
-      WHERE ${collectionQuery} AND datetime > (NOW() - interval '30 days') AND datetime < NOW() AND hide IS NOT TRUE
-      GROUP BY datetime::date
-    ) _sales
-    ON snapshot.starttime::date = _sales.datetime::date
-    WHERE snapshot.symbol = '${symbol}' and starttime > (NOW() - interval '30 days') AND starttime < NOW()
-    ORDER BY starttime`, (error, results) => {
+      SELECT DISTINCT ON (start_time::date) start_time::date,
+        volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
+      FROM magiceden_snapshot
+      WHERE symbol = '${slug}'
+      ORDER BY start_time::date
+    ) _24hvolume
+    ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date
+    WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
+    ORDER BY magiceden_snapshot.start_time::date`, (error, results) => {
     if (error) {
       console.log(error);
       throw error;
@@ -253,4 +234,88 @@ app.get('/api/user', (req, res) => {
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
+});
+
+app.get('/api/dev/home', async (req, res) => {
+  let leftJoins = '';
+
+  // Get the 24h and 7d floor
+  for (let days = 1; days <= 10; days += 6) {
+    leftJoins += `LEFT JOIN (SELECT MIN(floor_price) AS _${days}dfloor, symbol AS _${days}dsymbol FROM magiceden_snapshot WHERE start_time > (NOW() - interval '${days + 1} days') AND start_time < (NOW() - interval '${days} days') GROUP BY symbol) _${days}d ON _magiceden_collection.symbol = _${days}d._${days}dsymbol `;
+  }
+
+  pool.query(`
+    SELECT * FROM (
+      SELECT name, symbol, image
+      FROM magiceden_collection
+    ) _magiceden_collection
+    LEFT JOIN (
+      SELECT DISTINCT ON (symbol) *
+      FROM magiceden_snapshot
+      ORDER BY symbol, start_time DESC
+    ) _magiceden_snapshot
+    ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
+    LEFT JOIN (
+      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, listed_count AS live_listed_count, volume_all AS live_volume_all
+      FROM magiceden_hourly_snapshot
+      ORDER BY symbol, start_time DESC
+    ) _magiceden_hourly_snapshot
+    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol
+    LEFT JOIN (
+      SELECT symbol,
+        SUM(CASE _magiceden_snapshot.row
+          WHEN 1 THEN volume_all
+          WHEN 2 THEN -volume_all
+          ELSE 0
+        END) AS _24hvolume
+      FROM (
+        SELECT *, ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY start_time desc) AS row
+        FROM magiceden_snapshot) _magiceden_snapshot
+      WHERE _magiceden_snapshot.row <= 2
+      GROUP BY symbol
+    ) _24hvolume
+    ON _magiceden_snapshot.symbol = _24hvolume.symbol
+    ${leftJoins}
+    WHERE _magiceden_snapshot.floor_price IS NOT NULL AND _magiceden_snapshot.total_supply IS NOT NULL AND _magiceden_snapshot.unique_holders > 50`, (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
+app.get('/api/dev/:slug', async (req, res) => {
+  const { slug } = req.params;
+
+  pool.query(`
+    SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
+      FROM magiceden_snapshot
+    LEFT JOIN (
+      SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
+      FROM howrare_snapshot
+      JOIN (
+        SELECT name, magiceden_symbol
+        FROM howrare_collection
+      ) _howrare_collection
+      ON howrare_snapshot.name = _howrare_collection.name
+      WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '30 days') AND start_time < NOW()
+      ORDER BY howrare_snapshot.start_time::date
+    ) _howrare_snapshot
+    ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
+    LEFT JOIN (
+      SELECT DISTINCT ON (start_time::date) start_time::date,
+        volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
+      FROM magiceden_snapshot
+      WHERE symbol = '${slug}'
+      ORDER BY start_time::date
+    ) _24hvolume
+    ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date
+    WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
+    ORDER BY magiceden_snapshot.start_time::date`, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
 });

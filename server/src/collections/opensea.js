@@ -16,7 +16,7 @@ const pool = new Pool({
 });
 
 async function main() {
-  // await storeCollections();
+  await storeCollections();
   await snapshotCollectionStats();
 }
 
@@ -90,7 +90,7 @@ const getNewSlugs = async (slugs) => {
 }
 
 const getCollectionSlugs = async () => {
-  const { rows } = await pool.query('SELECT slug FROM opensea_collection');
+  const { rows } = await pool.query('SELECT slug FROM opensea_collection WHERE hide IS NOT TRUE');
   let collectionSlugs = [];
   for (const row of rows) {
     collectionSlugs.push(row.slug);
@@ -103,7 +103,14 @@ const snapshotCollectionStats = async () => {
   const slugs = await getCollectionSlugs();
   for (slug of slugs) {
     console.log(slug);
-    const collectionStats = await getCollectionStats(slug);
+    let collectionStats;
+    collectionStats = await getCollectionStats(slug);
+    if (!collectionStats) {
+      collectionStats = await getCollectionStats(slug);
+    }
+    if (!collectionStats) {
+      continue;
+    }
     const { one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price } = collectionStats;
     const startSnapshotTime = new Date();
     const query = {
