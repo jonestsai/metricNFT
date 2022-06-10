@@ -5,7 +5,7 @@ import React from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import CollectionTable from '../components/CollectionTable';
 import Pagination from '../components/Pagination';
-import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE } from '../utils/constants';
+import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
 import './Home.css';
 
@@ -137,7 +137,7 @@ export default class Home extends React.Component {
         {
           id: collection.id,
           row: (currentPage - 1) * COLLECTIONS_PER_PAGE + index + 1,
-          image,
+          image: `${MAGICEDEN_IMAGE_URL}${image}`,
           name,
           symbol,
           floorPrice: floorPriceText,
