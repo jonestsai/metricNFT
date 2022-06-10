@@ -95,9 +95,7 @@ export default class Home extends React.Component {
     const { collections, isLoading } = this.props;
     const { exchangeRates, currency, currencyRate, isRatesLoading, currentPage } = this.state;
     const collectionsByMC = collections?.sort((a, b) => {
-      const aMaxSupply = a.collection_max_supply || a.howrare_max_supply;
-      const bMaxSupply = b.collection_max_supply || b.howrare_max_supply;
-      return (b.floor_price * bMaxSupply) - (a.floor_price * aMaxSupply);
+      return (b.floor_price * b.total_supply) - (a.floor_price * a.total_supply);
     });
     const filteredResult = collectionsByMC?.slice(
       (currentPage - 1) * COLLECTIONS_PER_PAGE,
@@ -105,7 +103,7 @@ export default class Home extends React.Component {
     );
 
     const data = filteredResult?.map((collection, index) => {
-      const { howrare_image, collection_image, name, symbol, floor_price, live_floor_price, _1dfloor, _7dfloor, _24hvolume, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count, live_listed_count } = collection;
+      const { image, name, symbol, floor_price, live_floor_price, _1dfloor, _7dfloor, _24hvolume, total_supply, unique_holders, listed_count, live_listed_count } = collection;
       const floorPrice = live_floor_price || floor_price;
       const floorPriceInSOL = floorPrice / LAMPORTS_PER_SOL;
       let currencySymbol = '';
@@ -131,7 +129,7 @@ export default class Home extends React.Component {
       const _24hChange = _1dfloor ? (floorPrice - _1dfloor) / _1dfloor * 100 : 0;
       const _7dChange = _7dfloor ? (floorPrice - _7dfloor) / _7dfloor * 100 : 0;
       const volume = `${currencySymbol}${((_24hvolume / LAMPORTS_PER_SOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
-      const maxSupply = collection_max_supply || howrare_max_supply;
+      const maxSupply = total_supply;
       const floorMarketCap = `${currencySymbol}${(floorPriceInSOL * maxSupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
       const listedCount = live_listed_count || listed_count;
 
@@ -139,7 +137,7 @@ export default class Home extends React.Component {
         {
           id: collection.id,
           row: (currentPage - 1) * COLLECTIONS_PER_PAGE + index + 1,
-          image: howrare_image ? `https://howrare.is${howrare_image}` : require(`../assets/${collection_image}`),
+          image,
           name,
           symbol,
           floorPrice: floorPriceText,
@@ -148,7 +146,7 @@ export default class Home extends React.Component {
           volume,
           floorMarketCap,
           maxSupply,
-          holders: howrare_holders || holders,
+          holders: unique_holders,
           listedCount,          
         }
       );

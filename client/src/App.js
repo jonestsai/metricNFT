@@ -48,7 +48,7 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${URLS.api}`);
+      const response = await fetch(`${URLS.api}/dev/home`);
       const collections = await response.json();
 
       setCollections(collections);
@@ -127,13 +127,12 @@ const Contact = () => (
 
 const Main = ({ collections, isLoading }) => {
   const collectionRoutes = collections?.map((collection, index) => {
-    const { howrare_image, collection_image, name, symbol, floor_price, _24hvolume, volume_all, live_floor_price, live_volume_all, howrare_max_supply, collection_max_supply, howrare_holders, holders, listed_count, live_listed_count } = collection;
-    const image = howrare_image ? `https://howrare.is${howrare_image}` : require(`./assets/${collection_image}`);
+    const { image, name, symbol, floor_price, _24hvolume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
     const floorPrice = live_floor_price || floor_price;
     const listedCount = live_listed_count || listed_count;
     const volumeAll = live_volume_all || volume_all;
-    const maxSupply = collection_max_supply || howrare_max_supply;
-    const ownersCount = howrare_holders || holders;
+    const maxSupply = total_supply;
+    const ownersCount = unique_holders;
 
     return (
       <Route key={collection.id} path={symbol} element={
