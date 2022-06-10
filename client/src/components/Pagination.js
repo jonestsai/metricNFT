@@ -18,7 +18,7 @@ const PaginationComponent = ({
   if (totalPages === 0) return null;
 
   return (
-    <Pagination className="d-flex justify-content-center" size="lg">
+    <Pagination className="d-flex justify-content-center">
       <Pagination.Prev
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
