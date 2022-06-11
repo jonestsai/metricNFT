@@ -1,6 +1,4 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { getPythProgramKeyForCluster, PythHttpClient } from '@pythnetwork/client';
-import { Cluster, clusterApiUrl, Connection } from '@solana/web3.js';
 import React from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import CollectionTable from '../components/CollectionTable';
@@ -8,8 +6,6 @@ import Pagination from '../components/Pagination';
 import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
 import './Home.css';
-
-const anchor = require('@project-serum/anchor');
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -34,17 +30,12 @@ export default class Home extends React.Component {
     }
 
     try {
-      const anchorConnection = new anchor.web3.Connection(
-        'https://solana-api.projectserum.com'
-      );
-      const pythPublicKey = getPythProgramKeyForCluster('mainnet-beta');
-      const pythClient = new PythHttpClient(anchorConnection, pythPublicKey);
-      const data = await pythClient.getData();
-      const { productPrice } = data;
-      const symbols = ['Crypto.SOL/USD', 'Crypto.BTC/USD', 'Crypto.ETH/USD', 'FX.EUR/USD', 'FX.USD/CAD'];
-      const exchangeRates = symbols.reduce((rates, symbol) => ({
+      const ids = ['solana', 'ethereum'];
+      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids.toString()}&vs_currencies=usd`);
+      const currencies = await response.json();
+      const exchangeRates = ids.reduce((rates, id) => ({
         ...rates,
-        [symbol]: productPrice.get(symbol).price,
+        [`${id}/usd`]: currencies[id]?.usd,
       }), {});
 
       this.setState({
@@ -59,28 +50,16 @@ export default class Home extends React.Component {
 
   handleCurrencySelect = select => {
     const { exchangeRates } = this.state;
-    const USD = exchangeRates['Crypto.SOL/USD'];
-    const BTC = USD / exchangeRates['Crypto.BTC/USD'];
-    const ETH = USD / exchangeRates['Crypto.ETH/USD'];
-    const EUR = USD / exchangeRates['FX.EUR/USD'];
-    const CAD = USD * exchangeRates['FX.USD/CAD'];
+    const USD = exchangeRates['solana/usd'];
+    const ETH = USD / exchangeRates['ethereum/usd'];
     let currencyRate = 1;
 
     switch (select) {
       case 'USD':
         currencyRate = USD;
         break;
-      case 'BTC':
-        currencyRate = BTC;
-        break;
       case 'ETH':
         currencyRate = ETH;
-        break;
-      case 'EUR':
-        currencyRate = EUR;
-        break;
-      case 'CAD':
-        currencyRate = CAD;
         break;
     }
 
@@ -108,20 +87,11 @@ export default class Home extends React.Component {
       const floorPriceInSOL = floorPrice / LAMPORTS_PER_SOL;
       let currencySymbol = '';
       switch (currency) {
-        case 'BTC':
-          currencySymbol = '₿';
-          break;
         case 'ETH':
           currencySymbol = 'Ξ';
           break;
         case 'USD':
           currencySymbol = '$';
-          break;
-        case 'CAD':
-          currencySymbol = '$';
-          break;
-        case 'EUR':
-          currencySymbol = '€';
           break;
       }
 
@@ -165,19 +135,10 @@ export default class Home extends React.Component {
           <Dropdown.Item eventKey="SOL" active={!!(currency == 'SOL')}>SOL</Dropdown.Item>
           {!isRatesLoading && (
             <div>
-              {exchangeRates['Crypto.SOL/USD'] && (
+              {exchangeRates['solana/usd'] && (
                 <Dropdown.Item eventKey="USD" active={!!(currency == 'USD')}>USD</Dropdown.Item>
               )}
-              {exchangeRates['FX.EUR/USD'] && (
-                <Dropdown.Item eventKey="EUR" active={!!(currency == 'EUR')}>EUR</Dropdown.Item>
-              )}
-              {exchangeRates['FX.USD/CAD'] && (
-                <Dropdown.Item eventKey="CAD" active={!!(currency == 'CAD')}>CAD</Dropdown.Item>
-              )}
-              {exchangeRates['Crypto.BTC/USD'] && (
-                <Dropdown.Item eventKey="BTC" active={!!(currency == 'BTC')}>BTC</Dropdown.Item>
-              )}
-              {exchangeRates['Crypto.ETH/USD'] && (
+              {exchangeRates['ethereum/usd'] && (
                 <Dropdown.Item eventKey="ETH" active={!!(currency == 'ETH')}>ETH</Dropdown.Item>
               )}
             </div>
