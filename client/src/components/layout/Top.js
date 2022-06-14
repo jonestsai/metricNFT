@@ -7,6 +7,7 @@ import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { URLS } from '../../Settings';
 import logo from '../../assets/logo.png';
+import './Top.css';
 
 export default function Top() {
   const navigate = useNavigate();
