@@ -19,6 +19,12 @@ export default class Collection extends React.Component {
     await this.fetchCollection();
   };
 
+  async componentDidUpdate(prevProps) {
+    if (this.props.name !== prevProps.name) {
+      await this.fetchCollection();
+    }
+  };
+
   fetchCollection = async () => {
     if (!this.state.isLoading) {
       this.setState({ isLoading: true });
