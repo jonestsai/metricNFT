@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { LAMPORTS_PER_SOL } from '../utils/constants';
+import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
 import './Collection.css';
 
@@ -17,6 +17,12 @@ export default class Collection extends React.Component {
 
   async componentDidMount() {
     await this.fetchCollection();
+  };
+
+  async componentDidUpdate(prevProps) {
+    if (this.props.name !== prevProps.name) {
+      await this.fetchCollection();
+    }
   };
 
   fetchCollection = async () => {
@@ -114,7 +120,7 @@ export default class Collection extends React.Component {
       <Container fluid>
         <div className="row py-4 d-flex align-items-center">
           <div className="col-2 col-md-1">
-            <img className = "rounded-circle img-fluid" height="50" src={image} />
+            <img className = "rounded-circle img-fluid" height="50" src={`${MAGICEDEN_IMAGE_URL}${image}`} />
           </div>
           <div className="col-10 col-md-11">
             <h3 className="text-start">{name}</h3>
