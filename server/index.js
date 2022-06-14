@@ -60,8 +60,7 @@ app.get('/api', async (req, res) => {
       GROUP BY symbol
     ) _24hvolume
     ON _magiceden_snapshot.symbol = _24hvolume.symbol
-    ${leftJoins}
-    WHERE _magiceden_snapshot.floor_price IS NOT NULL AND _magiceden_snapshot.total_supply IS NOT NULL AND _magiceden_snapshot.unique_holders > 50`, (error, results) => {
+    ${leftJoins}`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -275,8 +274,7 @@ app.get('/api/dev/home', async (req, res) => {
       GROUP BY symbol
     ) _24hvolume
     ON _magiceden_snapshot.symbol = _24hvolume.symbol
-    ${leftJoins}
-    WHERE _magiceden_snapshot.floor_price IS NOT NULL AND _magiceden_snapshot.total_supply IS NOT NULL AND _magiceden_snapshot.unique_holders > 50`, (error, results) => {
+    ${leftJoins}`, (error, results) => {
     if (error) {
       throw error;
     }

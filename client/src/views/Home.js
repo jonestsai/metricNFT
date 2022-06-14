@@ -76,12 +76,15 @@ export default class Home extends React.Component {
     const collectionsByMC = collections?.sort((a, b) => {
       return (b.floor_price * b.total_supply) - (a.floor_price * a.total_supply);
     });
-    const filteredResult = collectionsByMC?.slice(
+    const filteredResult = collectionsByMC?.filter((collection) => {
+      return collection.floor_price && collection.total_supply && collection.unique_holders > 50;
+    });
+    const paginatedResult = filteredResult?.slice(
       (currentPage - 1) * COLLECTIONS_PER_PAGE,
       (currentPage - 1) * COLLECTIONS_PER_PAGE + COLLECTIONS_PER_PAGE
     );
 
-    const data = filteredResult?.map((collection, index) => {
+    const data = paginatedResult?.map((collection, index) => {
       const { image, name, symbol, floor_price, live_floor_price, _1dfloor, _7dfloor, _24hvolume, total_supply, unique_holders, listed_count, live_listed_count } = collection;
       const floorPrice = live_floor_price || floor_price;
       const floorPriceInSOL = floorPrice / LAMPORTS_PER_SOL;
