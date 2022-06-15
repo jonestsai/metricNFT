@@ -21,7 +21,6 @@ import Top from './components/layout/Top';
 import Bottom from './components/layout/Bottom';
 import { URLS } from './Settings';
 import usePageTracking from './utils/usePageTracking';
-import { LAMPORTS_PER_SOL } from './utils/constants';
 import Collection from './views/Collection';
 import Account from './views/Account';
 import Home from './views/Home';
@@ -34,6 +33,7 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 export default function App() {
   usePageTracking();
 
+  const [homeCollections, setHomeCollections] = useState();
   const [collections, setCollections] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
@@ -48,9 +48,14 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${URLS.api}`);
-      const collections = await response.json();
+      const [homeResponse, collectionsResponse] = await Promise.all([
+        fetch(`${URLS.api}`),
+        fetch(`${URLS.api}/magic-eden/collections`),
+      ]);
+      const homeCollections = await homeResponse.json();
+      const collections = await collectionsResponse.json();
 
+      setHomeCollections(homeCollections);
       setCollections(collections);
     } catch (error) {
       // Do nothing
@@ -89,6 +94,7 @@ export default function App() {
           <WalletModalProvider>
             <Top />
             <Main
+              homeCollections={homeCollections}
               collections={collections}
               isLoading={isLoading}
             />
@@ -125,14 +131,9 @@ const Contact = () => (
   </div>
 );
 
-const Main = ({ collections, isLoading }) => {
+const Main = ({ homeCollections, collections, isLoading }) => {
   const collectionRoutes = collections?.map((collection, index) => {
-    const { image, name, symbol, floor_price, _24hvolume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
-    const floorPrice = live_floor_price || floor_price;
-    const listedCount = live_listed_count || listed_count;
-    const volumeAll = live_volume_all || volume_all;
-    const maxSupply = total_supply;
-    const ownersCount = unique_holders;
+    const { image, name, symbol } = collection;
 
     return (
       <Route key={collection.id} path={symbol} element={
@@ -140,12 +141,6 @@ const Main = ({ collections, isLoading }) => {
           name={name}
           collectionAPI={symbol}
           image={image}
-          currentPrice={floorPrice / LAMPORTS_PER_SOL}
-          currentListedCount={listedCount}
-          currentOwnersCount={ownersCount}
-          numberOfTokens={maxSupply}
-          volumeAll={volumeAll / LAMPORTS_PER_SOL}
-          _24hVolume={_24hvolume / LAMPORTS_PER_SOL}
         />
       }></Route>
     );
@@ -153,7 +148,7 @@ const Main = ({ collections, isLoading }) => {
 
   return (
     <Routes>
-      <Route path='/' element={<Home collections={collections} isLoading={isLoading} />}></Route>
+      <Route path='/' element={<Home collections={homeCollections} isLoading={isLoading} />}></Route>
       {collectionRoutes}
       <Route path='/account' element={<Account />}></Route>
       <Route path='/about' element={<About />}></Route>

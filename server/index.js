@@ -104,6 +104,49 @@ app.get('/api/:slug', async (req, res) => {
   });
 });
 
+app.get('/api/summary/:slug', async (req, res) => {
+  const { slug } = req.params;
+
+  pool.query(`
+    SELECT * FROM (
+      SELECT name, symbol, image
+      FROM magiceden_collection
+    ) _magiceden_collection
+    LEFT JOIN (
+      SELECT DISTINCT ON (symbol) *
+      FROM magiceden_snapshot
+      ORDER BY symbol, start_time DESC
+    ) _magiceden_snapshot
+    ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
+    LEFT JOIN (
+      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, listed_count AS live_listed_count, volume_all AS live_volume_all
+      FROM magiceden_hourly_snapshot
+      ORDER BY symbol, start_time DESC
+    ) _magiceden_hourly_snapshot
+    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol
+    LEFT JOIN (
+      SELECT symbol,
+        SUM(CASE _magiceden_snapshot.row
+          WHEN 1 THEN volume_all
+          WHEN 2 THEN -volume_all
+          ELSE 0
+        END) AS _24hvolume
+      FROM (
+        SELECT *, ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY start_time desc) AS row
+        FROM magiceden_snapshot) _magiceden_snapshot
+      WHERE _magiceden_snapshot.row <= 2
+      GROUP BY symbol
+    ) _24hvolume
+    ON _magiceden_snapshot.symbol = _24hvolume.symbol
+    WHERE _magiceden_collection.symbol = '${slug}'`, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
 app.get('/api/users/:walletAddress', (req, res) => {
   const { walletAddress } = req.params;
   pool.query(`SELECT * FROM users

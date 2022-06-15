@@ -10,7 +10,8 @@ export default class Collection extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      collection: '',
+      summary: '',
+      chartsData: '',
       isLoading: true,
     };
   }
@@ -33,11 +34,16 @@ export default class Collection extends React.Component {
     const { collectionAPI } = this.props;
 
     try {
-      const response = await fetch(`${URLS.api}/${collectionAPI}`);
-      const collection = await response.json();
+      const [summaryResponse, chartsResponse] = await Promise.all([
+        fetch(`${URLS.api}/summary/${collectionAPI}`),
+        fetch(`${URLS.api}/${collectionAPI}`),
+      ]);
+      const [summary] = await summaryResponse.json();
+      const chartsData = await chartsResponse.json();
 
       this.setState({
-        collection,
+        summary,
+        chartsData,
       });
     } catch (error) {
       // Do nothing
@@ -46,9 +52,9 @@ export default class Collection extends React.Component {
     }
   };
 
-  getListedCount = (collection) => {
-    return collection.length > 0
-      ? collection.map((detail) => {
+  getListedCount = (chartsData) => {
+    return chartsData.length > 0
+      ? chartsData.map((detail) => {
         const { start_time, listed_count } = detail;
         const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
@@ -59,9 +65,9 @@ export default class Collection extends React.Component {
       : null;
   };
 
-  getOwnersCount = (collection) => {
-    return collection.length > 0
-      ? collection.map((detail) => {
+  getOwnersCount = (chartsData) => {
+    return chartsData.length > 0
+      ? chartsData.map((detail) => {
         const { start_time, unique_holders, howrare_holders } = detail;
         const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
@@ -73,11 +79,11 @@ export default class Collection extends React.Component {
       : null;
   };
 
-  getPrice = (collection) => {
+  getPrice = (chartsData) => {
     let lastPrice;
     let updatedPrice;
-    return collection.length > 0
-      ? collection.map((detail) => {
+    return chartsData.length > 0
+      ? chartsData.map((detail) => {
         const { start_time, floor_price } = detail;
         const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
@@ -95,9 +101,9 @@ export default class Collection extends React.Component {
       : null;
   };
 
-  getSalesVolume = (collection) => {
-    return collection.length > 0
-      ? collection.map((detail) => {
+  getSalesVolume = (chartsData) => {
+    return chartsData.length > 0
+      ? chartsData.map((detail) => {
         const { start_time, _24hvolume } = detail;
         const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
@@ -108,13 +114,22 @@ export default class Collection extends React.Component {
   };
 
   render() {
-    const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, _24hVolume, volumeAll } = this.props;
-    const { isLoading, collection } = this.state;
+    const { name, image } = this.props;
+    const { isLoading, summary, chartsData } = this.state;
 
-    const listedCount = this.getListedCount(collection);
-    const ownersCount = this.getOwnersCount(collection);
-    const price = this.getPrice(collection);
-    const salesVolume = this.getSalesVolume(collection);
+    const { live_floor_price, floor_price, live_listed_count, listed_count, live_volume_all, volume_all, unique_holders, total_supply, _24hvolume } = summary;
+    const floorPrice = live_floor_price || floor_price;
+    const currentPrice = floorPrice / LAMPORTS_PER_SOL;
+    const currentListedCount = live_listed_count || listed_count;
+    const currentOwnersCount = unique_holders;
+    const numberOfTokens = total_supply;
+    const volumeAll = (live_volume_all || volume_all) / LAMPORTS_PER_SOL;
+    const _24hVolume = _24hvolume / LAMPORTS_PER_SOL;
+
+    const listedCount = this.getListedCount(chartsData);
+    const ownersCount = this.getOwnersCount(chartsData);
+    const price = this.getPrice(chartsData);
+    const salesVolume = this.getSalesVolume(chartsData);
 
     return (
       <Container fluid>
@@ -127,58 +142,58 @@ export default class Collection extends React.Component {
             <h4 className="text-start">{currentPrice} SOL</h4>
           </div>
         </div>
-        <div className="row g-md-4 pb-4">
-          <div className="col-md-4 col-lg-2">
-            <div className="card bg-gray text-center">
-              <div className="card-header"># of Tokens</div>
-              <div className="card-body">
-                <h4 className="card-title">{numberOfTokens}</h4>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4 col-lg-2">
-            <div className="card bg-gray text-center">
-              <div className="card-header"># of Listings</div>
-              <div className="card-body">
-                <h4 className="card-title">{currentListedCount}</h4>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4 col-lg-2">
-            <div className="card bg-gray text-center">
-              <div className="card-header"># of Owners</div>
-              <div className="card-body">
-                <h4 className="card-title">{currentOwnersCount}</h4>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4 col-lg-2">
-            <div className="card bg-gray text-center">
-              <div className="card-header">24h Volume</div>
-              <div className="card-body">
-                <h4 className="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4 col-lg-2">
-            <div className="card bg-gray text-center">
-              <div className="card-header">Total Volume</div>
-              <div className="card-body">
-                <h4 className="card-title">{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4 col-lg-2">
-            <div className="card bg-gray text-center">
-              <div className="card-header">Floor Mkt Cap</div>
-              <div className="card-body">
-                <h4 className="card-title">{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
-              </div>
-            </div>
-          </div>
-        </div>
         {!isLoading && (
           <div>
+            <div className="row g-md-4 pb-4">
+              <div className="col-md-4 col-lg-2">
+                <div className="card bg-gray text-center">
+                  <div className="card-header"># of Tokens</div>
+                  <div className="card-body">
+                    <h4 className="card-title">{numberOfTokens}</h4>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 col-lg-2">
+                <div className="card bg-gray text-center">
+                  <div className="card-header"># of Listings</div>
+                  <div className="card-body">
+                    <h4 className="card-title">{currentListedCount}</h4>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 col-lg-2">
+                <div className="card bg-gray text-center">
+                  <div className="card-header"># of Owners</div>
+                  <div className="card-body">
+                    <h4 className="card-title">{currentOwnersCount}</h4>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 col-lg-2">
+                <div className="card bg-gray text-center">
+                  <div className="card-header">24h Volume</div>
+                  <div className="card-body">
+                    <h4 className="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 col-lg-2">
+                <div className="card bg-gray text-center">
+                  <div className="card-header">Total Volume</div>
+                  <div className="card-body">
+                    <h4 className="card-title">{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 col-lg-2">
+                <div className="card bg-gray text-center">
+                  <div className="card-header">Floor Mkt Cap</div>
+                  <div className="card-body">
+                    <h4 className="card-title">{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="row">
               <div className="col-lg-6">
                 <div className="bg-gray rounded shadow-lg mb-4">
