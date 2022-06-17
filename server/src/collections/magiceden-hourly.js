@@ -68,6 +68,7 @@ const getMagicedenCollectionStats = async (symbol) => {
     return stats;
   } catch (error) {
     console.log(error);
+    return { floorPrice: null, listedCount: null, avgPrice24hr: null, volumeAll: null };
   }
 }
 
