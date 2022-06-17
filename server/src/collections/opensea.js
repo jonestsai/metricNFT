@@ -134,6 +134,7 @@ const getCollectionStats = async (slug) => {
     return stats.stats;
   } catch (error) {
     console.log(error);
+    return { one_day_volume: null, one_day_change: null, one_day_sales: null, one_day_average_price: null, seven_day_volume: null, seven_day_change: null, seven_day_sales: null, seven_day_average_price: null, thirty_day_volume: null, thirty_day_change: null, thirty_day_sales: null, thirty_day_average_price: null, total_volume: null, total_sales: null, total_supply: null, count: null, num_owners: null, average_price: null, num_reports: null, market_cap: null, floor_price: null };
   }
 }
 
