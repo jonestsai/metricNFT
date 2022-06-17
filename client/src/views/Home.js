@@ -77,7 +77,7 @@ export default class Home extends React.Component {
       return (b.floor_price * b.total_supply) - (a.floor_price * a.total_supply);
     });
     const filteredResult = collectionsByMC?.filter((collection) => {
-      return collection.floor_price && collection.total_supply && collection.unique_holders > 50;
+      return collection.floor_price && collection.total_supply && collection.unique_holders > 50 && collection.listed_count > 10;
     });
     const paginatedResult = filteredResult?.slice(
       (currentPage - 1) * COLLECTIONS_PER_PAGE,
