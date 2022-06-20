@@ -127,7 +127,7 @@ const Contact = () => (
 
 const Main = ({ collections, isLoading }) => {
   const collectionRoutes = collections?.map((collection, index) => {
-    const { image, name, symbol, floor_price, _24hvolume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
+    const { image, name, symbol, floor_price, one_day_price_change, seven_day_price_change, one_day_volume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
     const floorPrice = live_floor_price || floor_price;
     const listedCount = live_listed_count || listed_count;
     const volumeAll = live_volume_all || volume_all;
@@ -145,7 +145,7 @@ const Main = ({ collections, isLoading }) => {
           currentOwnersCount={ownersCount}
           numberOfTokens={maxSupply}
           volumeAll={volumeAll / LAMPORTS_PER_SOL}
-          _24hVolume={_24hvolume / LAMPORTS_PER_SOL}
+          oneDayVolume={one_day_volume / LAMPORTS_PER_SOL}
         />
       }></Route>
     );

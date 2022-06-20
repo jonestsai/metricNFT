@@ -85,9 +85,11 @@ export default class Home extends React.Component {
     );
 
     const data = paginatedResult?.map((collection, index) => {
-      const { image, name, symbol, floor_price, live_floor_price, _1dfloor, _7dfloor, _24hvolume, total_supply, unique_holders, listed_count, live_listed_count } = collection;
+      const { image, name, symbol, floor_price, live_floor_price, one_day_volume, one_day_price_change, live_one_day_price_change, seven_day_price_change, live_seven_day_price_change, total_supply, unique_holders, listed_count, live_listed_count } = collection;
       const floorPrice = live_floor_price || floor_price;
       const floorPriceInSOL = floorPrice / LAMPORTS_PER_SOL;
+      const oneDayPriceChange = live_one_day_price_change || one_day_price_change;
+      const sevenDayPriceChange = live_seven_day_price_change || seven_day_price_change;
       let currencySymbol = '';
       switch (currency) {
         case 'ETH':
@@ -99,9 +101,9 @@ export default class Home extends React.Component {
       }
 
       const floorPriceText = `${currencySymbol}${(floorPriceInSOL * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
-      const _24hChange = _1dfloor ? (floorPrice - _1dfloor) / _1dfloor * 100 : 0;
-      const _7dChange = _7dfloor ? (floorPrice - _7dfloor) / _7dfloor * 100 : 0;
-      const volume = `${currencySymbol}${((_24hvolume / LAMPORTS_PER_SOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+      const oneDayPriceChangePct = oneDayPriceChange ? oneDayPriceChange * 100 : 0;
+      const sevenDayPriceChangePct = sevenDayPriceChange ? sevenDayPriceChange * 100 : 0;
+      const volume = `${currencySymbol}${((one_day_volume / LAMPORTS_PER_SOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
       const maxSupply = total_supply;
       const floorMarketCap = `${currencySymbol}${(floorPriceInSOL * maxSupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
       const listedCount = live_listed_count || listed_count;
@@ -114,8 +116,8 @@ export default class Home extends React.Component {
           name,
           symbol,
           floorPrice: floorPriceText,
-          _24hChange,
-          _7dChange,
+          oneDayPriceChangePct,
+          sevenDayPriceChangePct,
           volume,
           floorMarketCap,
           maxSupply,

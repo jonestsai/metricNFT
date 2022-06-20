@@ -54,9 +54,9 @@ export default function CollectionTable(props) {
       </thead>
       <tbody>
         {items?.map((item) => {
-          const { row, image, name, symbol, floorPrice, _24hChange, _7dChange, volume, floorMarketCap, maxSupply, holders, listedCount} = item;
-          const _24hChangeColor = _24hChange < 0 ? 'text-danger' : 'text-success';
-          const _7dChangeColor = _7dChange < 0 ? 'text-danger' : 'text-success';
+          const { row, image, name, symbol, floorPrice, oneDayPriceChangePct, sevenDayPriceChangePct, volume, floorMarketCap, maxSupply, holders, listedCount} = item;
+          const _24hChangeColor = oneDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
+          const _7dChangeColor = sevenDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
           const handleRowClick = (symbol) => {
             navigate(symbol);
           }
@@ -70,8 +70,8 @@ export default function CollectionTable(props) {
             <td className="align-middle"><img className = "rounded-circle" height="40" src={image} role="button" onClick={()=> handleRowClick(symbol)} /></td>
             <td className="text-start align-middle"><u role="button" onClick={()=> handleRowClick(symbol)}>{name}</u></td>
             <td className="text-white-50 text-end align-middle">{floorPrice}</td>
-            <td className={`${_24hChangeColor} text-end align-middle`}>{(_24hChange).toFixed(1)}%</td>
-            <td className={`${_7dChangeColor} text-end align-middle`}>{(_7dChange).toFixed(1)}%</td>
+            <td className={`${_24hChangeColor} text-end align-middle`}>{(oneDayPriceChangePct).toFixed(1)}%</td>
+            <td className={`${_7dChangeColor} text-end align-middle`}>{(sevenDayPriceChangePct).toFixed(1)}%</td>
             <td className="text-white-50 text-end align-middle">{volume}</td>
             <td className="text-white-50 text-end align-middle">{floorMarketCap}</td>
             <td className="text-white-50 text-end align-middle">{maxSupply}</td>

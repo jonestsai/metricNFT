@@ -24,11 +24,6 @@ app.use(express.urlencoded()); // to support URL-encoded bodies
 app.get('/api', async (req, res) => {
   let leftJoins = '';
 
-  // Get the 24h and 7d floor
-  for (let days = 1; days <= 10; days += 6) {
-    leftJoins += `LEFT JOIN (SELECT MIN(floor_price) AS _${days}dfloor, symbol AS _${days}dsymbol FROM magiceden_snapshot WHERE start_time > (NOW() - interval '${days + 1} days') AND start_time < (NOW() - interval '${days} days') GROUP BY symbol) _${days}d ON _magiceden_collection.symbol = _${days}d._${days}dsymbol `;
-  }
-
   pool.query(`
     SELECT * FROM (
       SELECT name, symbol, image
@@ -41,26 +36,11 @@ app.get('/api', async (req, res) => {
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
-      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, listed_count AS live_listed_count, volume_all AS live_volume_all
+      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
       ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
-    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol
-    LEFT JOIN (
-      SELECT symbol,
-        SUM(CASE _magiceden_snapshot.row
-          WHEN 1 THEN volume_all
-          WHEN 2 THEN -volume_all
-          ELSE 0
-        END) AS _24hvolume
-      FROM (
-        SELECT *, ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY start_time desc) AS row
-        FROM magiceden_snapshot) _magiceden_snapshot
-      WHERE _magiceden_snapshot.row <= 2
-      GROUP BY symbol
-    ) _24hvolume
-    ON _magiceden_snapshot.symbol = _24hvolume.symbol
-    ${leftJoins}`, (error, results) => {
+    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -238,11 +218,6 @@ app.listen(port, () => {
 app.get('/api/dev/home', async (req, res) => {
   let leftJoins = '';
 
-  // Get the 24h and 7d floor
-  for (let days = 1; days <= 10; days += 6) {
-    leftJoins += `LEFT JOIN (SELECT MIN(floor_price) AS _${days}dfloor, symbol AS _${days}dsymbol FROM magiceden_snapshot WHERE start_time > (NOW() - interval '${days + 1} days') AND start_time < (NOW() - interval '${days} days') GROUP BY symbol) _${days}d ON _magiceden_collection.symbol = _${days}d._${days}dsymbol `;
-  }
-
   pool.query(`
     SELECT * FROM (
       SELECT name, symbol, image
@@ -255,26 +230,11 @@ app.get('/api/dev/home', async (req, res) => {
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
-      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, listed_count AS live_listed_count, volume_all AS live_volume_all
+      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
       ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
-    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol
-    LEFT JOIN (
-      SELECT symbol,
-        SUM(CASE _magiceden_snapshot.row
-          WHEN 1 THEN volume_all
-          WHEN 2 THEN -volume_all
-          ELSE 0
-        END) AS _24hvolume
-      FROM (
-        SELECT *, ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY start_time desc) AS row
-        FROM magiceden_snapshot) _magiceden_snapshot
-      WHERE _magiceden_snapshot.row <= 2
-      GROUP BY symbol
-    ) _24hvolume
-    ON _magiceden_snapshot.symbol = _24hvolume.symbol
-    ${leftJoins}`, (error, results) => {
+    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol`, (error, results) => {
     if (error) {
       throw error;
     }

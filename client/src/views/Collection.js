@@ -108,7 +108,7 @@ export default class Collection extends React.Component {
   };
 
   render() {
-    const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, _24hVolume, volumeAll } = this.props;
+    const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll } = this.props;
     const { isLoading, collection } = this.state;
 
     const listedCount = this.getListedCount(collection);
@@ -156,7 +156,7 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">24h Volume</div>
               <div className="card-body">
-                <h4 className="card-title">{Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                <h4 className="card-title">{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
@@ -260,7 +260,7 @@ export default class Collection extends React.Component {
               <div className="col-lg-6">
                 <div className="bg-gray rounded shadow-lg mb-5">
                   <h5 className="text-start px-3 pt-3">Sales Volume</h5>
-                  <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(_24hVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} SOL`}</h6>
+                  <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} SOL`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <ComposedChart
                       width={500}
