@@ -1,6 +1,7 @@
 require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
+const moment = require('moment');
 const fetch = require('node-fetch');
 const { Pool } = require('pg');
 
@@ -32,12 +33,14 @@ app.get('/api', async (req, res) => {
     LEFT JOIN (
       SELECT DISTINCT ON (symbol) *
       FROM magiceden_snapshot
+      WHERE start_time::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
       ORDER BY symbol, start_time DESC
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
       SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
+      WHERE start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}'
       ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
     ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol`, (error, results) => {
@@ -226,12 +229,14 @@ app.get('/api/dev/home', async (req, res) => {
     LEFT JOIN (
       SELECT DISTINCT ON (symbol) *
       FROM magiceden_snapshot
+      WHERE start_time::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
       ORDER BY symbol, start_time DESC
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
       SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
+      WHERE start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}'
       ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
     ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol`, (error, results) => {
