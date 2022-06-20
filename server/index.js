@@ -38,12 +38,12 @@ app.get('/api', async (req, res) => {
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
-      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
+      SELECT DISTINCT ON (symbol) symbol as hourly_snapshot_symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
       WHERE start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}'
       ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
-    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol`, (error, results) => {
+    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.hourly_snapshot_symbol`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -234,12 +234,12 @@ app.get('/api/dev/home', async (req, res) => {
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
-      SELECT DISTINCT ON (symbol) symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
+      SELECT DISTINCT ON (symbol) symbol as hourly_snapshot_symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
       WHERE start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}'
       ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
-    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.symbol`, (error, results) => {
+    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.hourly_snapshot_symbol`, (error, results) => {
     if (error) {
       throw error;
     }
