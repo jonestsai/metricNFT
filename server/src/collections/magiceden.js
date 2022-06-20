@@ -116,10 +116,15 @@ const magicedenCollectionsSnapshot = async (collections) => {
       ({ totalSupply, uniqueHolders, isError } = collectionHolderStats);
     }
 
+    const [{ _1dfloor, _7dfloor, _24hvolume }] = await getPastData(symbol);
+    const oneDayPriceChange = _1dfloor ? (floorPrice - _1dfloor) / _1dfloor : 0;
+    const sevenDayPriceChange = _7dfloor ? (floorPrice - _7dfloor) / _7dfloor : 0;
+    const oneDayVolume = _24hvolume;
+
     const startSnapshotTime = new Date();
     const query = {
-      text: 'INSERT INTO magiceden_snapshot(symbol, start_time, floor_price, listed_count, avg_price_24hr, volume_all, total_supply, unique_holders) VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
-      values: [symbol, startSnapshotTime, floorPrice, listedCount, avgPrice24hr, volumeAll, totalSupply, uniqueHolders],
+      text: 'INSERT INTO magiceden_snapshot(symbol, start_time, floor_price, listed_count, avg_price_24hr, volume_all, total_supply, unique_holders, one_day_price_change, seven_day_price_change, one_day_volume) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+      values: [symbol, startSnapshotTime, floorPrice, listedCount, avgPrice24hr, volumeAll, totalSupply, uniqueHolders, oneDayPriceChange, sevenDayPriceChange, oneDayVolume],
     };
     pool.query(query, (error, results) => {
       if (error) {
@@ -157,6 +162,44 @@ const getCollectionHolderStats = async (symbol) => {
   } catch (error) {
     console.log(error);
     return { totalSupply: null, uniqueHolders: null, isError: true };
+  }
+}
+
+const getPastData = async (symbol) => {
+  try {
+    let leftJoins = '';
+
+    // Get the 24h and 7d floor
+    for (let days = 1; days <= 10; days += 6) {
+      leftJoins += `LEFT JOIN (SELECT MIN(floor_price) AS _${days}dfloor, symbol AS _${days}dsymbol FROM magiceden_snapshot WHERE start_time > (NOW() - interval '${days + 1} days') AND start_time < (NOW() - interval '${days} days') GROUP BY symbol) _${days}d ON _magiceden_collection.symbol = _${days}d._${days}dsymbol `;
+    }
+
+    const { rows } = await pool.query(`
+      SELECT * FROM (
+        SELECT name, symbol, image
+        FROM magiceden_collection
+      ) _magiceden_collection
+      LEFT JOIN LATERAL (
+        SELECT symbol,
+          SUM(CASE _magiceden_snapshot.row
+            WHEN 1 THEN volume_all
+            WHEN 2 THEN -volume_all
+            ELSE 0
+          END) AS _24hvolume
+        FROM (
+          SELECT *, ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY start_time desc) AS row
+          FROM magiceden_snapshot) _magiceden_snapshot
+        WHERE _magiceden_snapshot.row <= 2
+        GROUP BY symbol
+      ) _24hvolume
+      ON _magiceden_collection.symbol = _24hvolume.symbol
+      ${leftJoins}
+      WHERE _magiceden_collection.symbol = '${symbol}'
+    `);
+
+    return rows;
+  } catch (error) {
+    console.log(error);
   }
 }
 
