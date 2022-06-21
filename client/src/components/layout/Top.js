@@ -42,7 +42,7 @@ export default function Top() {
   }) : null;
 
   return (
-    <Navbar expand="lg" bg="dark" variant="dark" className="px-4 border-bottom border-gray">
+    <Navbar expand="lg" bg="dark" variant="dark" className="px-4 border-bottom border-secondary">
       <Navbar.Brand className="me-5" href="/">
         <img className="my-3 pe-3" src={logo} alt="Logo" height="50" />
         <span className="display-6 align-middle"><strong>MetricNFT</strong></span>
