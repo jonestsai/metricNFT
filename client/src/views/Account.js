@@ -38,7 +38,7 @@ export default function Account() {
     try {
       const response = await fetch(`${URLS.api}/magic-eden/wallets/${publicKey.toString()}/activities?offset=0&limit=100`);
       const wallet = await response.json();
-      console.log(wallet);
+
       setWallet(wallet);
     } catch (error) {
       console.log(error);
@@ -47,7 +47,7 @@ export default function Account() {
     try {
       const response = await fetch(`${URLS.api}/magic-eden/collections`);
       const collections = await response.json();
-      // console.log(collections);
+
       setCollections(collections);
     } catch (error) {
       console.log(error);
@@ -56,7 +56,7 @@ export default function Account() {
     try {
       const response = await fetch(`${URLS.api}/users/${publicKey.toString()}`);
       const userNotifications = await response.json();
-      // console.log(userNotifications);
+
       const email = userNotifications[0]?.email || '';
       setUserNotifications(userNotifications);
       setEmail(email);
@@ -78,7 +78,6 @@ export default function Account() {
     e.preventDefault();
 
     const collection = collections.find(c => c.name === collectionOption);
-    // console.log(collection);
 
     if (!email) {
       alert('Please save your email under Settings');
