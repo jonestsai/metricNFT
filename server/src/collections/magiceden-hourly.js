@@ -17,7 +17,7 @@ async function main() {
 }
 
 const getMagicedenCollections = async () => {
-  const previousDate = moment().subtract(1, 'day').format('YYYY-MM-DD HH:mm:ss');
+  const previousDate = moment().subtract(2, 'day').format('YYYY-MM-DD HH:mm:ss');
 
   try {
     const { rows } = await pool.query(`
