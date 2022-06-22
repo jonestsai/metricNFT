@@ -1,3 +1,37 @@
 [list]::-webkit-calendar-picker-indicator {
   display: none !important;
 }
+
+.secondary-menu .nav-link {
+  color: var(--bs-gray-500);
+  -webkit-transition: none;
+  -moz-transition: none;
+  -o-transition: none;
+  transition: none;
+  border-bottom: 2px solid transparent;
+}
+
+.secondary-menu .nav-link:hover {
+  color: white;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-left-color: transparent;
+  border-bottom: 2px solid var(--bs-gray-500);
+}
+
+.secondary-menu .nav-link.active {
+  background-color: transparent;
+  color: white;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-left-color: transparent;
+  border-bottom: 2px solid #61cdbb;
+}
+
+.secondary-menu .nav-link.active:hover {
+  color: #61cdbb;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-left-color: transparent;
+  border-bottom: 2px solid #61cdbb;
+}

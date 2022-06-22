@@ -4,12 +4,14 @@ import {
 } from '@solana/wallet-adapter-react-ui';
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { FaStar, FaRegStar } from 'react-icons/fa';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { URLS } from '../../Settings';
 import logo from '../../assets/logo.png';
 import './Top.css';
 
 export default function Top() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [collections, setCollections] = useState();
   const [collectionOption, setCollectionOption] = useState();
@@ -42,6 +44,7 @@ export default function Top() {
   }) : null;
 
   return (
+    <div>
     <Navbar expand="lg" bg="dark" variant="dark" className="px-4 border-bottom border-secondary">
       <Navbar.Brand className="me-5" href="/">
         <img className="my-3 pe-3" src={logo} alt="Logo" height="50" />
@@ -61,5 +64,14 @@ export default function Top() {
         </Nav>
       </Navbar.Collapse>
     </Navbar>
+    <Nav className="secondary-menu px-4 border-bottom border-secondary" variant="tabs" activeKey={location.pathname}>
+      <Nav.Item>
+        <Nav.Link className="d-flex" href="/watchlist"><FaStar className="me-2" size={20} style={{ height: 25 }} role="button" color="#fc6" />Watchlist</Nav.Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Nav.Link href="/">Collections</Nav.Link>
+      </Nav.Item>
+    </Nav>
+    </div>
   )
 };
