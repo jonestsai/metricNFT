@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import { FaStar, FaRegStar, FaRegBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,11 @@ export default function CollectionTable(props) {
   };
   const navigate = useNavigate();
 
-  const [watchlist, setWatchlist] = useState(new Set());
+  const [watchlist, setWatchlist] = useState(new Set(JSON.parse(localStorage.getItem('watchlist'))));
+
+  useEffect(() => {
+    localStorage.setItem('watchlist', JSON.stringify([...watchlist]));
+  }, [watchlist]);
 
   const handleWatchlistClick = (symbol) => {
     if (watchlist.has(symbol)) {
