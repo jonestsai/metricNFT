@@ -4,7 +4,6 @@ import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import CollectionTable from '../components/CollectionTable';
 import Pagination from '../components/Pagination';
 import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE, MAGICEDEN_IMAGE_URL } from '../utils/constants';
-import { URLS } from '../Settings';
 import './Home.css';
 
 export default function Home(props) {
