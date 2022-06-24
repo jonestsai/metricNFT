@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
 import { Container, Dropdown, DropdownButton, Nav } from 'react-bootstrap';
-import { FaStar, FaRegStar } from 'react-icons/fa';
+import { FaStar } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import CollectionTable from '../components/CollectionTable';
 import Pagination from '../components/Pagination';
