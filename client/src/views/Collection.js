@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, OverlayTrigger, Tooltip as BSTooltip } from 'react-bootstrap';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
@@ -143,9 +143,18 @@ export default class Collection extends React.Component {
           <div className="col-10 col-md-11">
             <h2 className="text-start d-flex align-items-center">
               {name}
-              <span className="watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center">
-                {watchlist.has(symbol) ? <FaStar className="m-1" size={18} role="button" color="#fc6" onClick={()=> this.handleWatchlistClick(symbol)} /> : <FaRegStar className="m-1" size={18} role="button" onClick={()=> this.handleWatchlistClick(symbol)} />}
-              </span>
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <BSTooltip>
+                    {watchlist.has(symbol) ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                  </BSTooltip>
+                }
+              >
+                <span className="watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center">
+                  {watchlist.has(symbol) ? <FaStar className="m-1" size={18} role="button" color="#fc6" onClick={()=> this.handleWatchlistClick(symbol)} /> : <FaRegStar className="m-1" size={18} role="button" onClick={()=> this.handleWatchlistClick(symbol)} />}
+                </span>
+              </OverlayTrigger>
             </h2>
             <h4 className="text-start">{currentPrice} SOL</h4>
           </div>
