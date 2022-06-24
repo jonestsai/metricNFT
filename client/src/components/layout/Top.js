@@ -3,7 +3,7 @@ import {
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
+import { Navbar, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { URLS } from '../../Settings';
 import logo from '../../assets/logo.png';
@@ -12,7 +12,6 @@ import './Top.css';
 export default function Top() {
   const navigate = useNavigate();
   const [collections, setCollections] = useState();
-  const [collectionOption, setCollectionOption] = useState();
 
   useEffect(() => {
     getCollections();
