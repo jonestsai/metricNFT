@@ -121,14 +121,14 @@ export default function Home(props) {
         className="text-end mb-3"
         onSelect={handleCurrencySelect}
       >
-        <Dropdown.Item eventKey="SOL" active={!!(currency == 'SOL')}>SOL</Dropdown.Item>
+        <Dropdown.Item eventKey="SOL" active={!!(currency === 'SOL')}>SOL</Dropdown.Item>
         {!isRatesLoading && (
           <div>
             {exchangeRates['solana/usd'] && (
-              <Dropdown.Item eventKey="USD" active={!!(currency == 'USD')}>USD</Dropdown.Item>
+              <Dropdown.Item eventKey="USD" active={!!(currency === 'USD')}>USD</Dropdown.Item>
             )}
             {exchangeRates['ethereum/usd'] && (
-              <Dropdown.Item eventKey="ETH" active={!!(currency == 'ETH')}>ETH</Dropdown.Item>
+              <Dropdown.Item eventKey="ETH" active={!!(currency === 'ETH')}>ETH</Dropdown.Item>
             )}
           </div>
         )}
