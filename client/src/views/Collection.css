@@ -1,3 +1,9 @@
 .bg-gray {
   background-color: #2b3035; /* --bs-gray-850 */
 }
+
+.watchlist {
+  width: 38px;
+  height: 38px;
+  border-radius: 0.3em;
+}

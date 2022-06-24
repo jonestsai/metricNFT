@@ -138,7 +138,7 @@ const Main = ({ collections, isLoading }) => {
       <Route key={collection.id} path={symbol} element={
         <Collection
           name={name}
-          collectionAPI={symbol}
+          symbol={symbol}
           image={image}
           currentPrice={floorPrice / LAMPORTS_PER_SOL}
           currentListedCount={listedCount}

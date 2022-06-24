@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Container } from 'react-bootstrap';
+import { FaStar, FaRegStar } from 'react-icons/fa';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
@@ -12,6 +13,7 @@ export default class Collection extends React.Component {
     this.state = {
       collection: '',
       isLoading: true,
+      watchlist: new Set(JSON.parse(localStorage.getItem('watchlist'))),
     };
   }
 
@@ -30,10 +32,10 @@ export default class Collection extends React.Component {
       this.setState({ isLoading: true });
     }
 
-    const { collectionAPI } = this.props;
+    const { symbol } = this.props;
 
     try {
-      const response = await fetch(`${URLS.api}/${collectionAPI}`);
+      const response = await fetch(`${URLS.api}/${symbol}`);
       const collection = await response.json();
 
       this.setState({
@@ -45,6 +47,22 @@ export default class Collection extends React.Component {
       this.setState({ isLoading: false });
     }
   };
+
+  handleWatchlistClick = (symbol) => {
+    const { watchlist } = this.state;
+    console.log(symbol);
+    console.log(watchlist);
+    if (watchlist.has(symbol)) {
+      const newWatchlist = new Set(watchlist);
+      newWatchlist.delete(symbol);
+      localStorage.setItem('watchlist', JSON.stringify([...newWatchlist]));
+      this.setState({ watchlist: new Set(newWatchlist) });
+    } else {
+      const newWatchlist = new Set(watchlist).add(symbol);
+      localStorage.setItem('watchlist', JSON.stringify([...newWatchlist]));
+      this.setState({ watchlist: new Set(watchlist).add(symbol) });
+    }
+  }
 
   getListedCount = (collection) => {
     return collection.length > 0
@@ -108,8 +126,8 @@ export default class Collection extends React.Component {
   };
 
   render() {
-    const { name, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll } = this.props;
-    const { isLoading, collection } = this.state;
+    const { name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll } = this.props;
+    const { isLoading, collection, watchlist } = this.state;
 
     const listedCount = this.getListedCount(collection);
     const ownersCount = this.getOwnersCount(collection);
@@ -123,7 +141,12 @@ export default class Collection extends React.Component {
             <img className = "rounded-circle img-fluid" height="50" src={`${MAGICEDEN_IMAGE_URL}${image}`} />
           </div>
           <div className="col-10 col-md-11">
-            <h3 className="text-start">{name}</h3>
+            <h2 className="text-start d-flex align-items-center">
+              {name}
+              <span className="watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center">
+                {watchlist.has(symbol) ? <FaStar className="m-1" size={18} role="button" color="#fc6" onClick={()=> this.handleWatchlistClick(symbol)} /> : <FaRegStar className="m-1" size={18} role="button" onClick={()=> this.handleWatchlistClick(symbol)} />}
+              </span>
+            </h2>
             <h4 className="text-start">{currentPrice} SOL</h4>
           </div>
         </div>
