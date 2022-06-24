@@ -1,12 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
-import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Container, Dropdown, DropdownButton, Nav } from 'react-bootstrap';
+import { FaStar, FaRegStar } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
 import CollectionTable from '../components/CollectionTable';
 import Pagination from '../components/Pagination';
 import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import './Home.css';
 
 export default function Home(props) {
+  const location = useLocation();
+
   const [exchangeRates, setExchangeRates] = useState();
   const [currency, setCurrency] = useState('SOL');
   const [currencyRate, setCurrencyRate] = useState(1);
@@ -112,45 +116,55 @@ export default function Home(props) {
   });
 
   return (
-    <Container fluid>
-      <h3 className="text-start pt-5">NFT Prices by Floor Market Cap</h3>
-      <DropdownButton
-        variant="secondary"
-        menuVariant="dark"
-        title={currency}
-        className="text-end mb-3"
-        onSelect={handleCurrencySelect}
-      >
-        <Dropdown.Item eventKey="SOL" active={!!(currency === 'SOL')}>SOL</Dropdown.Item>
-        {!isRatesLoading && (
-          <div>
-            {exchangeRates['solana/usd'] && (
-              <Dropdown.Item eventKey="USD" active={!!(currency === 'USD')}>USD</Dropdown.Item>
-            )}
-            {exchangeRates['ethereum/usd'] && (
-              <Dropdown.Item eventKey="ETH" active={!!(currency === 'ETH')}>ETH</Dropdown.Item>
-            )}
-          </div>
-        )}
-      </DropdownButton>
-      <div className="table-responsive-sm">
-        <CollectionTable
-          collections={data}
-        />
-        {isLoading && (
-          <div className="my-5 text-center">
-            <div className="spinner-border text-light" role="status" />
-          </div>
-        )}
-      </div>
-      <div className="pt-3">
-        <Pagination
-          total={collections?.length}
-          itemsPerPage={COLLECTIONS_PER_PAGE}
-          currentPage={currentPage}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      </div>
-    </Container>
+    <div>
+      <Nav className="secondary-menu px-4 border-bottom border-secondary" variant="tabs" activeKey={location.pathname}>
+        <Nav.Item>
+          <Nav.Link className="d-flex" href="/watchlist"><FaStar className="me-2" size={20} style={{ height: 25 }} role="button" color="#fc6" />Watchlist</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href="/">Collections</Nav.Link>
+        </Nav.Item>
+      </Nav>
+      <Container fluid>
+        <h3 className="text-start pt-5">NFT Prices by Floor Market Cap</h3>
+        <DropdownButton
+          variant="secondary"
+          menuVariant="dark"
+          title={currency}
+          className="text-end mb-3"
+          onSelect={handleCurrencySelect}
+        >
+          <Dropdown.Item eventKey="SOL" active={!!(currency === 'SOL')}>SOL</Dropdown.Item>
+          {!isRatesLoading && (
+            <div>
+              {exchangeRates['solana/usd'] && (
+                <Dropdown.Item eventKey="USD" active={!!(currency === 'USD')}>USD</Dropdown.Item>
+              )}
+              {exchangeRates['ethereum/usd'] && (
+                <Dropdown.Item eventKey="ETH" active={!!(currency === 'ETH')}>ETH</Dropdown.Item>
+              )}
+            </div>
+          )}
+        </DropdownButton>
+        <div className="table-responsive-sm">
+          <CollectionTable
+            collections={data}
+          />
+          {isLoading && (
+            <div className="my-5 text-center">
+              <div className="spinner-border text-light" role="status" />
+            </div>
+          )}
+        </div>
+        <div className="pt-3">
+          <Pagination
+            total={collections?.length}
+            itemsPerPage={COLLECTIONS_PER_PAGE}
+            currentPage={currentPage}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </div>
+      </Container>
+    </div>
   )
 };
