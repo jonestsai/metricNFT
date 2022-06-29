@@ -51,8 +51,7 @@ export default class Collection extends React.Component {
 
   handleWatchlistClick = (symbol) => {
     const { watchlist } = this.state;
-    console.log(symbol);
-    console.log(watchlist);
+
     if (watchlist.has(symbol)) {
       const newWatchlist = new Set(watchlist);
       newWatchlist.delete(symbol);
