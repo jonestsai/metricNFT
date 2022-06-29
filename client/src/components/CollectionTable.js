@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
-import { FaRegBell } from 'react-icons/fa';
+import { FaStar, FaRegStar, FaRegBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { isCurrencyString, currencyToNumber } from '../utils/helpers';
 import './CollectionTable.css';
@@ -16,11 +16,30 @@ export default function CollectionTable(props) {
   };
   const navigate = useNavigate();
 
+  const [watchlist, setWatchlist] = useState(new Set(JSON.parse(localStorage.getItem('watchlist'))));
+
+  useEffect(() => {
+    localStorage.setItem('watchlist', JSON.stringify([...watchlist]));
+  }, [watchlist]);
+
+  const handleWatchlistClick = (symbol) => {
+    if (watchlist.has(symbol)) {
+      setWatchlist(prev => {
+        const next = new Set(prev);
+        next.delete(symbol);
+        return next;
+      });
+    } else {
+      setWatchlist(prev => new Set(prev).add(symbol));
+    }
+  }
+
   return (
     <Table variant="dark" hover>
       <thead>
         <tr className="table-secondary">
-          <th scope="col">#</th>
+          <th scope="col" className="ps-3"></th>
+          <th scope="col" className="ps-0">#</th>
           <th scope="col"></th>
           <th scope="col" role="button"
             onClick={() => requestSort('name')}
@@ -66,7 +85,10 @@ export default function CollectionTable(props) {
 
           return (
           <tr key={item.id}>
-            <td className="text-white-50 align-middle">{row}</td>
+            <td className="text-white-50 ps-3 align-middle">
+              {watchlist.has(symbol) ? <FaStar className="d-flex" size={20} role="button" color="#fc6" onClick={()=> handleWatchlistClick(symbol)} /> : <FaRegStar className="d-flex" size={20} role="button" onClick={()=> handleWatchlistClick(symbol)} />}
+            </td>
+            <td className="text-white-50 ps-1 align-middle">{row}</td>
             <td className="align-middle"><img className = "rounded-circle" height="40" src={image} role="button" onClick={()=> handleRowClick(symbol)} /></td>
             <td className="text-start align-middle"><u role="button" onClick={()=> handleRowClick(symbol)}>{name}</u></td>
             <td className="text-white-50 text-end align-middle">{floorPrice}</td>
