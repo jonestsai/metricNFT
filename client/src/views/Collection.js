@@ -66,28 +66,36 @@ export default class Collection extends React.Component {
 
   getListedCount = (collection) => {
     return collection.length > 0
-      ? collection.map((detail) => {
+      ? collection.reduce((listedCount, detail) => {
         const { start_time, listed_count } = detail;
         const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
         const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
 
-        return { date: `${date}. ${month}`, 'Total Listed': Number(listed_count) };
-      })
+        if (listed_count !== null) {
+          listedCount.push({ date: `${date}. ${month}`, 'Total Listed': Number(listed_count) });
+        }
+
+        return listedCount;
+      }, [])
       : null;
   };
 
   getOwnersCount = (collection) => {
     return collection.length > 0
-      ? collection.map((detail) => {
+      ? collection.reduce((ownersCount, detail) => {
         const { start_time, unique_holders, howrare_holders } = detail;
         const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
         const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        const ownersCount = howrare_holders || unique_holders;
+        const holders = howrare_holders || unique_holders;
 
-        return { date: `${date}. ${month}`, 'Total Owners': Number(ownersCount) };
-      })
+        if (holders !== null) {
+          ownersCount.push({ date: `${date}. ${month}`, 'Total Owners': Number(holders) });
+        }
+
+        return ownersCount;
+      }, [])
       : null;
   };
 
@@ -95,7 +103,7 @@ export default class Collection extends React.Component {
     let lastPrice;
     let updatedPrice;
     return collection.length > 0
-      ? collection.map((detail) => {
+      ? collection.reduce((price, detail) => {
         const { start_time, floor_price } = detail;
         const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
@@ -108,20 +116,29 @@ export default class Collection extends React.Component {
 
         lastPrice = updatedPrice;
 
-        return { date: `${date}. ${month}`, 'Price': updatedPrice };
-      })
+        if (updatedPrice !== null) {
+          price.push({ date: `${date}. ${month}`, 'Price': updatedPrice });
+        }
+
+        return price;
+      }, [])
       : null;
   };
 
   getSalesVolume = (collection) => {
     return collection.length > 0
-      ? collection.map((detail) => {
+      ? collection.reduce((salesVolume, detail) => {
         const { start_time, _24hvolume } = detail;
         const datetime = new Date(start_time);
         const date = datetime.getUTCDate();
         const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        return { date: `${date}. ${month}`, 'Volume': Number(_24hvolume / LAMPORTS_PER_SOL) };
-      })
+
+        if (_24hvolume !== null) {
+          salesVolume.push({ date: `${date}. ${month}`, 'Volume': Number(_24hvolume / LAMPORTS_PER_SOL) });
+        }
+
+        return salesVolume;
+      }, [])
       : null;
   };
 
