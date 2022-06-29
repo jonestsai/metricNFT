@@ -3,7 +3,7 @@ import {
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
+import { Navbar, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { URLS } from '../../Settings';
 import logo from '../../assets/logo.png';
@@ -12,7 +12,6 @@ import './Top.css';
 export default function Top() {
   const navigate = useNavigate();
   const [collections, setCollections] = useState();
-  const [collectionOption, setCollectionOption] = useState();
 
   useEffect(() => {
     getCollections();
@@ -42,7 +41,7 @@ export default function Top() {
   }) : null;
 
   return (
-    <Navbar expand="lg" bg="dark" variant="dark" className="px-4 border-bottom border-gray">
+    <Navbar expand="lg" bg="dark" variant="dark" className="px-4 border-bottom border-secondary">
       <Navbar.Brand className="me-5" href="/">
         <img className="my-3 pe-3" src={logo} alt="Logo" height="50" />
         <span className="display-6 align-middle"><strong>MetricNFT</strong></span>

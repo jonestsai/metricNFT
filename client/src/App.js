@@ -25,6 +25,7 @@ import { LAMPORTS_PER_SOL } from './utils/constants';
 import Collection from './views/Collection';
 import Account from './views/Account';
 import Home from './views/Home';
+import Watchlist from './views/Watchlist';
 import logo from './logo.svg';
 import './App.css';
 
@@ -138,7 +139,7 @@ const Main = ({ collections, isLoading }) => {
       <Route key={collection.id} path={symbol} element={
         <Collection
           name={name}
-          collectionAPI={symbol}
+          symbol={symbol}
           image={image}
           currentPrice={floorPrice / LAMPORTS_PER_SOL}
           currentListedCount={listedCount}
@@ -155,6 +156,7 @@ const Main = ({ collections, isLoading }) => {
     <Routes>
       <Route path='/' element={<Home collections={collections} isLoading={isLoading} />}></Route>
       {collectionRoutes}
+      <Route path='/watchlist' element={<Watchlist />}></Route>
       <Route path='/account' element={<Account />}></Route>
       <Route path='/about' element={<About />}></Route>
       <Route path='/contact' element={<Contact />}></Route>
