@@ -87,6 +87,48 @@ app.get('/api/:slug', async (req, res) => {
   });
 });
 
+app.get('/api/users/watchlist', async (req, res) => {
+  const { symbol } = req.query;
+  const symbols = symbol.toString();
+
+  pool.query(`
+    SELECT DISTINCT ON (magiceden_snapshot.start_time::date, magiceden_snapshot.symbol) magiceden_snapshot.start_time::date, *
+      FROM magiceden_snapshot
+    LEFT JOIN (
+      SELECT name, symbol, image
+      FROM magiceden_collection
+    ) _magiceden_collection
+    ON magiceden_snapshot.symbol = _magiceden_collection.symbol
+    LEFT JOIN (
+      SELECT DISTINCT ON (howrare_snapshot.start_time::date, magiceden_symbol) howrare_snapshot.start_time::date, holders AS howrare_holders, magiceden_symbol
+      FROM howrare_snapshot
+      JOIN (
+        SELECT name, magiceden_symbol
+        FROM howrare_collection
+      ) _howrare_collection
+      ON howrare_snapshot.name = _howrare_collection.name
+      WHERE magiceden_symbol IN (${symbols}) AND start_time > (NOW() - interval '30 days') AND start_time < NOW()
+      ORDER BY howrare_snapshot.start_time::date
+    ) _howrare_snapshot
+    ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date AND magiceden_snapshot.symbol = magiceden_symbol
+    LEFT JOIN (
+      SELECT DISTINCT ON (start_time::date, symbol) start_time::date,
+        volume_all - LAG(volume_all) OVER (ORDER BY symbol, start_time) AS _24hvolume, symbol
+      FROM magiceden_snapshot
+      WHERE symbol IN (${symbols})
+      ORDER BY start_time::date
+    ) _24hvolume
+    ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date AND magiceden_snapshot.symbol = _24hvolume.symbol
+    WHERE magiceden_snapshot.symbol IN (${symbols}) AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
+    ORDER BY magiceden_snapshot.symbol, magiceden_snapshot.start_time::date`, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
 app.get('/api/users/:walletAddress', (req, res) => {
   const { walletAddress } = req.params;
   pool.query(`SELECT * FROM users
