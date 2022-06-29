@@ -4,7 +4,7 @@ import { Container, Nav, OverlayTrigger, Tooltip as BSTooltip } from 'react-boot
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import { ComposedChart, LineChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { getListedCount, getOwnersCount, getPrice, getSalesVolume } from '../utils/chartHelpers';
+import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
 import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 
 export default function Home(props) {
@@ -64,58 +64,6 @@ export default function Home(props) {
       setWatchlist(new Set(newWatchlist).add(symbol));
     }
   }
-
-  const ListedCountTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-light text-dark rounded opacity-75 p-2">
-          <div className="text-start">{label}</div>
-          <div className="text-start">{`Total Listed: ${payload[0].value}`}</div>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  const OwnersCountTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-light text-dark rounded opacity-75 p-2">
-          <div className="text-start">{label}</div>
-          <div className="text-start">{`Total Owners: ${payload[0].value}`}</div>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  const PriceTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-light text-dark rounded opacity-75 p-2">
-          <div className="text-start">{label}</div>
-          <div className="text-start">{`Floor Price: ${payload[0].value}`}</div>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  const SalesVolumeTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-light text-dark rounded opacity-75 p-2">
-          <div className="text-start">{label}</div>
-          <div className="text-start">{`Volume: ${Number(payload[0].value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`}</div>
-        </div>
-      );
-    }
-
-    return null;
-  };
 
   return (
     <div>

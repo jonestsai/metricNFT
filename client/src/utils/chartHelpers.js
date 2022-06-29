@@ -77,3 +77,55 @@ export function getSalesVolume(collection) {
   }, [])
   : null;
 };
+
+export function ListedCountTooltip({ active, payload, label }) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-light text-dark rounded opacity-75 p-2">
+        <div className="text-start">{label}</div>
+        <div className="text-start">{`Total Listed: ${payload[0].value}`}</div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+export function OwnersCountTooltip({ active, payload, label }) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-light text-dark rounded opacity-75 p-2">
+        <div className="text-start">{label}</div>
+        <div className="text-start">{`Total Owners: ${payload[0].value}`}</div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+export function PriceTooltip({ active, payload, label }) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-light text-dark rounded opacity-75 p-2">
+        <div className="text-start">{label}</div>
+        <div className="text-start">{`Floor Price: ${payload[0].value}`}</div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+export function SalesVolumeTooltip({ active, payload, label }) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-light text-dark rounded opacity-75 p-2">
+        <div className="text-start">{label}</div>
+        <div className="text-start">{`Volume: ${Number(payload[0].value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`}</div>
+      </div>
+    );
+  }
+
+  return null;
+};
