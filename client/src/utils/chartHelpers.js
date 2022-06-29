@@ -70,7 +70,8 @@ export function getSalesVolume(collection) {
     const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
 
     if (_24hvolume !== null) {
-      salesVolume.push({ date: `${date}. ${month}`, 'Volume': Number(_24hvolume / LAMPORTS_PER_SOL) });
+      const oneDayVolume = _24hvolume < 0 ? 0 : _24hvolume;
+      salesVolume.push({ date: `${date}. ${month}`, 'Volume': Number(oneDayVolume / LAMPORTS_PER_SOL) });
     }
 
     return salesVolume;
