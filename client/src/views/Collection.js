@@ -3,7 +3,8 @@ import React from 'react';
 import { Container, OverlayTrigger, Tooltip as BSTooltip } from 'react-bootstrap';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
+import { getListedCount, getOwnersCount, getPrice, getSalesVolume } from '../utils/chartHelpers';
+import { MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
 import './Collection.css';
 
@@ -64,92 +65,14 @@ export default class Collection extends React.Component {
     }
   }
 
-  getListedCount = (collection) => {
-    return collection.length > 0
-      ? collection.reduce((listedCount, detail) => {
-        const { start_time, listed_count } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-
-        if (listed_count !== null) {
-          listedCount.push({ date: `${date}. ${month}`, 'Total Listed': Number(listed_count) });
-        }
-
-        return listedCount;
-      }, [])
-      : null;
-  };
-
-  getOwnersCount = (collection) => {
-    return collection.length > 0
-      ? collection.reduce((ownersCount, detail) => {
-        const { start_time, unique_holders, howrare_holders } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        const holders = howrare_holders || unique_holders;
-
-        if (holders !== null) {
-          ownersCount.push({ date: `${date}. ${month}`, 'Total Owners': Number(holders) });
-        }
-
-        return ownersCount;
-      }, [])
-      : null;
-  };
-
-  getPrice = (collection) => {
-    let lastPrice;
-    let updatedPrice;
-    return collection.length > 0
-      ? collection.reduce((price, detail) => {
-        const { start_time, floor_price } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        updatedPrice = Number(Number(floor_price / LAMPORTS_PER_SOL)?.toFixed(2));
-
-        if (updatedPrice == 0) {
-          updatedPrice = lastPrice;
-        }
-
-        lastPrice = updatedPrice;
-
-        if (updatedPrice !== null) {
-          price.push({ date: `${date}. ${month}`, 'Price': updatedPrice });
-        }
-
-        return price;
-      }, [])
-      : null;
-  };
-
-  getSalesVolume = (collection) => {
-    return collection.length > 0
-      ? collection.reduce((salesVolume, detail) => {
-        const { start_time, _24hvolume } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-
-        if (_24hvolume !== null) {
-          salesVolume.push({ date: `${date}. ${month}`, 'Volume': Number(_24hvolume / LAMPORTS_PER_SOL) });
-        }
-
-        return salesVolume;
-      }, [])
-      : null;
-  };
-
   render() {
     const { name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll } = this.props;
     const { isLoading, collection, watchlist } = this.state;
 
-    const listedCount = this.getListedCount(collection);
-    const ownersCount = this.getOwnersCount(collection);
-    const price = this.getPrice(collection);
-    const salesVolume = this.getSalesVolume(collection);
+    const listedCount = getListedCount(collection);
+    const ownersCount = getOwnersCount(collection);
+    const price = getPrice(collection);
+    const salesVolume = getSalesVolume(collection);
 
     return (
       <Container fluid>

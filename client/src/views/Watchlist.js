@@ -4,6 +4,7 @@ import { Container, Nav, OverlayTrigger, Tooltip as BSTooltip } from 'react-boot
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import { ComposedChart, LineChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { getListedCount, getOwnersCount, getPrice, getSalesVolume } from '../utils/chartHelpers';
 import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 
 export default function Home(props) {
@@ -63,68 +64,6 @@ export default function Home(props) {
       setWatchlist(new Set(newWatchlist).add(symbol));
     }
   }
-
-  const getListedCount = (collection) => {
-    return collection?.length > 0
-      ? collection.map((detail) => {
-        const { start_time, listed_count } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-
-        return { date: `${date}. ${month}`, 'Total Listed': Number(listed_count) };
-      })
-      : null;
-  };
-
-  const getOwnersCount = (collection) => {
-    return collection?.length > 0
-      ? collection.map((detail) => {
-        const { start_time, unique_holders, howrare_holders } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        const ownersCount = howrare_holders || unique_holders;
-
-        return { date: `${date}. ${month}`, 'Total Owners': Number(ownersCount) };
-      })
-      : null;
-  };
-
-  const getPrice = (collection) => {
-    let lastPrice;
-    let updatedPrice;
-    return collection?.length > 0
-      ? collection.map((detail) => {
-        const { start_time, floor_price } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        updatedPrice = Number(Number(floor_price / LAMPORTS_PER_SOL)?.toFixed(2));
-
-        if (updatedPrice == 0) {
-          updatedPrice = lastPrice;
-        }
-
-        lastPrice = updatedPrice;
-
-        return { date: `${date}. ${month}`, 'Price': updatedPrice };
-      })
-      : null;
-  };
-
-  const getSalesVolume = (collection) => {
-    return collection?.length > 0
-      ? collection.map((detail) => {
-        const { start_time, _24hvolume } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        const oneDayVolume = _24hvolume < 0 ? 0 : _24hvolume;
-        return { date: `${date}. ${month}`, 'Volume': Number(oneDayVolume / LAMPORTS_PER_SOL) };
-      })
-      : null;
-  };
 
   const ListedCountTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
