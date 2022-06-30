@@ -7,7 +7,8 @@ import { isCurrencyString, currencyToNumber } from '../utils/helpers';
 import './CollectionTable.css';
 
 export default function CollectionTable(props) {
-  const { items, requestSort, sortConfig } = useSortableData(props.collections);
+  const { collections, partner } = props;
+  const { items, requestSort, sortConfig } = useSortableData(collections);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
@@ -38,8 +39,8 @@ export default function CollectionTable(props) {
     <Table variant="dark" hover>
       <thead>
         <tr className="table-secondary">
-          <th scope="col" className="ps-3"></th>
-          <th scope="col" className="ps-0">#</th>
+          <th scope="col" className={`${partner ? 'd-none' : ''} ps-3`}></th>
+          <th scope="col" className={`${partner ? '' : 'ps-0'}`}>#</th>
           <th scope="col"></th>
           <th scope="col" role="button"
             onClick={() => requestSort('name')}
@@ -67,8 +68,8 @@ export default function CollectionTable(props) {
             className={`text-end pe-1 ${getClassNamesFor('holders')}`}>Owners</th>
           <th scope="col" role="button"
             onClick={() => requestSort('listedCount')}
-            className={`text-end pe-1 ${getClassNamesFor('listedCount')}`}>Listed</th>
-          <th scope="col" className={`text-end pe-3`}></th>
+            className={`${partner ? 'pe-3' : 'pe-1'} text-end ${getClassNamesFor('listedCount')}`}>Listed</th>
+          <th scope="col" className={`${partner ? 'd-none' : ''} text-end pe-3`}></th>
         </tr>
       </thead>
       <tbody>
@@ -77,7 +78,8 @@ export default function CollectionTable(props) {
           const _24hChangeColor = oneDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
           const _7dChangeColor = sevenDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
           const handleRowClick = (symbol) => {
-            navigate(symbol);
+            const partnerSearchParams = partner ? `?partner=${partner}` : '';
+            navigate(`${symbol}${partnerSearchParams}`);
           }
           const handleNotificationClick = (name) => {
             navigate(`account?collection=${name}`);
@@ -85,10 +87,10 @@ export default function CollectionTable(props) {
 
           return (
           <tr key={item.id}>
-            <td className="text-white-50 ps-3 align-middle">
+            <td className={`${partner ? 'd-none' : ''} text-white-50 ps-3 align-middle`}>
               {watchlist.has(symbol) ? <FaStar className="d-flex" size={20} role="button" color="#fc6" onClick={()=> handleWatchlistClick(symbol)} /> : <FaRegStar className="d-flex" size={20} role="button" onClick={()=> handleWatchlistClick(symbol)} />}
             </td>
-            <td className="text-white-50 ps-1 align-middle">{row}</td>
+            <td className={`${partner ? '' : 'ps-1'} text-white-50 align-middle`}>{row}</td>
             <td className="align-middle"><img className = "rounded-circle" height="40" src={image} role="button" onClick={()=> handleRowClick(symbol)} /></td>
             <td className="text-start align-middle"><u role="button" onClick={()=> handleRowClick(symbol)}>{name}</u></td>
             <td className="text-white-50 text-end align-middle">{floorPrice}</td>
@@ -98,8 +100,8 @@ export default function CollectionTable(props) {
             <td className="text-white-50 text-end align-middle">{floorMarketCap}</td>
             <td className="text-white-50 text-end align-middle">{maxSupply}</td>
             <td className="text-white-50 text-end align-middle">{holders}</td>
-            <td className="text-white-50 text-end align-middle">{listedCount}<br/><span className="text-secondary">{(listedCount/maxSupply * 100).toFixed(1)}%</span></td>
-            <td className="text-white-50 text-end pe-3 align-middle"><FaRegBell size={20} role="button" onClick={()=> handleNotificationClick(name)} /></td>
+            <td className={`${partner ? 'pe-3' : ''} text-white-50 text-end align-middle`}>{listedCount}<br/><span className="text-secondary">{(listedCount/maxSupply * 100).toFixed(1)}%</span></td>
+            <td className={`${partner ? 'd-none' : ''} text-white-50 text-end pe-3 align-middle`}><FaRegBell size={20} role="button" onClick={()=> handleNotificationClick(name)} /></td>
            </tr>
          )})}
       </tbody>

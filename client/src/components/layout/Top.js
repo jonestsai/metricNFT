@@ -9,7 +9,7 @@ import { URLS } from '../../Settings';
 import logo from '../../assets/logo.png';
 import './Top.css';
 
-export default function Top() {
+export default function Top(props) {
   const navigate = useNavigate();
   const [collections, setCollections] = useState();
 
@@ -27,6 +27,8 @@ export default function Top() {
     }
   }
 
+  const { partner } = props;
+
   const navigateToCollection = (value) => {
     const collection = collections.find(c => c.name === value);
     if (collection) {
@@ -41,7 +43,7 @@ export default function Top() {
   }) : null;
 
   return (
-    <Navbar expand="lg" bg="dark" variant="dark" className="px-4 border-bottom border-secondary">
+    <Navbar expand="lg" bg="dark" variant="dark" className={`${partner ? 'd-none' : ''} px-4 border-bottom border-secondary`}>
       <Navbar.Brand className="me-5" href="/">
         <img className="my-3 pe-3" src={logo} alt="Logo" height="50" />
         <span className="display-6 align-middle"><strong>MetricNFT</strong></span>

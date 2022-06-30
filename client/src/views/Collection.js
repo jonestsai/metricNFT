@@ -65,7 +65,7 @@ export default class Collection extends React.Component {
   }
 
   render() {
-    const { name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll } = this.props;
+    const { name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, partner } = this.props;
     const { isLoading, collection, watchlist } = this.state;
 
     const listedCount = getListedCount(collection);
@@ -90,7 +90,7 @@ export default class Collection extends React.Component {
                   </BSTooltip>
                 }
               >
-                <span className="watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center">
+                <span className={`${partner ? 'd-none' : ''} watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center`}>
                   {watchlist.has(symbol) ? <FaStar className="m-1" size={18} role="button" color="#fc6" onClick={()=> this.handleWatchlistClick(symbol)} /> : <FaRegStar className="m-1" size={18} role="button" onClick={()=> this.handleWatchlistClick(symbol)} />}
                 </span>
               </OverlayTrigger>

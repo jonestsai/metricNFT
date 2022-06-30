@@ -60,7 +60,7 @@ export default function Home(props) {
     setCurrency(select);
   }
 
-  const { collections, isLoading } = props;
+  const { collections, isLoading, partner } = props;
   const collectionsByMC = collections?.sort((a, b) => {
     return (b.floor_price * b.total_supply) - (a.floor_price * a.total_supply);
   });
@@ -117,7 +117,7 @@ export default function Home(props) {
 
   return (
     <div>
-      <Nav className="secondary-menu px-4 border-bottom border-secondary" variant="tabs" activeKey={location.pathname}>
+      <Nav className={`${partner ? 'd-none' : ''} secondary-menu px-4 border-bottom border-secondary`} variant="tabs" activeKey={location.pathname}>
         <Nav.Item>
           <Nav.Link className="d-flex" href="/watchlist"><FaStar className="me-2" size={20} style={{ height: 25 }} role="button" color="#fc6" />Watchlist</Nav.Link>
         </Nav.Item>
@@ -149,6 +149,7 @@ export default function Home(props) {
         <div className="table-responsive-sm">
           <CollectionTable
             collections={data}
+            partner={partner}
           />
           {isLoading && (
             <div className="my-5 text-center">

@@ -15,7 +15,7 @@ import {
 import { clusterApiUrl } from '@solana/web3.js';
 import React, { useState, useEffect, useMemo } from 'react';
 import ReactGA from 'react-ga';
-import { NavLink, Routes, Route, useLocation } from 'react-router-dom';
+import { NavLink, Routes, Route, useLocation, useSearchParams } from 'react-router-dom';
 
 import Top from './components/layout/Top';
 import Bottom from './components/layout/Bottom';
@@ -38,6 +38,7 @@ export default function App() {
   const [collections, setCollections] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     document.body.style.backgroundColor = "#212529";
@@ -82,18 +83,21 @@ export default function App() {
     [network]
   );
 
+  const partner = searchParams.get('partner');
+
   return (
     <div className="App">
       {/*<Navigation />*/}
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>
-            <Top />
+            <Top partner={partner} />
             <Main
               collections={collections}
               isLoading={isLoading}
+              partner={partner}
             />
-            <Bottom />
+            <Bottom partner={partner} />
           </WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>
@@ -126,7 +130,7 @@ const Contact = () => (
   </div>
 );
 
-const Main = ({ collections, isLoading }) => {
+const Main = ({ collections, isLoading, partner }) => {
   const collectionRoutes = collections?.map((collection, index) => {
     const { image, name, symbol, floor_price, one_day_price_change, seven_day_price_change, one_day_volume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
     const floorPrice = live_floor_price || floor_price;
@@ -147,6 +151,7 @@ const Main = ({ collections, isLoading }) => {
           numberOfTokens={maxSupply}
           volumeAll={volumeAll / LAMPORTS_PER_SOL}
           oneDayVolume={one_day_volume / LAMPORTS_PER_SOL}
+          partner={partner}
         />
       }></Route>
     );
@@ -154,7 +159,7 @@ const Main = ({ collections, isLoading }) => {
 
   return (
     <Routes>
-      <Route path='/' element={<Home collections={collections} isLoading={isLoading} />}></Route>
+      <Route path='/' element={<Home collections={collections} isLoading={isLoading} partner={partner} />}></Route>
       {collectionRoutes}
       <Route path='/watchlist' element={<Watchlist />}></Route>
       <Route path='/account' element={<Account />}></Route>
