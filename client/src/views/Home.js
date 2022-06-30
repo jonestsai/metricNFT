@@ -18,7 +18,6 @@ export default function Home(props) {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    document.title = 'MetricNFT';
     fetchCurrencies();
   }, []);
 
