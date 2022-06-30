@@ -149,7 +149,7 @@ const getMagicedenCollectionStats = async (symbol) => {
 
 const getCollectionHolderStats = async (symbol) => {
   try {
-    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+    const browser = await puppeteer.launch({args: ['--single-process', '--no-zygote', '--no-sandbox']});
     const [page] = await browser.pages();
     await page.setUserAgent(userAgent.toString());
     await page.goto(`https://api-mainnet.magiceden.io/rpc/getCollectionHolderStats/${symbol}`, { waitUntil: 'networkidle0' });

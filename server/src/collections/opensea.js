@@ -51,7 +51,7 @@ const storeCollections = async () => {
 const getSlugs = async (durations) => {
   let slugs = [];
   try {
-    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+    const browser = await puppeteer.launch({args: ['--single-process', '--no-zygote', '--no-sandbox']});
     const [page] = await browser.pages();
 
     await page.setUserAgent(userAgent.toString());
