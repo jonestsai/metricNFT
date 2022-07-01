@@ -49,9 +49,10 @@ const storeCollections = async () => {
 }
 
 const getSlugs = async (durations) => {
+  const browser = await puppeteer.launch({args: ['--single-process', '--no-zygote', '--no-sandbox']});
   let slugs = [];
+
   try {
-    const browser = await puppeteer.launch({args: ['--single-process', '--no-zygote', '--no-sandbox']});
     const [page] = await browser.pages();
 
     await page.setUserAgent(userAgent.toString());
@@ -70,10 +71,10 @@ const getSlugs = async (durations) => {
       }
       console.log(duration);
     }
-
-    await browser.close();
   } catch (error) {
     console.log(error);
+  } finally {
+    await browser.close();
   }
 
   const uniqueSlugs = [...new Set(slugs)];

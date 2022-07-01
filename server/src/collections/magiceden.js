@@ -148,20 +148,22 @@ const getMagicedenCollectionStats = async (symbol) => {
 }
 
 const getCollectionHolderStats = async (symbol) => {
+  const browser = await puppeteer.launch({args: ['--single-process', '--no-zygote', '--no-sandbox']});
+
   try {
-    const browser = await puppeteer.launch({args: ['--single-process', '--no-zygote', '--no-sandbox']});
     const [page] = await browser.pages();
     await page.setUserAgent(userAgent.toString());
     await page.goto(`https://api-mainnet.magiceden.io/rpc/getCollectionHolderStats/${symbol}`, { waitUntil: 'networkidle0' });
     const data = await page.$eval('pre', (element) => element.textContent);
     const totalSupply = JSON.parse(data)?.results?.totalSupply;
     const uniqueHolders = JSON.parse(data)?.results?.uniqueHolders;
-    await browser.close();
 
     return { totalSupply, uniqueHolders, isError: false };
   } catch (error) {
     console.log(error);
     return { totalSupply: null, uniqueHolders: null, isError: true };
+  } finally {
+    await browser.close();
   }
 }
 
