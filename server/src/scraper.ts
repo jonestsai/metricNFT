@@ -22,10 +22,10 @@ async function main() {
     const [page] = await browser.pages();
     await page.setUserAgent(userAgent.toString());
 
-    // MagicEden
     await getMagicedenPrice(page);
     await getMagicedenHolders(page);
     await getOpenseaSlugs(page);
+    await getOpenseaListings(page);
 
     await browser.close();
   } catch (err) {
@@ -68,6 +68,18 @@ const getOpenseaSlugs = async (page: any) => {
   const uniqueSlugs = [...new Set(slugs)];
   console.log(uniqueSlugs);
 }
+
+const getOpenseaListings = async (page: any) => {
+  await page.goto('https://opensea.io/collection/copebears?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW', { waitUntil: 'networkidle0' });
+  await page.waitForTimeout(10000);
+  const data = await page.$eval('*', (element: any) => element.textContent);
+  // console.log(data);
+  const substrings = data.split('"totalCount":');
+  substrings.shift(); // Remove first item since it's not a slug
+  const [totalCount] = substrings;
+  const listings = totalCount.substr(0, totalCount.indexOf(','));
+  console.log(listings);
+};
 
 main().then(
   () => process.exit(),
