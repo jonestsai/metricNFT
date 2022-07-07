@@ -113,10 +113,13 @@ const snapshotCollectionStats = async () => {
       continue;
     }
     const { one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price } = collectionStats;
+    
+    const listedCount = await getOpenseaListings(slug);
+
     const startSnapshotTime = new Date();
     const query = {
-      text: 'INSERT INTO opensea_snapshot(slug, start_time, one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)',
-      values: [slug, startSnapshotTime, one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price],
+      text: 'INSERT INTO opensea_snapshot(slug, start_time, one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price, listed_count) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)',
+      values: [slug, startSnapshotTime, one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price, listedCount],
     };
     pool.query(query, (error, results) => {
       if (error) {
@@ -138,6 +141,31 @@ const getCollectionStats = async (slug) => {
     return { one_day_volume: null, one_day_change: null, one_day_sales: null, one_day_average_price: null, seven_day_volume: null, seven_day_change: null, seven_day_sales: null, seven_day_average_price: null, thirty_day_volume: null, thirty_day_change: null, thirty_day_sales: null, thirty_day_average_price: null, total_volume: null, total_sales: null, total_supply: null, count: null, num_owners: null, average_price: null, num_reports: null, market_cap: null, floor_price: null };
   }
 }
+
+const getOpenseaListings = async (slug) => {
+  const browser = await puppeteer.launch({args: ['--no-zygote', '--no-sandbox']});
+  const [page] = await browser.pages();
+
+  try {
+    await page.setUserAgent(userAgent.toString());
+    await page.goto(`https://opensea.io/collection/${slug}?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`, { waitUntil: 'networkidle0' });
+    await page.waitForSelector('.fresnel-container');
+    const data = await page.$eval('*', (element) => element.textContent);
+    // console.log(data);
+    const substrings = data.split('"totalCount":');
+    substrings.shift(); // Remove first item
+    const [totalCount] = substrings;
+    const listings = totalCount.substr(0, totalCount.indexOf(','));
+    console.log(listings);
+
+    return listings;
+  } catch (error) {
+    console.log(error);
+    return null;
+  } finally {
+    await browser.close();
+  }
+};
 
 main().then(
   () => process.exit(),
