@@ -49,7 +49,7 @@ const storeCollections = async () => {
 }
 
 const getSlugs = async (durations) => {
-  const browser = await puppeteer.launch({args: ['--single-process', '--no-zygote', '--no-sandbox']});
+  const browser = await puppeteer.launch({args: ['--no-zygote', '--no-sandbox']});
   let slugs = [];
 
   try {

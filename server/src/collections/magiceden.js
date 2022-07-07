@@ -152,7 +152,7 @@ const getMagicedenCollectionStats = async (symbol) => {
 }
 
 const getCollectionHolderStats = async (symbol) => {
-  const browser = await puppeteer.launch({args: ['--single-process', '--no-zygote', '--no-sandbox']});
+  const browser = await puppeteer.launch({args: ['--no-zygote', '--no-sandbox']});
 
   try {
     const [page] = await browser.pages();
