@@ -114,7 +114,10 @@ const snapshotCollectionStats = async () => {
     }
     const { one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price } = collectionStats;
     
-    const listedCount = await getOpenseaListings(slug);
+    let listedCount = await getOpenseaListings(slug);
+    if (!listedCount) {
+      listedCount = await getOpenseaListings(slug);
+    }    
 
     const startSnapshotTime = new Date();
     const query = {
