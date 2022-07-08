@@ -35,7 +35,8 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 export default function App() {
   usePageTracking();
 
-  const [collections, setCollections] = useState();
+  const [magicedenCollections, setMagicedenCollections] = useState();
+  const [openseaCollections, setOpenseaCollections] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -50,10 +51,15 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${URLS.api}`);
-      const collections = await response.json();
+      let [magiceden, opensea] = await Promise.all([
+        fetch(`${URLS.api}/dev/magiceden`),
+        fetch(`${URLS.api}/dev/opensea`),
+      ]);
+      const magicedenCollections = await magiceden.json();
+      const openseaCollections = await opensea.json();
 
-      setCollections(collections);
+      setMagicedenCollections(magicedenCollections);
+      setOpenseaCollections(openseaCollections);
     } catch (error) {
       // Do nothing
     } finally {
@@ -93,7 +99,8 @@ export default function App() {
           <WalletModalProvider>
             <Top partner={partner} />
             <Main
-              collections={collections}
+              magicedenCollections={magicedenCollections}
+              openseaCollections={openseaCollections}
               isLoading={isLoading}
               partner={partner}
             />
@@ -130,8 +137,8 @@ const Contact = () => (
   </div>
 );
 
-const Main = ({ collections, isLoading, partner }) => {
-  const collectionRoutes = collections?.map((collection, index) => {
+const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) => {
+  const magicedenCollectionsRoutes = magicedenCollections?.map((collection, index) => {
     const { image, name, symbol, floor_price, one_day_price_change, seven_day_price_change, one_day_volume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
     const floorPrice = live_floor_price || floor_price;
     const listedCount = live_listed_count || listed_count;
@@ -159,8 +166,8 @@ const Main = ({ collections, isLoading, partner }) => {
 
   return (
     <Routes>
-      <Route path='/' element={<Home collections={collections} isLoading={isLoading} partner={partner} />}></Route>
-      {collectionRoutes}
+      <Route path='/' element={<Home magicedenCollections={magicedenCollections} openseaCollections={openseaCollections} isLoading={isLoading} partner={partner} />}></Route>
+      {magicedenCollectionsRoutes}
       <Route path='/watchlist' element={<Watchlist />}></Route>
       <Route path='/account' element={<Account />}></Route>
       <Route path='/about' element={<About />}></Route>

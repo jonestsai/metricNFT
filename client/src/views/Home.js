@@ -59,12 +59,30 @@ export default function Home(props) {
     setCurrency(select);
   }
 
-  const { collections, isLoading, partner } = props;
+  const { magicedenCollections, openseaCollections, isLoading, partner } = props;
+
+  const updatedOpenseaCollections = openseaCollections?.map((openseaCollection) => {
+    const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, total_supply, num_owners, listed_count } = openseaCollection;
+
+    return {
+      name,
+      image: image_url,
+      symbol: slug,
+      floor_price: floor_price * exchangeRates['ethereum/usd'] / exchangeRates['solana/usd'] * LAMPORTS_PER_SOL,
+      one_day_volume: one_day_volume * exchangeRates['ethereum/usd'] / exchangeRates['solana/usd'] * LAMPORTS_PER_SOL,
+      total_supply,
+      unique_holders: num_owners,
+      listed_count,
+    };
+  });
+
+  const collections = magicedenCollections?.concat(updatedOpenseaCollections);
+
   const collectionsByMC = collections?.sort((a, b) => {
     return (b.floor_price * b.total_supply) - (a.floor_price * a.total_supply);
   });
   const filteredResult = collectionsByMC?.filter((collection) => {
-    return collection.floor_price && collection.total_supply && collection.unique_holders > 50 && collection.listed_count > 10;
+    return collection?.floor_price && collection?.total_supply && collection?.unique_holders > 50 && collection?.listed_count > 10;
   });
   const paginatedResult = filteredResult?.slice(
     (currentPage - 1) * COLLECTIONS_PER_PAGE,
@@ -97,7 +115,7 @@ export default function Home(props) {
 
     return (
       {
-        id: collection.id,
+        id: collection.symbol,
         row: (currentPage - 1) * COLLECTIONS_PER_PAGE + index + 1,
         image: `${MAGICEDEN_IMAGE_URL}${image}`,
         name,

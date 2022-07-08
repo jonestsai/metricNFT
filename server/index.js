@@ -260,7 +260,7 @@ app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
 
-app.get('/api/dev/home', async (req, res) => {
+app.get('/api/dev/magiceden', async (req, res) => {
   let leftJoins = '';
 
   pool.query(`
@@ -282,6 +282,28 @@ app.get('/api/dev/home', async (req, res) => {
       ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
     ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.hourly_snapshot_symbol`, (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
+app.get('/api/dev/opensea', async (req, res) => {
+  let leftJoins = '';
+
+  pool.query(`
+    SELECT * FROM (
+      SELECT name, slug, image_url
+      FROM opensea_collection
+    ) _opensea_collection
+    LEFT JOIN (
+      SELECT DISTINCT ON (slug) *
+      FROM opensea_snapshot
+      WHERE start_time::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
+      ORDER BY slug, start_time DESC
+    ) _opensea_snapshot
+    ON _opensea_collection.slug = _opensea_snapshot.slug`, (error, results) => {
     if (error) {
       throw error;
     }
