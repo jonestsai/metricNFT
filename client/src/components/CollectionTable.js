@@ -91,7 +91,7 @@ export default function CollectionTable(props) {
               {watchlist.has(symbol) ? <FaStar className="d-flex" size={20} role="button" color="#fc6" onClick={()=> handleWatchlistClick(symbol)} /> : <FaRegStar className="d-flex" size={20} role="button" onClick={()=> handleWatchlistClick(symbol)} />}
             </td>
             <td className={`${partner ? '' : 'ps-1'} text-white-50 align-middle`}>{row}</td>
-            <td className="align-middle"><img className = "rounded-circle" height="40" src={image} role="button" onClick={()=> handleRowClick(symbol)} /></td>
+            <td className="align-middle"><img className = "rounded-circle" height="40" width="40" src={image} role="button" onClick={()=> handleRowClick(symbol)} /></td>
             <td className="text-start align-middle"><u role="button" onClick={()=> handleRowClick(symbol)}>{name}</u></td>
             <td className="text-white-50 text-end align-middle">{floorPrice}</td>
             <td className={`${_24hChangeColor} text-end align-middle`}>{(oneDayPriceChangePct).toFixed(1)}%</td>
