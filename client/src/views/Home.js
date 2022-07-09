@@ -83,6 +83,10 @@ export default function Home(props) {
     return (b.floor_price * b.total_supply) - (a.floor_price * a.total_supply);
   });
   const filteredResult = collectionsByMC?.filter((collection) => {
+    if (collection?.symbol === 'cryptopunks') {
+      return true;
+    }
+
     return collection?.floor_price && collection?.total_supply && collection?.unique_holders > 50 && collection?.listed_count > 10;
   });
   const paginatedResult = filteredResult?.slice(
