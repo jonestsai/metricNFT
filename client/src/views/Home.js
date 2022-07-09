@@ -63,12 +63,13 @@ export default function Home(props) {
 
   const updatedOpenseaCollections = openseaCollections?.map((openseaCollection) => {
     const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, total_supply, num_owners, listed_count } = openseaCollection;
+    const floorPrice = floor_price || one_day_average_price;
 
     return {
       name,
       image: image_url,
       symbol: slug,
-      floor_price: floor_price * exchangeRates['ethereum/usd'] / exchangeRates['solana/usd'] * LAMPORTS_PER_SOL,
+      floor_price: floorPrice * exchangeRates['ethereum/usd'] / exchangeRates['solana/usd'] * LAMPORTS_PER_SOL,
       one_day_volume: one_day_volume * exchangeRates['ethereum/usd'] / exchangeRates['solana/usd'] * LAMPORTS_PER_SOL,
       total_supply,
       unique_holders: num_owners,
