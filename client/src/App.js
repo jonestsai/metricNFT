@@ -164,10 +164,39 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
     );
   });
 
+  const openseaCollectionsRoutes = openseaCollections?.map((collection, index) => {
+    const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, total_volume, total_supply, num_owners, listed_count } = collection;
+    const symbol = slug;
+    const image = image_url;
+    const floorPrice = floor_price || one_day_average_price;
+    const listedCount = listed_count;
+    const volumeAll = total_volume;
+    const maxSupply = total_supply;
+    const ownersCount = num_owners;
+
+    return (
+      <Route key={collection.id} path={symbol} element={
+        <Collection
+          name={name}
+          symbol={symbol}
+          image={image}
+          currentPrice={floorPrice}
+          currentListedCount={listedCount}
+          currentOwnersCount={ownersCount}
+          numberOfTokens={maxSupply}
+          volumeAll={volumeAll}
+          oneDayVolume={one_day_volume}
+          partner={partner}
+        />
+      }></Route>
+    );
+  });
+
   return (
     <Routes>
       <Route path='/' element={<Home magicedenCollections={magicedenCollections} openseaCollections={openseaCollections} isLoading={isLoading} partner={partner} />}></Route>
       {magicedenCollectionsRoutes}
+      {openseaCollectionsRoutes}
       <Route path='/watchlist' element={<Watchlist />}></Route>
       <Route path='/account' element={<Account />}></Route>
       <Route path='/about' element={<About />}></Route>
