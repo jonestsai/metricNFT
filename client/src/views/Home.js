@@ -6,6 +6,8 @@ import { useLocation } from 'react-router-dom';
 import CollectionTable from '../components/CollectionTable';
 import Pagination from '../components/Pagination';
 import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE, MAGICEDEN_IMAGE_URL } from '../utils/constants';
+import solana from '../assets/solana-symbol.png';
+import ethereum from '../assets/ethereum-symbol.png';
 import './Home.css';
 
 export default function Home(props) {
@@ -102,20 +104,23 @@ export default function Home(props) {
     const sevenDayPriceChange = live_seven_day_price_change || seven_day_price_change;
     let currencySymbol = '';
     switch (currency) {
+      case 'SOL':
+        currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
+        break;
       case 'ETH':
-        currencySymbol = 'Ξ';
+        currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
         break;
       case 'USD':
         currencySymbol = '$';
         break;
     }
 
-    const floorPriceText = `${currencySymbol}${(floorPriceInSOL * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+    const floorPriceText = <div className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(floorPriceInSOL * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
     const oneDayPriceChangePct = oneDayPriceChange ? oneDayPriceChange * 100 : 0;
     const sevenDayPriceChangePct = sevenDayPriceChange ? sevenDayPriceChange * 100 : 0;
-    const volume = `${currencySymbol}${((one_day_volume / LAMPORTS_PER_SOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+    const volume = <span className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{((one_day_volume / LAMPORTS_PER_SOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
     const maxSupply = total_supply;
-    const floorMarketCap = `${currencySymbol}${(floorPriceInSOL * maxSupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`;
+    const floorMarketCap = <span className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(floorPriceInSOL * maxSupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
     const listedCount = live_listed_count || listed_count;
 
     return (
