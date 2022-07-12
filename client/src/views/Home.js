@@ -14,8 +14,7 @@ export default function Home(props) {
   const location = useLocation();
 
   const [exchangeRates, setExchangeRates] = useState();
-  const [currency, setCurrency] = useState('SOL');
-  const [currencyRate, setCurrencyRate] = useState(1);
+  const [currency, setCurrency] = useState('Currency');
   const [isRatesLoading, setIsRatesLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -44,84 +43,148 @@ export default function Home(props) {
   }
 
   const handleCurrencySelect = (select) => {
-    const USD = exchangeRates['solana/usd'];
-    const ETH = USD / exchangeRates['ethereum/usd'];
-    let rate = 1;
-
-    switch (select) {
-      case 'USD':
-        rate = USD;
-        break;
-      case 'ETH':
-        rate = ETH;
-        break;
-    }
-
-    setCurrencyRate(rate);
     setCurrency(select);
   }
 
   const { magicedenCollections, openseaCollections, isLoading, partner } = props;
 
-  const updatedOpenseaCollections = openseaCollections?.map((openseaCollection) => {
-    const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, total_supply, num_owners, listed_count } = openseaCollection;
-    const floorPrice = floor_price || one_day_average_price;
+  const updatedMagicedenCollections = magicedenCollections?.map((magicedenCollection) => {
+    const { name, symbol, image, floor_price, live_floor_price, one_day_volume, one_day_price_change, live_one_day_price_change, seven_day_price_change, live_seven_day_price_change, total_supply, unique_holders, listed_count, live_listed_count } = magicedenCollection;
+    const chain = 'solana';
+    const floorPrice = (live_floor_price || floor_price) / LAMPORTS_PER_SOL;
+    const oneDayPriceChange = live_one_day_price_change || one_day_price_change;
+    const sevenDayPriceChange = live_seven_day_price_change || seven_day_price_change;
+    const oneDayVolume = one_day_volume / LAMPORTS_PER_SOL || 0;
+    const maxSupply = total_supply;
+    const uniqueHolders = unique_holders;
+    const listedCount = live_listed_count || listed_count;
+    const floorMarketCap = floorPrice * maxSupply * exchangeRates?.['solana/usd'];
 
     return {
+      chain,
       name,
-      image: image_url,
-      symbol: slug,
-      floor_price: floorPrice * exchangeRates?.['ethereum/usd'] / exchangeRates?.['solana/usd'] * LAMPORTS_PER_SOL,
-      one_day_volume: one_day_volume * exchangeRates?.['ethereum/usd'] / exchangeRates?.['solana/usd'] * LAMPORTS_PER_SOL,
-      total_supply,
-      unique_holders: num_owners,
-      listed_count,
+      image,
+      symbol,
+      floorPrice,
+      oneDayPriceChange,
+      sevenDayPriceChange,
+      oneDayVolume,
+      maxSupply,
+      uniqueHolders,
+      listedCount,
+      floorMarketCap,
     };
   });
 
-  const collections = magicedenCollections?.concat(updatedOpenseaCollections);
+  const updatedOpenseaCollections = openseaCollections?.map((openseaCollection) => {
+    const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, total_supply, num_owners, listed_count } = openseaCollection;
+    const chain = 'ethereum';
+    const image = image_url;
+    const symbol = slug;
+    const floorPrice = floor_price || one_day_average_price;
+    const oneDayVolume = one_day_volume;
+    const maxSupply = total_supply;
+    const uniqueHolders = num_owners;
+    const listedCount = listed_count;
+    const floorMarketCap = floorPrice * maxSupply * exchangeRates?.['ethereum/usd'];
+
+    return {
+      chain,
+      name,
+      image,
+      symbol,
+      floorPrice,
+      oneDayVolume,
+      maxSupply,
+      uniqueHolders,
+      listedCount,
+      floorMarketCap,
+    };
+  });
+
+  const collections = updatedMagicedenCollections?.concat(updatedOpenseaCollections);
 
   const collectionsByMC = collections?.sort((a, b) => {
-    return (b.floor_price * b.total_supply) - (a.floor_price * a.total_supply);
+    return b.floorMarketCap - a.floorMarketCap;
   });
+
   const filteredResult = collectionsByMC?.filter((collection) => {
     if (collection?.symbol === 'cryptopunks') {
       return true;
     }
 
-    return collection?.floor_price && collection?.total_supply && collection?.unique_holders > 50 && collection?.listed_count > 10;
+    return collection?.floorPrice && collection?.maxSupply && collection?.uniqueHolders > 50 && collection?.listedCount > 10;
   });
+
   const paginatedResult = filteredResult?.slice(
     (currentPage - 1) * COLLECTIONS_PER_PAGE,
     (currentPage - 1) * COLLECTIONS_PER_PAGE + COLLECTIONS_PER_PAGE
   );
 
   const data = paginatedResult?.map((collection, index) => {
-    const { image, name, symbol, floor_price, live_floor_price, one_day_volume, one_day_price_change, live_one_day_price_change, seven_day_price_change, live_seven_day_price_change, total_supply, unique_holders, listed_count, live_listed_count } = collection;
-    const floorPrice = live_floor_price || floor_price;
-    const floorPriceInSOL = floorPrice / LAMPORTS_PER_SOL;
-    const oneDayPriceChange = live_one_day_price_change || one_day_price_change;
-    const sevenDayPriceChange = live_seven_day_price_change || seven_day_price_change;
-    let currencySymbol = '';
+    const { chain, name, image, symbol, floorPrice, oneDayPriceChange, sevenDayPriceChange, oneDayVolume, maxSupply, uniqueHolders, listedCount, floorMarketCap } = collection;
+    let currencySymbol;
+    let currencyRate = 1;
+    let marketCapCurrencyRate = 1;
     switch (currency) {
       case 'SOL':
         currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
+
+        if (chain === 'solana') {
+          currencyRate = 1;
+        }
+
+        if (chain === 'ethereum') {
+          currencyRate = exchangeRates?.['ethereum/usd'] / exchangeRates?.['solana/usd'];
+        }
+        
+        marketCapCurrencyRate = 1 / exchangeRates?.['solana/usd'];
+
         break;
       case 'ETH':
         currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
+
+        if (chain === 'solana') {
+          currencyRate = exchangeRates?.['solana/usd'] / exchangeRates?.['ethereum/usd'];
+        }
+
+        if (chain === 'ethereum') {
+          currencyRate = 1;
+        }
+
+        marketCapCurrencyRate = 1 / exchangeRates?.['ethereum/usd'];
+
         break;
       case 'USD':
         currencySymbol = '$';
+
+        if (chain === 'solana') {
+          currencyRate = exchangeRates?.['solana/usd'];
+        }
+
+        if (chain === 'ethereum') {
+          currencyRate = exchangeRates?.['ethereum/usd'];
+        }
+
+        marketCapCurrencyRate = 1;
+
         break;
+      default:
+        if (chain === 'solana') {
+          currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
+        }
+
+        if (chain === 'ethereum') {
+          currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
+        }
     }
 
-    const floorPriceText = <div className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(floorPriceInSOL * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
+    const floorPriceText = <div className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(floorPrice * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
     const oneDayPriceChangePct = oneDayPriceChange ? oneDayPriceChange * 100 : 0;
     const sevenDayPriceChangePct = sevenDayPriceChange ? sevenDayPriceChange * 100 : 0;
-    const volume = <span className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{((one_day_volume / LAMPORTS_PER_SOL || 0) * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
-    const maxSupply = total_supply;
-    const floorMarketCap = <span className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(floorPriceInSOL * maxSupply * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
-    const listedCount = live_listed_count || listed_count;
+    const volume = <span className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(oneDayVolume * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
+    const marketCapCurrencySymbol = currency === 'Currency' ? '$' : currencySymbol;
+    const floorMarketCapText = <span className="text-nowrap d-flex align-items-center justify-content-end">{marketCapCurrencySymbol}{(floorMarketCap * marketCapCurrencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
 
     return (
       {
@@ -134,9 +197,9 @@ export default function Home(props) {
         oneDayPriceChangePct,
         sevenDayPriceChangePct,
         volume,
-        floorMarketCap,
+        floorMarketCap: floorMarketCapText,
         maxSupply,
-        holders: unique_holders,
+        holders: uniqueHolders,
         listedCount,          
       }
     );
@@ -161,15 +224,12 @@ export default function Home(props) {
           className="text-end mb-3"
           onSelect={handleCurrencySelect}
         >
-          <Dropdown.Item eventKey="SOL" active={!!(currency === 'SOL')}>SOL</Dropdown.Item>
+          <Dropdown.Item eventKey="Currency" active={!!(currency === 'Currency')}>Currency</Dropdown.Item>
           {!isRatesLoading && (
             <div>
-              {exchangeRates['solana/usd'] && (
-                <Dropdown.Item eventKey="USD" active={!!(currency === 'USD')}>USD</Dropdown.Item>
-              )}
-              {exchangeRates['ethereum/usd'] && (
-                <Dropdown.Item eventKey="ETH" active={!!(currency === 'ETH')}>ETH</Dropdown.Item>
-              )}
+              <Dropdown.Item eventKey="SOL" active={!!(currency === 'SOL')}>SOL</Dropdown.Item>
+              <Dropdown.Item eventKey="ETH" active={!!(currency === 'ETH')}>ETH</Dropdown.Item>
+              <Dropdown.Item eventKey="USD" active={!!(currency === 'USD')}>USD</Dropdown.Item>
             </div>
           )}
         </DropdownButton>
