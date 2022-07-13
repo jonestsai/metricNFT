@@ -14,7 +14,7 @@ export default function Home(props) {
   const location = useLocation();
 
   const [exchangeRates, setExchangeRates] = useState();
-  const [chainFilter, setChainFilter] = useState('all');
+  const [chainFilter, setChainFilter] = useState(localStorage.getItem('chainFilter') || 'all');
   const [currency, setCurrency] = useState('Currency');
   const [isRatesLoading, setIsRatesLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,6 +22,10 @@ export default function Home(props) {
   useEffect(() => {
     fetchCurrencies();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('chainFilter', chainFilter);
+  }, [chainFilter]);
 
   const fetchCurrencies = async () => {
     setIsRatesLoading(true);
