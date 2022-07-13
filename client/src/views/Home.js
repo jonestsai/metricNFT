@@ -114,11 +114,13 @@ export default function Home(props) {
   });
 
   const filteredResult = collectionsByMC?.filter((collection) => {
-    if (collection?.symbol === 'cryptopunks') {
+    const isChain = chainFilter === collection?.chain || chainFilter === 'all';
+
+    if (collection?.symbol === 'cryptopunks' && isChain) {
       return true;
     }
 
-    return collection?.floorPrice && collection?.maxSupply && collection?.uniqueHolders > 50 && collection?.listedCount > 10;
+    return isChain && collection?.floorPrice && collection?.maxSupply && collection?.uniqueHolders > 50 && collection?.listedCount > 10;
   });
 
   const paginatedResult = filteredResult?.slice(
