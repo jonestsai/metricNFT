@@ -86,7 +86,7 @@ export default function Home(props) {
     const chain = 'ethereum';
     const image = image_url;
     const symbol = slug;
-    const floorPrice = floor_price || one_day_average_price;
+    const floorPrice = floor_price;
     const oneDayVolume = one_day_volume;
     const maxSupply = total_supply;
     const uniqueHolders = num_owners;
