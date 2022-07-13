@@ -116,10 +116,6 @@ export default function Home(props) {
   const filteredResult = collectionsByMC?.filter((collection) => {
     const isChain = chainFilter === collection?.chain || chainFilter === 'all';
 
-    if (collection?.symbol === 'cryptopunks' && isChain) {
-      return true;
-    }
-
     return isChain && collection?.floorPrice && collection?.maxSupply && collection?.uniqueHolders > 50 && collection?.listedCount > 10;
   });
 
