@@ -14,6 +14,7 @@ export default function Home(props) {
   const location = useLocation();
 
   const [exchangeRates, setExchangeRates] = useState();
+  const [chainFilter, setChainFilter] = useState('all');
   const [currency, setCurrency] = useState('Currency');
   const [isRatesLoading, setIsRatesLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,6 +41,10 @@ export default function Home(props) {
     } finally {
       setIsRatesLoading(false);
     }
+  }
+
+  const handleChainChange = (event) => {
+    setChainFilter(event.target.value);
   }
 
   const handleCurrencySelect = (select) => {
@@ -217,22 +222,32 @@ export default function Home(props) {
       </Nav>
       <Container fluid>
         <h3 className="text-start pt-5">NFT Prices by Floor Market Cap</h3>
-        <DropdownButton
-          variant="secondary"
-          menuVariant="dark"
-          title={currency}
-          className="text-end mb-3"
-          onSelect={handleCurrencySelect}
-        >
-          <Dropdown.Item eventKey="Currency" active={!!(currency === 'Currency')}>Currency</Dropdown.Item>
-          {!isRatesLoading && (
-            <div>
-              <Dropdown.Item eventKey="SOL" active={!!(currency === 'SOL')}>SOL</Dropdown.Item>
-              <Dropdown.Item eventKey="ETH" active={!!(currency === 'ETH')}>ETH</Dropdown.Item>
-              <Dropdown.Item eventKey="USD" active={!!(currency === 'USD')}>USD</Dropdown.Item>
-            </div>
-          )}
-        </DropdownButton>
+        <div className="d-flex justify-content-between">
+          <div className="btn-group mb-3" role="group">
+            <input type="radio" className="btn-check" name="chainfilter" id="all" value="all" autoComplete="off" checked={!!(chainFilter === 'all')} onChange={handleChainChange} />
+            <label className="btn btn-outline-secondary" htmlFor="all">All</label>
+            <input type="radio" className="btn-check" name="chainfilter" id="solana" value="solana" autoComplete="off" checked={!!(chainFilter === 'solana')} onChange={handleChainChange} />
+            <label className="btn btn-outline-secondary" htmlFor="solana">Solana</label>
+            <input type="radio" className="btn-check" name="chainfilter" id="ethereum" value="ethereum" autoComplete="off" checked={!!(chainFilter === 'ethereum')} onChange={handleChainChange} />
+            <label className="btn btn-outline-secondary" htmlFor="ethereum">Ethereum</label>
+          </div>
+          <DropdownButton
+            variant="secondary"
+            menuVariant="dark"
+            title={currency}
+            className="text-end mb-3"
+            onSelect={handleCurrencySelect}
+          >
+            <Dropdown.Item eventKey="Currency" active={!!(currency === 'Currency')}>Currency</Dropdown.Item>
+            {!isRatesLoading && (
+              <div>
+                <Dropdown.Item eventKey="SOL" active={!!(currency === 'SOL')}>SOL</Dropdown.Item>
+                <Dropdown.Item eventKey="ETH" active={!!(currency === 'ETH')}>ETH</Dropdown.Item>
+                <Dropdown.Item eventKey="USD" active={!!(currency === 'USD')}>USD</Dropdown.Item>
+              </div>
+            )}
+          </DropdownButton>
+        </div>
         <div className="table-responsive-sm">
           <CollectionTable
             collections={data}
