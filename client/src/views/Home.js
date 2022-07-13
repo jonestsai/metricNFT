@@ -221,7 +221,7 @@ export default function Home(props) {
         </Nav.Item>
       </Nav>
       <Container fluid>
-        <h3 className="text-start pt-5">NFT Prices by Floor Market Cap</h3>
+        <h3 className="text-start pt-4 pb-2">NFT Prices by Floor Market Cap</h3>
         <div className="d-flex justify-content-between">
           <div className="btn-group mb-3" role="group">
             <input type="radio" className="btn-check" name="chainfilter" id="all" value="all" autoComplete="off" checked={!!(chainFilter === 'all')} onChange={handleChainChange} />
