@@ -117,12 +117,16 @@ const snapshotCollectionStats = async () => {
     let listedCount = await getOpenseaListings(slug);
     if (!listedCount) {
       listedCount = await getOpenseaListings(slug);
-    }    
+    }
+
+    const [{ _1dfloor, _7dfloor }] = await getPastData(slug);
+    const oneDayPriceChange = _1dfloor ? (floor_price - _1dfloor) / _1dfloor : 0;
+    const sevenDayPriceChange = _7dfloor ? (floor_price - _7dfloor) / _7dfloor : 0;
 
     const startSnapshotTime = new Date();
     const query = {
-      text: 'INSERT INTO opensea_snapshot(slug, start_time, one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price, listed_count) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)',
-      values: [slug, startSnapshotTime, one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price, listedCount],
+      text: 'INSERT INTO opensea_snapshot(slug, start_time, one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price, listed_count, one_day_price_change, seven_day_price_change) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)',
+      values: [slug, startSnapshotTime, one_day_volume, one_day_change, one_day_sales, one_day_average_price, seven_day_volume, seven_day_change, seven_day_sales, seven_day_average_price, thirty_day_volume, thirty_day_change, thirty_day_sales, thirty_day_average_price, total_volume, total_sales, total_supply, count, num_owners, average_price, num_reports, market_cap, floor_price, listedCount, oneDayPriceChange, sevenDayPriceChange],
     };
     pool.query(query, (error, results) => {
       if (error) {
@@ -169,6 +173,31 @@ const getOpenseaListings = async (slug) => {
     await browser.close();
   }
 };
+
+const getPastData = async (slug) => {
+  try {
+    let leftJoins = '';
+
+    // Get the 24h and 7d floor
+    for (let days = 1; days <= 10; days += 6) {
+      leftJoins += `LEFT JOIN (SELECT MIN(floor_price) AS _${days}dfloor, slug AS _${days}dslug FROM opensea_snapshot WHERE start_time > (NOW() - interval '${days + 1} days') AND start_time < (NOW() - interval '${days} days') GROUP BY slug) _${days}d ON _opensea_collection.slug = _${days}d._${days}dslug `;
+    }
+
+    const { rows } = await pool.query(`
+      SELECT * FROM (
+        SELECT name, slug, image_url
+        FROM opensea_collection
+      ) _opensea_collection
+      ${leftJoins}
+      WHERE _opensea_collection.slug = '${slug}'
+    `);
+
+    return rows;
+  } catch (error) {
+    console.log(error);
+    return [{ _1dfloor: null, _7dfloor: null }];
+  }
+}
 
 main().then(
   () => process.exit(),
