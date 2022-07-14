@@ -86,11 +86,13 @@ export default function Home(props) {
   });
 
   const updatedOpenseaCollections = openseaCollections?.map((openseaCollection) => {
-    const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, total_supply, num_owners, listed_count } = openseaCollection;
+    const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, one_day_price_change, seven_day_price_change, total_supply, num_owners, listed_count } = openseaCollection;
     const chain = 'ethereum';
     const image = image_url;
     const symbol = slug;
     const floorPrice = floor_price;
+    const oneDayPriceChange = one_day_price_change;
+    const sevenDayPriceChange = seven_day_price_change;
     const oneDayVolume = one_day_volume;
     const maxSupply = total_supply;
     const uniqueHolders = num_owners;
@@ -103,6 +105,8 @@ export default function Home(props) {
       image,
       symbol,
       floorPrice,
+      oneDayPriceChange,
+      sevenDayPriceChange,
       oneDayVolume,
       maxSupply,
       uniqueHolders,
