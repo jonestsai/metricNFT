@@ -1,6 +1,6 @@
 import { LAMPORTS_PER_SOL } from './constants';
 
-export function getListedCount(collection) {
+export function getListedCount(chain, collection) {
   return collection.length > 0
   ? collection.reduce((listedCount, detail) => {
     const { start_time, listed_count } = detail;
@@ -17,14 +17,14 @@ export function getListedCount(collection) {
   : null;
 };
 
-export function getOwnersCount(collection) {
+export function getOwnersCount(chain, collection) {
   return collection.length > 0
   ? collection.reduce((ownersCount, detail) => {
-    const { start_time, unique_holders, howrare_holders } = detail;
+    const { start_time, unique_holders, howrare_holders, num_owners } = detail;
     const datetime = new Date(start_time);
     const date = datetime.getUTCDate();
     const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-    const holders = howrare_holders || unique_holders;
+    const holders = chain === 'solana' ? (howrare_holders || unique_holders) : num_owners;
 
     if (holders !== null) {
       ownersCount.push({ date: `${date}. ${month}`, 'Total Owners': Number(holders) });
@@ -35,7 +35,7 @@ export function getOwnersCount(collection) {
   : null;
 };
 
-export function getPrice(collection) {
+export function getPrice(chain, collection) {
   let lastPrice;
   let updatedPrice;
   return collection.length > 0
@@ -44,7 +44,7 @@ export function getPrice(collection) {
     const datetime = new Date(start_time);
     const date = datetime.getUTCDate();
     const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-    updatedPrice = Number(Number(floor_price / LAMPORTS_PER_SOL)?.toFixed(2));
+    updatedPrice = chain === 'solana' ? Number(Number(floor_price / LAMPORTS_PER_SOL)?.toFixed(2)) : Number(Number(floor_price)?.toFixed(2));
 
     if (updatedPrice == 0) {
       updatedPrice = lastPrice;
@@ -61,17 +61,18 @@ export function getPrice(collection) {
   : null;
 };
 
-export function getSalesVolume(collection) {
+export function getSalesVolume(chain, collection) {
   return collection.length > 0
   ? collection.reduce((salesVolume, detail) => {
-    const { start_time, _24hvolume } = detail;
+    const { start_time, _24hvolume, one_day_volume } = detail;
     const datetime = new Date(start_time);
     const date = datetime.getUTCDate();
     const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
 
     if (_24hvolume !== null) {
       const oneDayVolume = _24hvolume < 0 ? 0 : _24hvolume;
-      salesVolume.push({ date: `${date}. ${month}`, 'Volume': Number(oneDayVolume / LAMPORTS_PER_SOL) });
+      const volume = chain === 'solana' ? Number(oneDayVolume / LAMPORTS_PER_SOL) : Number(one_day_volume);
+      salesVolume.push({ date: `${date}. ${month}`, 'Volume': volume });
     }
 
     return salesVolume;

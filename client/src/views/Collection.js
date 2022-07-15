@@ -6,6 +6,8 @@ import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid,
 import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
 import { MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
+import solana from '../assets/solana-symbol.png';
+import ethereum from '../assets/ethereum-symbol.png';
 import './Collection.css';
 
 export default class Collection extends React.Component {
@@ -36,7 +38,7 @@ export default class Collection extends React.Component {
     const { symbol } = this.props;
 
     try {
-      const response = await fetch(`${URLS.api}/${symbol}`);
+      const response = await fetch(`${URLS.api}/dev/${symbol}`);
       const collection = await response.json();
 
       this.setState({
@@ -65,13 +67,22 @@ export default class Collection extends React.Component {
   }
 
   render() {
-    const { name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, partner } = this.props;
+    const { chain, name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, partner } = this.props;
     const { isLoading, collection, watchlist } = this.state;
 
-    const listedCount = getListedCount(collection);
-    const ownersCount = getOwnersCount(collection);
-    const price = getPrice(collection);
-    const salesVolume = getSalesVolume(collection);
+    let currencySymbol;
+    if (chain === 'solana') {
+      currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
+    }
+
+    if (chain === 'ethereum') {
+      currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
+    }
+
+    const listedCount = getListedCount(chain, collection);
+    const ownersCount = getOwnersCount(chain, collection);
+    const price = getPrice(chain, collection);
+    const salesVolume = getSalesVolume(chain, collection);
 
     return (
       <Container fluid>
@@ -95,7 +106,7 @@ export default class Collection extends React.Component {
                 </span>
               </OverlayTrigger>
             </h2>
-            <h4 className="text-start">{currentPrice} SOL</h4>
+            <h4 className="text-start">{currentPrice} {chain === 'solana' ? 'SOL' : 'ETH'}</h4>
           </div>
         </div>
         <div className="row g-md-4 pb-4">
@@ -127,7 +138,7 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">24h Volume</div>
               <div className="card-body">
-                <h4 className="card-title">{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
@@ -135,7 +146,7 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">Total Volume</div>
               <div className="card-body">
-                <h4 className="card-title">{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
@@ -143,7 +154,7 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">Floor Mkt Cap</div>
               <div className="card-body">
-                <h4 className="card-title">{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
               </div>
             </div>
           </div>

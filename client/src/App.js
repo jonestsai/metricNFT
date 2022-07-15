@@ -140,6 +140,7 @@ const Contact = () => (
 const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) => {
   const magicedenCollectionsRoutes = magicedenCollections?.map((collection, index) => {
     const { image, name, symbol, floor_price, one_day_price_change, seven_day_price_change, one_day_volume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
+    const chain = 'solana';
     const floorPrice = live_floor_price || floor_price;
     const listedCount = live_listed_count || listed_count;
     const volumeAll = live_volume_all || volume_all;
@@ -149,6 +150,7 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
     return (
       <Route key={collection.id} path={symbol} element={
         <Collection
+          chain={chain}
           name={name}
           symbol={symbol}
           image={image}
@@ -166,6 +168,7 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
 
   const openseaCollectionsRoutes = openseaCollections?.map((collection, index) => {
     const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, total_volume, total_supply, num_owners, listed_count } = collection;
+    const chain = 'ethereum';
     const symbol = slug;
     const image = image_url;
     const floorPrice = floor_price;
@@ -177,6 +180,7 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
     return (
       <Route key={collection.id} path={symbol} element={
         <Collection
+          chain={chain}
           name={name}
           symbol={symbol}
           image={image}

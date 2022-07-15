@@ -87,6 +87,16 @@ app.get('/api/:slug', async (req, res) => {
   });
 });
 
+const getCollectionChain = async (slug) => {
+  const { rows } = await pool.query(`SELECT symbol FROM magiceden_collection WHERE symbol = '${slug}'`);
+
+  if (rows.length > 0) {
+    return 'solana';
+  }
+
+  return 'ethereum';
+}
+
 app.get('/api/users/watchlist', async (req, res) => {
   const { symbol } = req.query;
   const symbols = symbol.toString();
@@ -314,35 +324,51 @@ app.get('/api/dev/opensea', async (req, res) => {
 app.get('/api/dev/:slug', async (req, res) => {
   const { slug } = req.params;
 
-  pool.query(`
-    SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
+  const chain = await getCollectionChain(slug);
+
+  if (chain === 'solana') {
+    pool.query(`
+      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
       FROM magiceden_snapshot
-    LEFT JOIN (
-      SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
-      FROM howrare_snapshot
-      JOIN (
-        SELECT name, magiceden_symbol
-        FROM howrare_collection
-      ) _howrare_collection
-      ON howrare_snapshot.name = _howrare_collection.name
-      WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '30 days') AND start_time < NOW()
-      ORDER BY howrare_snapshot.start_time::date
-    ) _howrare_snapshot
-    ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
-    LEFT JOIN (
-      SELECT DISTINCT ON (start_time::date) start_time::date,
-        volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
-      FROM magiceden_snapshot
-      WHERE symbol = '${slug}'
-      ORDER BY start_time::date
-    ) _24hvolume
-    ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date
-    WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
-    ORDER BY magiceden_snapshot.start_time::date`, (error, results) => {
-    if (error) {
-      console.log(error);
-      throw error;
-    }
-    res.status(200).json(results.rows);
-  });
+      LEFT JOIN (
+        SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
+        FROM howrare_snapshot
+        JOIN (
+          SELECT name, magiceden_symbol
+          FROM howrare_collection
+        ) _howrare_collection
+        ON howrare_snapshot.name = _howrare_collection.name
+        WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '30 days') AND start_time < NOW()
+        ORDER BY howrare_snapshot.start_time::date
+      ) _howrare_snapshot
+      ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
+      LEFT JOIN (
+        SELECT DISTINCT ON (start_time::date) start_time::date,
+          volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
+        FROM magiceden_snapshot
+        WHERE symbol = '${slug}'
+        ORDER BY start_time::date
+      ) _24hvolume
+      ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date
+      WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
+      ORDER BY magiceden_snapshot.start_time::date`, (error, results) => {
+      if (error) {
+        console.log(error);
+        throw error;
+      }
+      res.status(200).json(results.rows);
+    });
+  } else {
+    pool.query(`
+      SELECT DISTINCT ON (opensea_snapshot.start_time::date) opensea_snapshot.start_time::date, *
+      FROM opensea_snapshot
+      WHERE opensea_snapshot.slug = '${slug}' AND opensea_snapshot.start_time > (NOW() - interval '30 days') AND opensea_snapshot.start_time < NOW()
+      ORDER BY opensea_snapshot.start_time::date`, (error, results) => {
+      if (error) {
+        console.log(error);
+        throw error;
+      }
+      res.status(200).json(results.rows);
+    });
+  }
 });
