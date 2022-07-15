@@ -49,11 +49,11 @@ export default function CollectionTable(props) {
             onClick={() => requestSort('floorPrice')}
             className={`text-end ${getClassNamesFor('floorPrice')}`}>Floor</th>
           <th scope="col" role="button"
-            onClick={() => requestSort('_24hChange')}
-            className={`text-end ${getClassNamesFor('_24hChange')}`}>24h</th>
+            onClick={() => requestSort('oneDayPriceChangePct')}
+            className={`text-end ${getClassNamesFor('oneDayPriceChangePct')}`}>24h</th>
           <th scope="col" role="button"
-            onClick={() => requestSort('_7dChange')}
-            className={`text-end ${getClassNamesFor('_7dChange')}`}>7d</th>
+            onClick={() => requestSort('sevenDayPriceChangePct')}
+            className={`text-end ${getClassNamesFor('sevenDayPriceChangePct')}`}>7d</th>
           <th scope="col" role="button"
             onClick={() => requestSort('volume')}
             className={`text-end pe-1 ${getClassNamesFor('volume')}`}>24h Volume</th>
