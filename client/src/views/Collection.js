@@ -38,7 +38,7 @@ export default class Collection extends React.Component {
     const { symbol } = this.props;
 
     try {
-      const response = await fetch(`${URLS.api}/dev/${symbol}`);
+      const response = await fetch(`${URLS.api}/collection/${symbol}`);
       const collection = await response.json();
 
       this.setState({

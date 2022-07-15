@@ -52,8 +52,8 @@ export default function App() {
 
     try {
       let [magiceden, opensea] = await Promise.all([
-        fetch(`${URLS.api}/dev/magiceden`),
-        fetch(`${URLS.api}/dev/opensea`),
+        fetch(`${URLS.api}/magiceden`),
+        fetch(`${URLS.api}/opensea`),
       ]);
       const magicedenCollections = await magiceden.json();
       const openseaCollections = await opensea.json();
