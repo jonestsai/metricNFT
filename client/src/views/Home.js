@@ -6,8 +6,6 @@ import { useLocation } from 'react-router-dom';
 import CollectionTable from '../components/CollectionTable';
 import Pagination from '../components/Pagination';
 import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE, MAGICEDEN_IMAGE_URL } from '../utils/constants';
-import solana from '../assets/solana-symbol.png';
-import ethereum from '../assets/ethereum-symbol.png';
 import './Home.css';
 
 export default function Home(props) {
@@ -60,14 +58,14 @@ export default function Home(props) {
   const updatedMagicedenCollections = magicedenCollections?.map((magicedenCollection) => {
     const { name, symbol, image, floor_price, live_floor_price, one_day_volume, one_day_price_change, live_one_day_price_change, seven_day_price_change, live_seven_day_price_change, total_supply, unique_holders, listed_count, live_listed_count } = magicedenCollection;
     const chain = 'solana';
-    const floorPrice = (live_floor_price || floor_price) / LAMPORTS_PER_SOL;
+    const floorPrice = (live_floor_price || floor_price) / LAMPORTS_PER_SOL * exchangeRates?.['solana/usd'];
     const oneDayPriceChange = live_one_day_price_change || one_day_price_change;
     const sevenDayPriceChange = live_seven_day_price_change || seven_day_price_change;
-    const oneDayVolume = one_day_volume / LAMPORTS_PER_SOL || 0;
+    const oneDayVolume = one_day_volume / LAMPORTS_PER_SOL * exchangeRates?.['solana/usd'] || 0;
     const maxSupply = total_supply;
     const uniqueHolders = unique_holders;
     const listedCount = live_listed_count || listed_count;
-    const floorMarketCap = floorPrice * maxSupply * exchangeRates?.['solana/usd'];
+    const floorMarketCap = floorPrice * maxSupply;
 
     return {
       chain,
@@ -90,14 +88,14 @@ export default function Home(props) {
     const chain = 'ethereum';
     const image = image_url;
     const symbol = slug;
-    const floorPrice = floor_price;
+    const floorPrice = floor_price * exchangeRates?.['ethereum/usd'];
     const oneDayPriceChange = one_day_price_change;
     const sevenDayPriceChange = seven_day_price_change;
-    const oneDayVolume = one_day_volume;
+    const oneDayVolume = one_day_volume * exchangeRates?.['ethereum/usd'];
     const maxSupply = total_supply;
     const uniqueHolders = num_owners;
     const listedCount = listed_count;
-    const floorMarketCap = floorPrice * maxSupply * exchangeRates?.['ethereum/usd'];
+    const floorMarketCap = floorPrice * maxSupply;
 
     return {
       chain,
@@ -134,81 +132,22 @@ export default function Home(props) {
 
   const data = paginatedResult?.map((collection, index) => {
     const { chain, name, image, symbol, floorPrice, oneDayPriceChange, sevenDayPriceChange, oneDayVolume, maxSupply, uniqueHolders, listedCount, floorMarketCap } = collection;
-    let currencySymbol;
-    let currencyRate = 1;
-    let marketCapCurrencyRate = 1;
-    switch (currency) {
-      case 'SOL':
-        currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
-
-        if (chain === 'solana') {
-          currencyRate = 1;
-        }
-
-        if (chain === 'ethereum') {
-          currencyRate = exchangeRates?.['ethereum/usd'] / exchangeRates?.['solana/usd'];
-        }
-        
-        marketCapCurrencyRate = 1 / exchangeRates?.['solana/usd'];
-
-        break;
-      case 'ETH':
-        currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
-
-        if (chain === 'solana') {
-          currencyRate = exchangeRates?.['solana/usd'] / exchangeRates?.['ethereum/usd'];
-        }
-
-        if (chain === 'ethereum') {
-          currencyRate = 1;
-        }
-
-        marketCapCurrencyRate = 1 / exchangeRates?.['ethereum/usd'];
-
-        break;
-      case 'USD':
-        currencySymbol = '$';
-
-        if (chain === 'solana') {
-          currencyRate = exchangeRates?.['solana/usd'];
-        }
-
-        if (chain === 'ethereum') {
-          currencyRate = exchangeRates?.['ethereum/usd'];
-        }
-
-        marketCapCurrencyRate = 1;
-
-        break;
-      default:
-        if (chain === 'solana') {
-          currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
-        }
-
-        if (chain === 'ethereum') {
-          currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
-        }
-    }
-
-    const floorPriceText = <div className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(floorPrice * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
     const oneDayPriceChangePct = oneDayPriceChange ? oneDayPriceChange * 100 : 0;
     const sevenDayPriceChangePct = sevenDayPriceChange ? sevenDayPriceChange * 100 : 0;
-    const volume = <span className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(oneDayVolume * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
-    const marketCapCurrencySymbol = currency === 'Currency' ? '$' : currencySymbol;
-    const floorMarketCapText = <span className="text-nowrap d-flex align-items-center justify-content-end">{marketCapCurrencySymbol}{(floorMarketCap * marketCapCurrencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
 
     return (
       {
         id: collection.symbol,
         row: (currentPage - 1) * COLLECTIONS_PER_PAGE + index + 1,
+        chain,
         image: `${MAGICEDEN_IMAGE_URL}${image}`,
         name,
         symbol,
-        floorPrice: floorPriceText,
+        floorPrice,
         oneDayPriceChangePct,
         sevenDayPriceChangePct,
-        volume,
-        floorMarketCap: floorMarketCapText,
+        oneDayVolume,
+        floorMarketCap,
         maxSupply,
         holders: uniqueHolders,
         listedCount,          
@@ -257,6 +196,8 @@ export default function Home(props) {
         <div className="table-responsive-sm">
           <CollectionTable
             collections={data}
+            exchangeRates={exchangeRates}
+            currency={currency}
             partner={partner}
           />
           {isLoading && (
