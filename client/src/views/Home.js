@@ -125,12 +125,7 @@ export default function Home(props) {
     return isChain && collection?.floorPrice && collection?.maxSupply && collection?.uniqueHolders > 50 && collection?.listedCount > 10;
   });
 
-  const paginatedResult = filteredResult?.slice(
-    (currentPage - 1) * COLLECTIONS_PER_PAGE,
-    (currentPage - 1) * COLLECTIONS_PER_PAGE + COLLECTIONS_PER_PAGE
-  );
-
-  const data = paginatedResult?.map((collection, index) => {
+  const data = filteredResult?.map((collection, index) => {
     const { chain, name, image, symbol, floorPrice, oneDayPriceChange, sevenDayPriceChange, oneDayVolume, maxSupply, uniqueHolders, listedCount, floorMarketCap } = collection;
     const oneDayPriceChangePct = oneDayPriceChange ? oneDayPriceChange * 100 : 0;
     const sevenDayPriceChangePct = sevenDayPriceChange ? sevenDayPriceChange * 100 : 0;
@@ -138,7 +133,7 @@ export default function Home(props) {
     return (
       {
         id: collection.symbol,
-        row: (currentPage - 1) * COLLECTIONS_PER_PAGE + index + 1,
+        row: index + 1,
         chain,
         image: `${MAGICEDEN_IMAGE_URL}${image}`,
         name,
@@ -198,6 +193,7 @@ export default function Home(props) {
             collections={data}
             exchangeRates={exchangeRates}
             currency={currency}
+            currentPage={currentPage}
             partner={partner}
           />
           {isLoading && (
