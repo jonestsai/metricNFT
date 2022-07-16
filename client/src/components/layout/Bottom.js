@@ -3,10 +3,12 @@ import React from 'react';
 import { Container, Row, Col, Navbar } from 'react-bootstrap';
 import logo from '../../assets/logo.png';
 
-export default function Bottom() {
+export default function Bottom(props) {
+  const { partner } = props;
+
   return (
-    <div className="mx-4 my-5 text-muted d-flex justify-content-between">
-        <span className="text-start">Copyright © {new Date().getFullYear()} MetricNFT</span>
+    <div className={`${partner ? 'd-none' : ''} mx-4 my-5 text-muted d-flex justify-content-between`}>
+      <span className="text-start">Copyright © {new Date().getFullYear()} MetricNFT</span>
       <span className="text-end align-middle">
         <a href="https://discord.gg/6Fr697uEAR" target="_blank">
           <svg width="80" height="30" viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg">

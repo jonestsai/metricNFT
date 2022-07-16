@@ -3,11 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import { FaStar, FaRegStar, FaRegBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import solana from '../assets/solana-symbol.png';
+import ethereum from '../assets/ethereum-symbol.png';
 import { isCurrencyString, currencyToNumber } from '../utils/helpers';
 import './CollectionTable.css';
 
 export default function CollectionTable(props) {
-  const { items, requestSort, sortConfig } = useSortableData(props.collections);
+  const { collections, exchangeRates, currency, partner } = props;
+  const { items, requestSort, sortConfig } = useSortableData(collections);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
@@ -38,8 +41,8 @@ export default function CollectionTable(props) {
     <Table variant="dark" hover>
       <thead>
         <tr className="table-secondary">
-          <th scope="col" className="ps-3"></th>
-          <th scope="col" className="ps-0">#</th>
+          <th scope="col" className={`${partner ? 'd-none' : ''} ps-3`}></th>
+          <th scope="col" className={`${partner ? '' : 'ps-0'}`}>#</th>
           <th scope="col"></th>
           <th scope="col" role="button"
             onClick={() => requestSort('name')}
@@ -48,14 +51,14 @@ export default function CollectionTable(props) {
             onClick={() => requestSort('floorPrice')}
             className={`text-end ${getClassNamesFor('floorPrice')}`}>Floor</th>
           <th scope="col" role="button"
-            onClick={() => requestSort('_24hChange')}
-            className={`text-end ${getClassNamesFor('_24hChange')}`}>24h</th>
+            onClick={() => requestSort('oneDayPriceChangePct')}
+            className={`text-end ${getClassNamesFor('oneDayPriceChangePct')}`}>24h</th>
           <th scope="col" role="button"
-            onClick={() => requestSort('_7dChange')}
-            className={`text-end ${getClassNamesFor('_7dChange')}`}>7d</th>
+            onClick={() => requestSort('sevenDayPriceChangePct')}
+            className={`text-end ${getClassNamesFor('sevenDayPriceChangePct')}`}>7d</th>
           <th scope="col" role="button"
-            onClick={() => requestSort('volume')}
-            className={`text-end pe-1 ${getClassNamesFor('volume')}`}>24h Volume</th>
+            onClick={() => requestSort('oneDayVolume')}
+            className={`text-end pe-1 ${getClassNamesFor('oneDayVolume')}`}>24h Volume</th>
           <th scope="col" role="button"
             onClick={() => requestSort('floorMarketCap')}
             className={`text-end pe-1 ${getClassNamesFor('floorMarketCap')}`}>Floor Mkt Cap</th>
@@ -67,39 +70,78 @@ export default function CollectionTable(props) {
             className={`text-end pe-1 ${getClassNamesFor('holders')}`}>Owners</th>
           <th scope="col" role="button"
             onClick={() => requestSort('listedCount')}
-            className={`text-end pe-1 ${getClassNamesFor('listedCount')}`}>Listed</th>
-          <th scope="col" className={`text-end pe-3`}></th>
+            className={`${partner ? 'pe-3' : 'pe-1'} text-end ${getClassNamesFor('listedCount')}`}>Listed</th>
+          <th scope="col" className={`${partner ? 'd-none' : ''} text-end pe-3`}></th>
         </tr>
       </thead>
       <tbody>
         {items?.map((item) => {
-          const { row, image, name, symbol, floorPrice, oneDayPriceChangePct, sevenDayPriceChangePct, volume, floorMarketCap, maxSupply, holders, listedCount} = item;
+          const { row, image, chain, name, symbol, floorPrice, oneDayPriceChangePct, sevenDayPriceChangePct, oneDayVolume, floorMarketCap, maxSupply, holders, listedCount} = item;
           const _24hChangeColor = oneDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
           const _7dChangeColor = sevenDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
           const handleRowClick = (symbol) => {
-            navigate(symbol);
+            const partnerSearchParams = partner ? `?partner=${partner}` : '';
+            navigate(`${symbol}${partnerSearchParams}`);
           }
           const handleNotificationClick = (name) => {
             navigate(`account?collection=${name}`);
           }
 
+          let currencySymbol;
+          let currencyRate = 1;
+          let marketCapCurrencyRate = 1;
+          switch (currency) {
+            case 'SOL':
+              currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
+              currencyRate = 1 / exchangeRates?.['solana/usd'];
+              marketCapCurrencyRate = 1 / exchangeRates?.['solana/usd'];
+              break;
+            case 'ETH':
+              currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
+              currencyRate = 1 / exchangeRates?.['ethereum/usd'];
+              marketCapCurrencyRate = 1 / exchangeRates?.['ethereum/usd'];
+              break;
+            case 'USD':
+              currencySymbol = '$';
+              currencyRate = 1;
+              marketCapCurrencyRate = 1;
+              break;
+            default:
+              if (chain === 'solana') {
+                currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
+                currencyRate = 1 / exchangeRates?.['solana/usd'];
+              }
+
+              if (chain === 'ethereum') {
+                currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
+                currencyRate = 1 / exchangeRates?.['ethereum/usd'];
+              }
+
+              marketCapCurrencyRate = 1;
+          }
+
+          const floorPriceText = <div className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(floorPrice * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
+          const volume = <span className="text-nowrap d-flex align-items-center justify-content-end">{currencySymbol}{(oneDayVolume * currencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
+          const marketCapCurrencySymbol = currency === 'Currency' ? '$' : currencySymbol;
+          const floorMarketCapText = <span className="text-nowrap d-flex align-items-center justify-content-end">{marketCapCurrencySymbol}{(floorMarketCap * marketCapCurrencyRate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</span>;
+
           return (
           <tr key={item.id}>
-            <td className="text-white-50 ps-3 align-middle">
+            <td className={`${partner ? 'd-none' : ''} text-white-50 ps-3 align-middle`}>
               {watchlist.has(symbol) ? <FaStar className="d-flex" size={20} role="button" color="#fc6" onClick={()=> handleWatchlistClick(symbol)} /> : <FaRegStar className="d-flex" size={20} role="button" onClick={()=> handleWatchlistClick(symbol)} />}
             </td>
-            <td className="text-white-50 ps-1 align-middle">{row}</td>
-            <td className="align-middle"><img className = "rounded-circle" height="40" src={image} role="button" onClick={()=> handleRowClick(symbol)} /></td>
+            <td className={`${partner ? '' : 'ps-1'} text-white-50 align-middle`}>{row}</td>
+            <td className="align-middle"><img className = "rounded-circle" height="40" width="40" src={image} role="button" onClick={()=> handleRowClick(symbol)} /></td>
             <td className="text-start align-middle"><u role="button" onClick={()=> handleRowClick(symbol)}>{name}</u></td>
-            <td className="text-white-50 text-end align-middle">{floorPrice}</td>
+            <td className="text-white-50 text-end align-middle">{floorPriceText}</td>
             <td className={`${_24hChangeColor} text-end align-middle`}>{(oneDayPriceChangePct).toFixed(1)}%</td>
             <td className={`${_7dChangeColor} text-end align-middle`}>{(sevenDayPriceChangePct).toFixed(1)}%</td>
             <td className="text-white-50 text-end align-middle">{volume}</td>
-            <td className="text-white-50 text-end align-middle">{floorMarketCap}</td>
+            <td className="text-white-50 text-end align-middle">{floorMarketCapText}</td>
             <td className="text-white-50 text-end align-middle">{maxSupply}</td>
             <td className="text-white-50 text-end align-middle">{holders}</td>
-            <td className="text-white-50 text-end align-middle">{listedCount}<br/><span className="text-secondary">{(listedCount/maxSupply * 100).toFixed(1)}%</span></td>
-            <td className="text-white-50 text-end pe-3 align-middle"><FaRegBell size={20} role="button" onClick={()=> handleNotificationClick(name)} /></td>
+            <td className={`${partner ? 'pe-3' : ''} text-white-50 text-end align-middle`}>{listedCount}<br/><span className="text-secondary">{(listedCount/maxSupply * 100).toFixed(1)}%</span></td>
+            <td className={`${partner ? 'd-none' : ''} text-white-50 text-end pe-3 align-middle`}><FaRegBell size={20} role="button" onClick={()=> handleNotificationClick(name)} /></td>
            </tr>
          )})}
       </tbody>

@@ -3,8 +3,11 @@ import React from 'react';
 import { Container, OverlayTrigger, Tooltip as BSTooltip } from 'react-bootstrap';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
+import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
+import { MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
+import solana from '../assets/solana-symbol.png';
+import ethereum from '../assets/ethereum-symbol.png';
 import './Collection.css';
 
 export default class Collection extends React.Component {
@@ -35,7 +38,7 @@ export default class Collection extends React.Component {
     const { symbol } = this.props;
 
     try {
-      const response = await fetch(`${URLS.api}/${symbol}`);
+      const response = await fetch(`${URLS.api}/collection/${symbol}`);
       const collection = await response.json();
 
       this.setState({
@@ -50,8 +53,7 @@ export default class Collection extends React.Component {
 
   handleWatchlistClick = (symbol) => {
     const { watchlist } = this.state;
-    console.log(symbol);
-    console.log(watchlist);
+
     if (watchlist.has(symbol)) {
       const newWatchlist = new Set(watchlist);
       newWatchlist.delete(symbol);
@@ -64,75 +66,23 @@ export default class Collection extends React.Component {
     }
   }
 
-  getListedCount = (collection) => {
-    return collection.length > 0
-      ? collection.map((detail) => {
-        const { start_time, listed_count } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-
-        return { date: `${date}. ${month}`, 'Total Listed': Number(listed_count) };
-      })
-      : null;
-  };
-
-  getOwnersCount = (collection) => {
-    return collection.length > 0
-      ? collection.map((detail) => {
-        const { start_time, unique_holders, howrare_holders } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        const ownersCount = howrare_holders || unique_holders;
-
-        return { date: `${date}. ${month}`, 'Total Owners': Number(ownersCount) };
-      })
-      : null;
-  };
-
-  getPrice = (collection) => {
-    let lastPrice;
-    let updatedPrice;
-    return collection.length > 0
-      ? collection.map((detail) => {
-        const { start_time, floor_price } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        updatedPrice = Number(Number(floor_price / LAMPORTS_PER_SOL)?.toFixed(2));
-
-        if (updatedPrice == 0) {
-          updatedPrice = lastPrice;
-        }
-
-        lastPrice = updatedPrice;
-
-        return { date: `${date}. ${month}`, 'Price': updatedPrice };
-      })
-      : null;
-  };
-
-  getSalesVolume = (collection) => {
-    return collection.length > 0
-      ? collection.map((detail) => {
-        const { start_time, _24hvolume } = detail;
-        const datetime = new Date(start_time);
-        const date = datetime.getUTCDate();
-        const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
-        return { date: `${date}. ${month}`, 'Volume': Number(_24hvolume / LAMPORTS_PER_SOL) };
-      })
-      : null;
-  };
-
   render() {
-    const { name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll } = this.props;
+    const { chain, name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, partner } = this.props;
     const { isLoading, collection, watchlist } = this.state;
 
-    const listedCount = this.getListedCount(collection);
-    const ownersCount = this.getOwnersCount(collection);
-    const price = this.getPrice(collection);
-    const salesVolume = this.getSalesVolume(collection);
+    let currencySymbol;
+    if (chain === 'solana') {
+      currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
+    }
+
+    if (chain === 'ethereum') {
+      currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
+    }
+
+    const listedCount = getListedCount(chain, collection);
+    const ownersCount = getOwnersCount(chain, collection);
+    const price = getPrice(chain, collection);
+    const salesVolume = getSalesVolume(chain, collection);
 
     return (
       <Container fluid>
@@ -151,12 +101,12 @@ export default class Collection extends React.Component {
                   </BSTooltip>
                 }
               >
-                <span className="watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center">
+                <span className={`${partner ? 'd-none' : ''} watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center`}>
                   {watchlist.has(symbol) ? <FaStar className="m-1" size={18} role="button" color="#fc6" onClick={()=> this.handleWatchlistClick(symbol)} /> : <FaRegStar className="m-1" size={18} role="button" onClick={()=> this.handleWatchlistClick(symbol)} />}
                 </span>
               </OverlayTrigger>
             </h2>
-            <h4 className="text-start">{currentPrice} SOL</h4>
+            <h4 className="text-start">{currentPrice} {chain === 'solana' ? 'SOL' : 'ETH'}</h4>
           </div>
         </div>
         <div className="row g-md-4 pb-4">
@@ -188,7 +138,7 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">24h Volume</div>
               <div className="card-body">
-                <h4 className="card-title">{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
@@ -196,7 +146,7 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">Total Volume</div>
               <div className="card-body">
-                <h4 className="card-title">{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               </div>
             </div>
           </div>
@@ -204,7 +154,7 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">Floor Mkt Cap</div>
               <div className="card-body">
-                <h4 className="card-title">{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
               </div>
             </div>
           </div>
@@ -329,55 +279,3 @@ export default class Collection extends React.Component {
     );
   }
 }
-
-const ListedCountTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-light text-dark rounded opacity-75 p-2">
-        <div className="text-start">{label}</div>
-        <div className="text-start">{`Total Listed: ${payload[0].value}`}</div>
-      </div>
-    );
-  }
-
-  return null;
-};
-
-const OwnersCountTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-light text-dark rounded opacity-75 p-2">
-        <div className="text-start">{label}</div>
-        <div className="text-start">{`Total Owners: ${payload[0].value}`}</div>
-      </div>
-    );
-  }
-
-  return null;
-};
-
-const PriceTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-light text-dark rounded opacity-75 p-2">
-        <div className="text-start">{label}</div>
-        <div className="text-start">{`Floor Price: ${payload[0].value}`}</div>
-      </div>
-    );
-  }
-
-  return null;
-};
-
-const SalesVolumeTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-light text-dark rounded opacity-75 p-2">
-        <div className="text-start">{label}</div>
-        <div className="text-start">{`Volume: ${Number(payload[0].value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}`}</div>
-      </div>
-    );
-  }
-
-  return null;
-};

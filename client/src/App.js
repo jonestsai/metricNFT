@@ -15,7 +15,7 @@ import {
 import { clusterApiUrl } from '@solana/web3.js';
 import React, { useState, useEffect, useMemo } from 'react';
 import ReactGA from 'react-ga';
-import { NavLink, Routes, Route, useLocation } from 'react-router-dom';
+import { NavLink, Routes, Route, useLocation, useSearchParams } from 'react-router-dom';
 
 import Top from './components/layout/Top';
 import Bottom from './components/layout/Bottom';
@@ -35,9 +35,11 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 export default function App() {
   usePageTracking();
 
-  const [collections, setCollections] = useState();
+  const [magicedenCollections, setMagicedenCollections] = useState();
+  const [openseaCollections, setOpenseaCollections] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     document.body.style.backgroundColor = "#212529";
@@ -49,10 +51,15 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${URLS.api}`);
-      const collections = await response.json();
+      let [magiceden, opensea] = await Promise.all([
+        fetch(`${URLS.api}/magiceden`),
+        fetch(`${URLS.api}/opensea`),
+      ]);
+      const magicedenCollections = await magiceden.json();
+      const openseaCollections = await opensea.json();
 
-      setCollections(collections);
+      setMagicedenCollections(magicedenCollections);
+      setOpenseaCollections(openseaCollections);
     } catch (error) {
       // Do nothing
     } finally {
@@ -82,18 +89,22 @@ export default function App() {
     [network]
   );
 
+  const partner = searchParams.get('partner');
+
   return (
     <div className="App">
       {/*<Navigation />*/}
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>
-            <Top />
+            <Top partner={partner} />
             <Main
-              collections={collections}
+              magicedenCollections={magicedenCollections}
+              openseaCollections={openseaCollections}
               isLoading={isLoading}
+              partner={partner}
             />
-            <Bottom />
+            <Bottom partner={partner} />
           </WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>
@@ -126,9 +137,10 @@ const Contact = () => (
   </div>
 );
 
-const Main = ({ collections, isLoading }) => {
-  const collectionRoutes = collections?.map((collection, index) => {
+const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) => {
+  const magicedenCollectionsRoutes = magicedenCollections?.map((collection, index) => {
     const { image, name, symbol, floor_price, one_day_price_change, seven_day_price_change, one_day_volume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
+    const chain = 'solana';
     const floorPrice = live_floor_price || floor_price;
     const listedCount = live_listed_count || listed_count;
     const volumeAll = live_volume_all || volume_all;
@@ -138,6 +150,7 @@ const Main = ({ collections, isLoading }) => {
     return (
       <Route key={collection.id} path={symbol} element={
         <Collection
+          chain={chain}
           name={name}
           symbol={symbol}
           image={image}
@@ -147,6 +160,37 @@ const Main = ({ collections, isLoading }) => {
           numberOfTokens={maxSupply}
           volumeAll={volumeAll / LAMPORTS_PER_SOL}
           oneDayVolume={one_day_volume / LAMPORTS_PER_SOL}
+          partner={partner}
+        />
+      }></Route>
+    );
+  });
+
+  const openseaCollectionsRoutes = openseaCollections?.map((collection, index) => {
+    const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, total_volume, total_supply, num_owners, listed_count } = collection;
+    const chain = 'ethereum';
+    const symbol = slug;
+    const image = image_url;
+    const floorPrice = floor_price;
+    const listedCount = listed_count;
+    const volumeAll = total_volume;
+    const maxSupply = total_supply;
+    const ownersCount = num_owners;
+
+    return (
+      <Route key={collection.id} path={symbol} element={
+        <Collection
+          chain={chain}
+          name={name}
+          symbol={symbol}
+          image={image}
+          currentPrice={floorPrice}
+          currentListedCount={listedCount}
+          currentOwnersCount={ownersCount}
+          numberOfTokens={maxSupply}
+          volumeAll={volumeAll}
+          oneDayVolume={one_day_volume}
+          partner={partner}
         />
       }></Route>
     );
@@ -154,8 +198,9 @@ const Main = ({ collections, isLoading }) => {
 
   return (
     <Routes>
-      <Route path='/' element={<Home collections={collections} isLoading={isLoading} />}></Route>
-      {collectionRoutes}
+      <Route path='/' element={<Home magicedenCollections={magicedenCollections} openseaCollections={openseaCollections} isLoading={isLoading} partner={partner} />}></Route>
+      {magicedenCollectionsRoutes}
+      {openseaCollectionsRoutes}
       <Route path='/watchlist' element={<Watchlist />}></Route>
       <Route path='/account' element={<Account />}></Route>
       <Route path='/about' element={<About />}></Route>

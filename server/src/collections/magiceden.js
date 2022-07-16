@@ -99,39 +99,43 @@ const magicedenCollectionsSnapshot = async (collections) => {
   let uniqueHolders;
   let isError;
   for (collection of collections) {
-    const { symbol } = collection;
-    console.log(symbol);
-    const collectionStats = await getMagicedenCollectionStats(symbol);
-    const { floorPrice, listedCount, avgPrice24hr, volumeAll } = collectionStats;
-    collectionHolderStats = await getCollectionHolderStats(symbol);
-    ({ totalSupply, uniqueHolders, isError } = collectionHolderStats);
-
-    // Retry getCollectionHolderStats if return is null
-    if (!totalSupply && !uniqueHolders && isError) {
+    try {
+      const { symbol } = collection;
+      console.log(symbol);
+      const collectionStats = await getMagicedenCollectionStats(symbol);
+      const { floorPrice, listedCount, avgPrice24hr, volumeAll } = collectionStats;
       collectionHolderStats = await getCollectionHolderStats(symbol);
       ({ totalSupply, uniqueHolders, isError } = collectionHolderStats);
-    }
-    if (!totalSupply && !uniqueHolders && isError) {
-      collectionHolderStats = await getCollectionHolderStats(symbol);
-      ({ totalSupply, uniqueHolders, isError } = collectionHolderStats);
-    }
 
-    const [{ _1dfloor, _7dfloor, _24hvolume }] = await getPastData(symbol);
-    const oneDayPriceChange = _1dfloor ? (floorPrice - _1dfloor) / _1dfloor : 0;
-    const sevenDayPriceChange = _7dfloor ? (floorPrice - _7dfloor) / _7dfloor : 0;
-    const oneDayVolume = _24hvolume;
-
-    const startSnapshotTime = new Date();
-    const query = {
-      text: 'INSERT INTO magiceden_snapshot(symbol, start_time, floor_price, listed_count, avg_price_24hr, volume_all, total_supply, unique_holders, one_day_price_change, seven_day_price_change, one_day_volume) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
-      values: [symbol, startSnapshotTime, floorPrice, listedCount, avgPrice24hr, volumeAll, totalSupply, uniqueHolders, oneDayPriceChange, sevenDayPriceChange, oneDayVolume],
-    };
-    pool.query(query, (error, results) => {
-      if (error) {
-        console.log(error);
+      // Retry getCollectionHolderStats if return is null
+      if (!totalSupply && !uniqueHolders && isError) {
+        collectionHolderStats = await getCollectionHolderStats(symbol);
+        ({ totalSupply, uniqueHolders, isError } = collectionHolderStats);
       }
-    });
-    await new Promise(f => setTimeout(f, 1000));
+      if (!totalSupply && !uniqueHolders && isError) {
+        collectionHolderStats = await getCollectionHolderStats(symbol);
+        ({ totalSupply, uniqueHolders, isError } = collectionHolderStats);
+      }
+
+      const [{ _1dfloor, _7dfloor, _24hvolume }] = await getPastData(symbol);
+      const oneDayPriceChange = _1dfloor ? (floorPrice - _1dfloor) / _1dfloor : 0;
+      const sevenDayPriceChange = _7dfloor ? (floorPrice - _7dfloor) / _7dfloor : 0;
+      const oneDayVolume = _24hvolume;
+
+      const startSnapshotTime = new Date();
+      const query = {
+        text: 'INSERT INTO magiceden_snapshot(symbol, start_time, floor_price, listed_count, avg_price_24hr, volume_all, total_supply, unique_holders, one_day_price_change, seven_day_price_change, one_day_volume) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+        values: [symbol, startSnapshotTime, floorPrice, listedCount, avgPrice24hr, volumeAll, totalSupply, uniqueHolders, oneDayPriceChange, sevenDayPriceChange, oneDayVolume],
+      };
+      pool.query(query, (error, results) => {
+        if (error) {
+          console.log(error);
+        }
+      });
+      await new Promise(f => setTimeout(f, 1000));
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 
@@ -148,20 +152,22 @@ const getMagicedenCollectionStats = async (symbol) => {
 }
 
 const getCollectionHolderStats = async (symbol) => {
+  const browser = await puppeteer.launch({args: ['--no-zygote', '--no-sandbox']});
+
   try {
-    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
     const [page] = await browser.pages();
     await page.setUserAgent(userAgent.toString());
     await page.goto(`https://api-mainnet.magiceden.io/rpc/getCollectionHolderStats/${symbol}`, { waitUntil: 'networkidle0' });
     const data = await page.$eval('pre', (element) => element.textContent);
     const totalSupply = JSON.parse(data)?.results?.totalSupply;
     const uniqueHolders = JSON.parse(data)?.results?.uniqueHolders;
-    await browser.close();
 
     return { totalSupply, uniqueHolders, isError: false };
   } catch (error) {
     console.log(error);
     return { totalSupply: null, uniqueHolders: null, isError: true };
+  } finally {
+    await browser.close();
   }
 }
 
@@ -200,6 +206,7 @@ const getPastData = async (symbol) => {
     return rows;
   } catch (error) {
     console.log(error);
+    return [{ _1dfloor: null, _7dfloor: null, _24hvolume: null }];
   }
 }
 
