@@ -27,7 +27,7 @@ export default function Home(props) {
     try {
       const response = await fetch(`https://metricnft.com/api/users/watchlist?${symbols}`);
       const data = await response.json();
-      const collections = groupBy(data, 'symbol');
+      const collections = groupBySymbol(data);
 
       setCollections(collections);
     } catch (error) {
@@ -37,9 +37,10 @@ export default function Home(props) {
     }
   };
 
-  const groupBy = (data, key) => {
+  const groupBySymbol = (data) => {
     return data.reduce((storage, item) => {
       // get the first instance of the key by which we're grouping
+      const key = item.symbol ? 'symbol' : 'slug';
       const group = item[key];
     
       // set 'storage' for this instance of group to the outer scope (if not empty) or initialize it
@@ -76,134 +77,140 @@ export default function Home(props) {
         </Nav.Item>
       </Nav>
       <Container fluid>
-        {!isLoading && collections && (Object.keys(collections).map((symbol) => 
-          <div key={symbol}>
-            <div className="row py-4 d-flex align-items-center">
-              <div className="col-2 col-md-1">
-                <img className = "rounded-circle img-fluid" height="50" src={`${MAGICEDEN_IMAGE_URL}${collections[symbol][0].image}`} />
+        {!isLoading && collections && (Object.keys(collections).map((symbol) => {
+          const [collection] = collections[symbol].slice(-1); // Get the latest record
+          const image = collection.image || collection.image_url;
+          const floorPrice = collection.chain === 'solana' ? `${collection.floor_price / LAMPORTS_PER_SOL} SOL` : `${collection.floor_price} ETH`;
+
+          return (
+            <div key={symbol}>
+              <div className="row py-4 d-flex align-items-center">
+                <div className="col-2 col-md-1">
+                  <img className = "rounded-circle img-fluid" height="50" src={`${MAGICEDEN_IMAGE_URL}${image}`} />
+                </div>
+                <div className="col-10 col-md-11">
+                  <h2 className="text-start d-flex align-items-center">
+                    {collection.name}
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={
+                        <BSTooltip>
+                          {watchlist.has(symbol) ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                        </BSTooltip>
+                      }
+                    >
+                      <span className="watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center">
+                        {watchlist.has(symbol) ? <FaStar className="m-1" size={18} role="button" color="#fc6" onClick={()=> handleWatchlistClick(symbol)} /> : <FaRegStar className="m-1" size={18} role="button" onClick={()=> handleWatchlistClick(symbol)} />}
+                      </span>
+                    </OverlayTrigger>
+                  </h2>
+                  <h4 className="text-start">{floorPrice}</h4>
+                </div>
               </div>
-              <div className="col-10 col-md-11">
-                <h2 className="text-start d-flex align-items-center">
-                  {collections[symbol][0].name}
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={
-                      <BSTooltip>
-                        {watchlist.has(symbol) ? 'Remove from Watchlist' : 'Add to Watchlist'}
-                      </BSTooltip>
-                    }
-                  >
-                    <span className="watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center">
-                      {watchlist.has(symbol) ? <FaStar className="m-1" size={18} role="button" color="#fc6" onClick={()=> handleWatchlistClick(symbol)} /> : <FaRegStar className="m-1" size={18} role="button" onClick={()=> handleWatchlistClick(symbol)} />}
-                    </span>
-                  </OverlayTrigger>
-                </h2>
-                <h4 className="text-start">{collections[symbol].slice(-1)[0].floor_price / LAMPORTS_PER_SOL} SOL</h4>
+              <div className="row">
+                <div className="col-lg-6">
+                  <div className="bg-gray rounded shadow-lg mb-4">
+                    <h5 className="text-start px-3 pt-3">Number of Tokens Listed</h5>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart
+                        width={500}
+                        height={300}
+                        data={getListedCount(collection.chain, collections[symbol])}
+                        margin={{
+                          top: 10,
+                          right: 30,
+                          left: 0,
+                          bottom: 0,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                        <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                        <Tooltip content={<ListedCountTooltip />} />
+                        <Line dataKey="Total Listed" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                <div className="col-lg-6">
+                  <div className="bg-gray rounded shadow-lg mb-4">
+                    <h5 className="text-start px-3 pt-3">Number of Owners</h5>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart
+                        width={500}
+                        height={300}
+                        data={getOwnersCount(collection.chain, collections[symbol])}
+                        margin={{
+                          top: 10,
+                          right: 30,
+                          left: 0,
+                          bottom: 0,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                        <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                        <Tooltip content={<OwnersCountTooltip />} />
+                        <Line dataKey="Total Owners" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-lg-6">
+                  <div className="bg-gray rounded shadow-lg mb-5">
+                    <h5 className="text-start px-3 pt-3">Price</h5>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart
+                        width={500}
+                        height={300}
+                        data={getPrice(collection.chain, collections[symbol])}
+                        margin={{
+                          top: 10,
+                          right: 30,
+                          left: 0,
+                          bottom: 0,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                        <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                        <Tooltip content={<PriceTooltip />} />
+                        <Line dataKey="Price" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                <div className="col-lg-6">
+                  <div className="bg-gray rounded shadow-lg mb-5">
+                    <h5 className="text-start px-3 pt-3">Sales Volume</h5>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <ComposedChart
+                        width={500}
+                        height={300}
+                        data={getSalesVolume(collection.chain, collections[symbol])}
+                        barCategoryGap="28%"
+                        margin={{
+                          top: 10,
+                          right: 30,
+                          left: 0,
+                          bottom: 0,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                        <YAxis yAxisId="volume" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                        <Tooltip content={<SalesVolumeTooltip />} />
+                        <Area yAxisId="volume" dataKey="Volume" type="monotone" isAnimationActive={false} fill="#4b95d1" stroke="#4b95d1" />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-4">
-                  <h5 className="text-start px-3 pt-3">Number of Tokens Listed</h5>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <LineChart
-                      width={500}
-                      height={300}
-                      data={getListedCount(collections[symbol])}
-                      margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                      }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
-                      <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                      <Tooltip content={<ListedCountTooltip />} />
-                      <Line dataKey="Total Listed" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-4">
-                  <h5 className="text-start px-3 pt-3">Number of Owners</h5>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <LineChart
-                      width={500}
-                      height={300}
-                      data={getOwnersCount(collections[symbol])}
-                      margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                      }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
-                      <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                      <Tooltip content={<OwnersCountTooltip />} />
-                      <Line dataKey="Total Owners" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-5">
-                  <h5 className="text-start px-3 pt-3">Price</h5>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <LineChart
-                      width={500}
-                      height={300}
-                      data={getPrice(collections[symbol])}
-                      margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                      }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
-                      <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                      <Tooltip content={<PriceTooltip />} />
-                      <Line dataKey="Price" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-5">
-                  <h5 className="text-start px-3 pt-3">Sales Volume</h5>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <ComposedChart
-                      width={500}
-                      height={300}
-                      data={getSalesVolume(collections[symbol])}
-                      barCategoryGap="28%"
-                      margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                      }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
-                      <YAxis yAxisId="volume" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                      <Tooltip content={<SalesVolumeTooltip />} />
-                      <Area yAxisId="volume" dataKey="Volume" type="monotone" isAnimationActive={false} fill="#4b95d1" stroke="#4b95d1" />
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+          )
+        }))}
         {isLoading && (
           <div className="my-5 text-center">
             <div className="spinner-border text-light" role="status" />

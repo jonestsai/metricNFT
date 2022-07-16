@@ -138,10 +138,17 @@ const getCollectionChain = async (slug) => {
 app.get('/api/users/watchlist', async (req, res) => {
   const { symbol } = req.query;
   const symbols = symbol.toString();
+  const magicedenWatchlist = await getMagicedenWatchlist(symbols);
+  const openseaWatchlist = await getOpenseaWatchlist(symbols);
+  const watchlist = magicedenWatchlist?.concat(openseaWatchlist);
+  
+  res.status(200).json(watchlist);
+});
 
-  pool.query(`
-    SELECT DISTINCT ON (magiceden_snapshot.start_time::date, magiceden_snapshot.symbol) magiceden_snapshot.start_time::date, *
-      FROM magiceden_snapshot
+const getMagicedenWatchlist = async (symbols) => {
+  const { rows } = await pool.query(`
+    SELECT DISTINCT ON (magiceden_snapshot.start_time::date, magiceden_snapshot.symbol) magiceden_snapshot.start_time::date, 'solana' as chain, *
+    FROM magiceden_snapshot
     LEFT JOIN (
       SELECT name, symbol, image
       FROM magiceden_collection
@@ -168,14 +175,25 @@ app.get('/api/users/watchlist', async (req, res) => {
     ) _24hvolume
     ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date AND magiceden_snapshot.symbol = _24hvolume.symbol
     WHERE magiceden_snapshot.symbol IN (${symbols}) AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
-    ORDER BY magiceden_snapshot.symbol, magiceden_snapshot.start_time::date`, (error, results) => {
-    if (error) {
-      console.log(error);
-      throw error;
-    }
-    res.status(200).json(results.rows);
-  });
-});
+    ORDER BY magiceden_snapshot.symbol, magiceden_snapshot.start_time::date`);
+
+  return rows;
+}
+
+const getOpenseaWatchlist = async (slugs) => {
+  const { rows } = await pool.query(`
+    SELECT DISTINCT ON (opensea_snapshot.start_time::date, opensea_snapshot.slug) opensea_snapshot.start_time::date, 'ethereum' as chain, *
+    FROM opensea_snapshot
+    LEFT JOIN (
+      SELECT name, slug, image_url
+      FROM opensea_collection
+    ) _opensea_collection
+    ON opensea_snapshot.slug = _opensea_collection.slug
+    WHERE opensea_snapshot.slug IN (${slugs}) AND opensea_snapshot.start_time > (NOW() - interval '30 days') AND opensea_snapshot.start_time < NOW()
+    ORDER BY opensea_snapshot.slug, opensea_snapshot.start_time::date`);
+
+  return rows;
+}
 
 app.get('/api/users/:walletAddress', (req, res) => {
   const { walletAddress } = req.params;
