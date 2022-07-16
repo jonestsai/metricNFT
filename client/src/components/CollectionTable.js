@@ -5,11 +5,12 @@ import { FaStar, FaRegStar, FaRegBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import solana from '../assets/solana-symbol.png';
 import ethereum from '../assets/ethereum-symbol.png';
+import { COLLECTIONS_PER_PAGE } from '../utils/constants';
 import { isCurrencyString, currencyToNumber } from '../utils/helpers';
 import './CollectionTable.css';
 
 export default function CollectionTable(props) {
-  const { collections, exchangeRates, currency, partner } = props;
+  const { collections, exchangeRates, currency, currentPage, partner } = props;
   const { items, requestSort, sortConfig } = useSortableData(collections);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
@@ -36,6 +37,11 @@ export default function CollectionTable(props) {
       setWatchlist(prev => new Set(prev).add(symbol));
     }
   }
+
+  const paginatedResult = items?.slice(
+    (currentPage - 1) * COLLECTIONS_PER_PAGE,
+    (currentPage - 1) * COLLECTIONS_PER_PAGE + COLLECTIONS_PER_PAGE
+  );
 
   return (
     <Table variant="dark" hover>
@@ -75,7 +81,7 @@ export default function CollectionTable(props) {
         </tr>
       </thead>
       <tbody>
-        {items?.map((item) => {
+        {paginatedResult?.map((item) => {
           const { row, image, chain, name, symbol, floorPrice, oneDayPriceChangePct, sevenDayPriceChangePct, oneDayVolume, floorMarketCap, maxSupply, holders, listedCount} = item;
           const _24hChangeColor = oneDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
           const _7dChangeColor = sevenDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
