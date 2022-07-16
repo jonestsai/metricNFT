@@ -141,7 +141,9 @@ export default function CollectionTable(props) {
             <td className="text-white-50 text-end align-middle">{maxSupply}</td>
             <td className="text-white-50 text-end align-middle">{holders}</td>
             <td className={`${partner ? 'pe-3' : ''} text-white-50 text-end align-middle`}>{listedCount}<br/><span className="text-secondary">{(listedCount/maxSupply * 100).toFixed(1)}%</span></td>
-            <td className={`${partner ? 'd-none' : ''} text-white-50 text-end pe-3 align-middle`}><FaRegBell size={20} role="button" onClick={()=> handleNotificationClick(name)} /></td>
+            <td className={`${partner ? 'd-none' : ''} text-white-50 text-end pe-3 align-middle`}>
+              {chain === 'solana' && <FaRegBell size={20} role="button" onClick={()=> handleNotificationClick(name)} />}
+            </td>
            </tr>
          )})}
       </tbody>
