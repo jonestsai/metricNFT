@@ -163,7 +163,7 @@ const useSortableData = (items, config = null) => {
   const sortedItems = React.useMemo(() => {
     let sortableItems = items ? [...items] : null;
     if (sortConfig !== null) {
-      sortableItems.sort((a, b) => {
+      sortableItems?.sort((a, b) => {
         let aKey = a[sortConfig.key];
         let bKey = b[sortConfig.key];
         if (isCurrencyString(aKey)) {
