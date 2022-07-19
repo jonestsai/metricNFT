@@ -268,7 +268,7 @@ const newTweet = async (tokenAddress, name, price, id) => {
         // file path
         client.v1.uploadMedia('./img.jpg'),
       ]);
-      await client.v1.tweet(`👌🐻 ${name}\n\n💵 SOLD for ${price} SOL\n\n🛒 https://magiceden.io/item-details/${tokenAddress}\n\n🧾 https://solscan.io/tx/${id}\n\n#WAGBO #OkayBears #OkBears #SolanaNFTs #Solana`, { media_ids: mediaIds });
+      await client.v1.tweet(`👌🐻 ${name}\n\n💵 SOLD for ${price} SOL\n\n🛒 https://magiceden.io/item-details/${tokenAddress}\n\n🧾 https://solscan.io/tx/${id}\n\n#WAGBO #OkayBears #OkBears #WeAreOkay #SolanaNFTs #Solana`, { media_ids: mediaIds });
     }
     // if (name.startsWith('Trippin') && Number(price) > 65) {
     if (name.startsWith('Trippin')) {
