@@ -16,6 +16,7 @@ export default function Home(props) {
   const [collections, setCollections] = useState();
   const [watchlist, setWatchlist] = useState(new Set(JSON.parse(localStorage.getItem('watchlist'))));
   const [isLoading, setIsLoading] = useState(false);
+  const [collapse, setCollapse] = useState(true);
   const symbols = [...watchlist].map(symbol => `symbol='${symbol}'`).join('&');
 
   useEffect(() => {
@@ -80,6 +81,9 @@ export default function Home(props) {
         </Nav.Item>
       </Nav>
       <Container fluid>
+        <div className="text-end">
+          <button className="btn btn-secondary mt-4" type="button" onClick={() => setCollapse(!collapse)}>{collapse ? 'Expand All' : 'Collapse All'}<FaChevronDown className="ms-2" size={20} role="button" /></button>
+        </div>
         <Table variant="dark" className="my-4">
           <thead>
             <tr className="table-secondary">
@@ -118,7 +122,7 @@ export default function Home(props) {
 
               return (
                 <React.Fragment key={symbol}>
-                  <tr key={symbol} role="button" data-bs-toggle="collapse" data-bs-target={`#expand-${symbol}`}>
+                  <tr key={symbol} role="button" data-bs-toggle="collapse" data-bs-target={`#collapse-${symbol}`}>
                     <td className={`text-white-50 ps-3 align-middle`}>
                       {watchlist.has(symbol) ? <FaStar className="d-flex" size={20} role="button" color="#fc6" onClick={()=> handleWatchlistClick(symbol)} /> : <FaRegStar className="d-flex" size={20} role="button" onClick={()=> handleWatchlistClick(symbol)} />}
                     </td>
@@ -137,7 +141,7 @@ export default function Home(props) {
                       <FaChevronDown size={20} role="button" />
                     </td>
                   </tr>
-                  <tr key={`${symbol}-detail`} className="collapse" id={`expand-${symbol}`}>
+                  <tr key={`${symbol}-detail`} className={`collapse ${collapse ? '' : 'show'}`} id={`collapse-${symbol}`}>
                     <td colSpan="13">
                       <div className="row my-4">
                         <div className="col-lg-6">
