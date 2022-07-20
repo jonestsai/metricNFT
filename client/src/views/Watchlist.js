@@ -82,7 +82,7 @@ export default function Home(props) {
       </Nav>
       <Container fluid>
         <div className="text-end">
-          <button className="btn btn-secondary mt-4" type="button" onClick={() => setCollapse(!collapse)}>{collapse ? 'Expand All' : 'Collapse All'}<FaChevronDown className="ms-2" size={20} role="button" /></button>
+          <button className="btn btn-secondary mt-4" type="button" onClick={() => setCollapse(!collapse)}>{collapse ? 'Expand All' : 'Collapse All'}<FaChevronDown className="ms-2" size={16} role="button" /></button>
         </div>
         <Table variant="dark" className="my-4">
           <thead>
@@ -138,7 +138,7 @@ export default function Home(props) {
                     <td className="text-white-50 text-end align-middle">{holders}</td>
                     <td className="text-white-50 text-end align-middle">{listedCount}<br/><span className="text-secondary">{(listedCount/maxSupply * 100).toFixed(1)}%</span></td>
                     <td className="text-white-50 text-end pe-3 align-middle">
-                      <FaChevronDown size={20} role="button" />
+                      <FaChevronDown size={16} role="button" />
                     </td>
                   </tr>
                   <tr key={`${symbol}-detail`} className={`collapse ${collapse ? '' : 'show'}`} id={`collapse-${symbol}`}>
