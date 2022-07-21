@@ -145,9 +145,9 @@ export default function Home(props) {
                     </tr>
                     <tr key={`${symbol}-detail`} className={`collapse ${collapse ? '' : 'show'}`} id={`collapse-${symbol}`}>
                       <td colSpan="13">
-                        <div className="row my-4">
+                        <div className="row mt-4">
                           <div className="col-lg-6">
-                            <div className="bg-gray rounded shadow-lg">
+                            <div className="bg-gray rounded shadow-lg mb-4">
                               <h5 className="text-start px-3 pt-3">Number of Tokens Listed</h5>
                               <ResponsiveContainer width="100%" height={200}>
                                 <LineChart
@@ -171,7 +171,7 @@ export default function Home(props) {
                             </div>
                           </div>
                           <div className="col-lg-6">
-                            <div className="bg-gray rounded shadow-lg">
+                            <div className="bg-gray rounded shadow-lg mb-4">
                               <h5 className="text-start px-3 pt-3">Number of Owners</h5>
                               <ResponsiveContainer width="100%" height={200}>
                                 <LineChart
@@ -195,9 +195,9 @@ export default function Home(props) {
                             </div>
                           </div>
                         </div>
-                        <div className="row my-4">
+                        <div className="row">
                           <div className="col-lg-6">
-                            <div className="bg-gray rounded shadow-lg">
+                            <div className="bg-gray rounded shadow-lg mb-4">
                               <h5 className="text-start px-3 pt-3">Price</h5>
                               <ResponsiveContainer width="100%" height={200}>
                                 <LineChart
@@ -221,7 +221,7 @@ export default function Home(props) {
                             </div>
                           </div>
                           <div className="col-lg-6">
-                            <div className="bg-gray rounded shadow-lg">
+                            <div className="bg-gray rounded shadow-lg mb-4">
                               <h5 className="text-start px-3 pt-3">Sales Volume</h5>
                               <ResponsiveContainer width="100%" height={200}>
                                 <ComposedChart
