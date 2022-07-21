@@ -27,7 +27,7 @@ app.get('/api/magiceden', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT name, symbol, image
+      SELECT symbol, name, description, image
       FROM magiceden_collection
     ) _magiceden_collection
     LEFT JOIN (
@@ -56,7 +56,7 @@ app.get('/api/opensea', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT name, slug, image_url
+      SELECT slug, name, description, image_url
       FROM opensea_collection
     ) _opensea_collection
     LEFT JOIN (

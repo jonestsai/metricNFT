@@ -67,7 +67,7 @@ export default class Collection extends React.Component {
   }
 
   render() {
-    const { chain, name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, partner } = this.props;
+    const { chain, name, description, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, partner } = this.props;
     const { isLoading, collection, watchlist } = this.state;
 
     let currencySymbol;
@@ -106,7 +106,7 @@ export default class Collection extends React.Component {
                 </span>
               </OverlayTrigger>
             </h2>
-            <h4 className="text-start">{currentPrice} {chain === 'solana' ? 'SOL' : 'ETH'}</h4>
+            <h5 className="text-start text-white-50 pt-2">{description}</h5>
           </div>
         </div>
         <div className="row g-md-4 pb-4">
