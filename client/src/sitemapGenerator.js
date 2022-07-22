@@ -30,7 +30,7 @@ async function generateSitemap() {
     })
 
     const paramsConfig = {
-      "/:symbol": symbols,
+      "/collection/:symbol": symbols,
     };
 
     return (
