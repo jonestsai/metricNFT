@@ -148,7 +148,7 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
     const ownersCount = unique_holders;
 
     return (
-      <Route key={collection.id} path={symbol} element={
+      <Route key={collection.id} path={`collection/${symbol}`} element={
         <Collection
           chain={chain}
           name={name}
@@ -179,7 +179,7 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
     const ownersCount = num_owners;
 
     return (
-      <Route key={collection.id} path={symbol} element={
+      <Route key={collection.id} path={`collection/${symbol}`} element={
         <Collection
           chain={chain}
           name={name}
