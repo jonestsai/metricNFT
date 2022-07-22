@@ -32,7 +32,7 @@ export default function Top(props) {
   const navigateToCollection = (value) => {
     const collection = collections.find(c => c.name === value);
     if (collection) {
-      navigate(collection.symbol);
+      navigate(`collection/${collection.symbol}`);
     }
   }
 
