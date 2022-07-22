@@ -57,7 +57,7 @@ export default function Top(props) {
           </datalist>
         </Nav>
         <Nav className="ms-auto">
-          <Nav.Link href="account" className="text-white align-self-center mx-3">Account</Nav.Link>
+          <Nav.Link href="/account" className="text-white align-self-center mx-3">Account</Nav.Link>
           <Nav.Link><WalletMultiButton /></Nav.Link>
         </Nav>
       </Navbar.Collapse>
