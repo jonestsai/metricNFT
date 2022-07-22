@@ -254,7 +254,7 @@ app.post('/api/users/notification/delete', (req, res) => {
   });
 });
 
-app.get('/api/magic-eden/wallets/:walletAddress/tokens', async (req, res) => {
+app.get('/api/magiceden/wallets/:walletAddress/tokens', async (req, res) => {
   const { walletAddress } = req.params;
   const { offset, limit, listedOnly } = req.query;
 
@@ -267,7 +267,7 @@ app.get('/api/magic-eden/wallets/:walletAddress/tokens', async (req, res) => {
   }
 });
 
-app.get('/api/magic-eden/wallets/:walletAddress/activities', async (req, res) => {
+app.get('/api/magiceden/wallets/:walletAddress/activities', async (req, res) => {
   const { walletAddress } = req.params;
   const { offset, limit } = req.query;
 
@@ -280,7 +280,7 @@ app.get('/api/magic-eden/wallets/:walletAddress/activities', async (req, res) =>
   }
 });
 
-app.get('/api/magic-eden/collections', (req, res) => {
+app.get('/api/magiceden/collections', (req, res) => {
   pool.query(`SELECT * FROM magiceden_collection`, (error, results) => {
     if (error) {
       console.log(error);
@@ -291,7 +291,7 @@ app.get('/api/magic-eden/collections', (req, res) => {
 });
 
 // Store collections from Magic Eden API
-app.get('/api/magic-eden/collections/store', async (req, res) => {
+app.get('/api/magiceden/collections/store', async (req, res) => {
   const { offset, limit } = req.query;
 
   try {

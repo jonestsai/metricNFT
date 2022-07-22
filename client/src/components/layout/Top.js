@@ -19,7 +19,7 @@ export default function Top(props) {
 
   const getCollections = async () => {
     try {
-      const response = await fetch(`${URLS.api}/magic-eden/collections`);
+      const response = await fetch(`${URLS.api}/magiceden/collections`);
       const collections = await response.json();
       setCollections(collections);
     } catch (error) {
