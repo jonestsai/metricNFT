@@ -44,14 +44,30 @@ export default function App() {
   useEffect(() => {
     document.body.style.backgroundColor = "#212529";
     document.body.style.color = "white";
+    fetchCollectionsSimple(); // Speed up routes generation for faster collection detail page loading time
     fetchCollections();
   }, []);
+
+  const fetchCollectionsSimple = async () => {
+    try {
+      const [magiceden, opensea] = await Promise.all([
+        fetch(`${URLS.api}/magiceden/collections`),
+        fetch(`${URLS.api}/opensea/collections`),
+      ]);
+      const magicedenCollections = await magiceden.json();
+      const openseaCollections = await opensea.json();
+      setMagicedenCollections(magicedenCollections);
+      setOpenseaCollections(openseaCollections);
+    } catch (error) {
+      // Do nothing
+    }
+  }
 
   const fetchCollections = async () => {
     setIsLoading(true);
 
     try {
-      let [magiceden, opensea] = await Promise.all([
+      const [magiceden, opensea] = await Promise.all([
         fetch(`${URLS.api}/magiceden`),
         fetch(`${URLS.api}/opensea`),
       ]);
@@ -161,6 +177,7 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
           numberOfTokens={maxSupply}
           volumeAll={volumeAll / LAMPORTS_PER_SOL}
           oneDayVolume={one_day_volume / LAMPORTS_PER_SOL}
+          isLoading={isLoading}
           partner={partner}
         />
       }></Route>
@@ -192,6 +209,7 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
           numberOfTokens={maxSupply}
           volumeAll={volumeAll}
           oneDayVolume={one_day_volume}
+          isLoading={isLoading}
           partner={partner}
         />
       }></Route>

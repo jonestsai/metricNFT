@@ -15,7 +15,7 @@ export default class Collection extends React.Component {
     super(props);
     this.state = {
       collection: '',
-      isLoading: true,
+      isCollectionLoading: true,
       watchlist: new Set(JSON.parse(localStorage.getItem('watchlist'))),
     };
   }
@@ -31,8 +31,8 @@ export default class Collection extends React.Component {
   };
 
   fetchCollection = async () => {
-    if (!this.state.isLoading) {
-      this.setState({ isLoading: true });
+    if (!this.state.isCollectionLoading) {
+      this.setState({ isCollectionLoading: true });
     }
 
     const { symbol } = this.props;
@@ -47,7 +47,7 @@ export default class Collection extends React.Component {
     } catch (error) {
       // Do nothing
     } finally {
-      this.setState({ isLoading: false });
+      this.setState({ isCollectionLoading: false });
     }
   };
 
@@ -67,8 +67,8 @@ export default class Collection extends React.Component {
   }
 
   render() {
-    const { chain, name, description, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, partner } = this.props;
-    const { isLoading, collection, watchlist } = this.state;
+    const { chain, name, description, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, isLoading, partner } = this.props;
+    const { isCollectionLoading, collection, watchlist } = this.state;
 
     let currencySymbol;
     if (chain === 'solana') {
@@ -114,7 +114,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header"># of Tokens</div>
               <div className="card-body">
-                <h4 className="card-title">{numberOfTokens}</h4>
+                {!isLoading && (
+                  <h4 className="card-title">{numberOfTokens}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -122,7 +129,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header"># of Listings</div>
               <div className="card-body">
-                <h4 className="card-title">{currentListedCount}</h4>
+                {!isLoading && (
+                  <h4 className="card-title">{currentListedCount}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -130,7 +144,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header"># of Owners</div>
               <div className="card-body">
-                <h4 className="card-title">{currentOwnersCount}</h4>
+                {!isLoading && (
+                  <h4 className="card-title">{currentOwnersCount}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -138,7 +159,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">24h Volume</div>
               <div className="card-body">
-                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                {!isLoading && (
+                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -146,7 +174,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">Total Volume</div>
               <div className="card-body">
-                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                {!isLoading && (
+                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -154,12 +189,19 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">Floor Mkt Cap</div>
               <div className="card-body">
-                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+                {!isLoading && (
+                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
         </div>
-        {!isLoading && (
+        {!isCollectionLoading && (
           <div>
             <div className="row">
               <div className="col-lg-6">
@@ -270,7 +312,7 @@ export default class Collection extends React.Component {
             </div>
           </div>
         )}
-        {isLoading && (
+        {isCollectionLoading && (
           <div className="my-5 text-center">
             <div className="spinner-border text-light" role="status" />
           </div>

@@ -318,6 +318,16 @@ app.get('/api/magiceden/collections/store', async (req, res) => {
   }
 });
 
+app.get('/api/opensea/collections', (req, res) => {
+  pool.query(`SELECT * FROM opensea_collection`, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
 app.get('/api/user', (req, res) => {
   res.json({ message: 'Looks good to me!!!' });
 });
