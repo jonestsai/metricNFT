@@ -83,10 +83,10 @@ app.get('/api/collection/:slug', async (req, res) => {
       SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
       FROM magiceden_snapshot
       LEFT JOIN (
-        SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
+        SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders, url AS howrare_url
         FROM howrare_snapshot
         JOIN (
-          SELECT name, magiceden_symbol
+          SELECT name, magiceden_symbol, url
           FROM howrare_collection
         ) _howrare_collection
         ON howrare_snapshot.name = _howrare_collection.name
@@ -326,6 +326,18 @@ app.get('/api/opensea/collections', (req, res) => {
     }
     res.status(200).json(results.rows);
   });
+});
+
+app.get('/api/howrare/collections/:collection/owners', async (req, res) => {
+  const { collection } = req.params;
+
+  try {
+    const response = await fetch(`https://api.howrare.is/v0.1/collections/${collection}/owners`);
+    const { result: { data: { owners } } } = await response.json();
+    res.status(200).json(owners);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.get('/api/user', (req, res) => {

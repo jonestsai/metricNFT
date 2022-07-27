@@ -1,9 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import { Container, OverlayTrigger, Tooltip as BSTooltip } from 'react-bootstrap';
+import { Container, OverlayTrigger, Table, Tooltip as BSTooltip } from 'react-bootstrap';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
+import { getTopOwnersByQuantity } from '../utils/helpers';
 import { MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
 import solana from '../assets/solana-symbol.png';
@@ -15,18 +16,22 @@ export default class Collection extends React.Component {
     super(props);
     this.state = {
       collection: '',
+      owners: '',
       isCollectionLoading: true,
+      isOwnersLoading: true,
       watchlist: new Set(JSON.parse(localStorage.getItem('watchlist'))),
     };
   }
 
   async componentDidMount() {
     await this.fetchCollection();
+    await this.fetchOwners();
   };
 
   async componentDidUpdate(prevProps) {
     if (this.props.name !== prevProps.name) {
       await this.fetchCollection();
+      await this.fetchOwners();
     }
   };
 
@@ -51,6 +56,31 @@ export default class Collection extends React.Component {
     }
   };
 
+  fetchOwners = async () => {
+    this.setState({ isOwnersLoading: true });
+
+    const { collection } = this.state;
+    const [collectionLatest] = collection.slice(-1); // Get the latest record
+    const { howrare_url } = collectionLatest;
+
+    if (!howrare_url) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${URLS.api}/howrare/collections${howrare_url}/owners`);
+      const owners = await response.json();
+
+      this.setState({
+        owners,
+      });
+    } catch (error) {
+      // Do nothing
+    } finally {
+      this.setState({ isOwnersLoading: false });
+    }
+  };
+
   handleWatchlistClick = (symbol) => {
     const { watchlist } = this.state;
 
@@ -68,7 +98,7 @@ export default class Collection extends React.Component {
 
   render() {
     const { chain, name, description, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, isLoading, partner } = this.props;
-    const { isCollectionLoading, collection, watchlist } = this.state;
+    const { isCollectionLoading, collection, owners, watchlist } = this.state;
 
     let currencySymbol;
     if (chain === 'solana') {
@@ -83,6 +113,8 @@ export default class Collection extends React.Component {
     const ownersCount = getOwnersCount(chain, collection);
     const price = getPrice(chain, collection);
     const salesVolume = getSalesVolume(chain, collection);
+
+    const whales = getTopOwnersByQuantity(owners, 20);
 
     return (
       <Container fluid>
@@ -257,7 +289,7 @@ export default class Collection extends React.Component {
             </div>
             <div className="row">
               <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-5">
+                <div className="bg-gray rounded shadow-lg mb-4">
                   <h5 className="text-start px-3 pt-3">Price</h5>
                   <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice} SOL`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
@@ -282,7 +314,7 @@ export default class Collection extends React.Component {
                 </div>
               </div>
               <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-5">
+                <div className="bg-gray rounded shadow-lg mb-4">
                   <h5 className="text-start px-3 pt-3">Sales Volume</h5>
                   <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} SOL`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
@@ -315,6 +347,35 @@ export default class Collection extends React.Component {
         {isCollectionLoading && (
           <div className="my-5 text-center">
             <div className="spinner-border text-light" role="status" />
+          </div>
+        )}
+        {owners && (
+          <div className="row">
+            <div className="col-lg-6">
+              <div className="bg-gray rounded shadow-lg mb-4">
+                <h5 className="text-start px-3 pt-3">Top Owners</h5>
+                <div className="px-3 py-2">
+                  <Table borderless className="top-owners">
+                    <thead className="text-white">
+                      <tr>
+                        <th scope="col" style={{ width: '65%' }}>Address</th>
+                        <th scope="col" className="text-end"># of Tokens</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-white">
+                      {whales.map((whale) => {
+                        return (
+                          <tr>
+                            <td style={{ width: '65%' }}>{Object.keys(whale)[0]}</td>
+                            <td className="text-end">{Object.values(whale)[0]}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </Container>
