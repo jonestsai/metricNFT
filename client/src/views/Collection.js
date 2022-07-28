@@ -57,13 +57,12 @@ export default class Collection extends React.Component {
   };
 
   fetchOwners = async () => {
-    this.setState({ isOwnersLoading: true });
-
     const { collection } = this.state;
     const [collectionLatest] = collection.slice(-1); // Get the latest record
     const { howrare_url } = collectionLatest;
 
     if (!howrare_url) {
+      this.setState({ isOwnersLoading: false });
       return;
     }
 
@@ -98,7 +97,7 @@ export default class Collection extends React.Component {
 
   render() {
     const { chain, name, description, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, isLoading, partner } = this.props;
-    const { isCollectionLoading, collection, owners, watchlist } = this.state;
+    const { isCollectionLoading, isOwnersLoading, collection, owners, watchlist } = this.state;
 
     let currencySymbol;
     if (chain === 'solana') {
@@ -349,12 +348,17 @@ export default class Collection extends React.Component {
             <div className="spinner-border text-light" role="status" />
           </div>
         )}
-        {owners && (
-          <div className="row">
-            <div className="col-lg-6">
-              <div className="bg-gray rounded shadow-lg mb-4">
-                <h5 className="text-start px-3 pt-3">Top Owners</h5>
-                <div className="px-3 py-2">
+        <div className="row">
+          <div className="col-lg-6">
+            <div className="bg-gray rounded shadow-lg mb-4">
+              <h5 className="text-start px-3 pt-3">Top Owners</h5>
+              <div className="px-3 py-2">
+                {isOwnersLoading && (
+                  <div className="my-5 text-center">
+                    <div className="spinner-border text-light" role="status" />
+                  </div>
+                )}
+                {owners && (
                   <Table borderless className="top-owners">
                     <thead className="text-white">
                       <tr>
@@ -373,11 +377,14 @@ export default class Collection extends React.Component {
                       })}
                     </tbody>
                   </Table>
-                </div>
+                )}
+                {!isOwnersLoading && !owners && (
+                  <div className="pb-3">Coming Soon</div>
+                )}
               </div>
             </div>
           </div>
-        )}
+        </div>
       </Container>
     );
   }
