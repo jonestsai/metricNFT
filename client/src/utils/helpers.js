@@ -19,5 +19,8 @@ export function getTopOwnersByQuantity(owners, ownersCount) {
 
   const topOwners = sortedByCount.slice(0, ownersCount);
 
-  return topOwners.map((key) => ({ [key]: counts[key] }));
+  return topOwners.reduce((owners, key) => ({
+    ...owners,
+    [key]: counts[key],
+  }), {});
 };

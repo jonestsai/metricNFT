@@ -367,11 +367,11 @@ export default class Collection extends React.Component {
                       </tr>
                     </thead>
                     <tbody className="text-white">
-                      {whales.map((whale) => {
+                      {Object.keys(whales).map((address) => {
                         return (
                           <tr>
-                            <td style={{ width: '65%' }}>{Object.keys(whale)[0]}</td>
-                            <td className="text-end">{Object.values(whale)[0]}</td>
+                            <td style={{ width: '65%' }}>{address}</td>
+                            <td className="text-end">{whales[address]}</td>
                           </tr>
                         );
                       })}
