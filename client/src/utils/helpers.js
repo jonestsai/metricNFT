@@ -24,3 +24,21 @@ export function getTopOwnersByQuantity(owners, rows) {
     [key]: quantity[key],
   }), {});
 };
+
+export function getTokensPerOwner(owners, rows) {
+  const quantity = {};
+
+  Object.values(owners).map((owner) => {
+    quantity[owner] = quantity[owner] ? quantity[owner] + 1 : 1;
+  });
+
+  const tokensPerOwner = Object.values(quantity).reduce((acc, tokenCount) => ({
+    ...acc,
+    [tokenCount]: acc[tokenCount] ? acc[tokenCount] + 1 : 1,
+  }), {});
+
+  return Object.keys(tokensPerOwner).slice(0, rows).reduce((acc, tokenCount) => ({
+    ...acc,
+    [tokenCount]: tokensPerOwner[tokenCount],
+  }), {});
+}

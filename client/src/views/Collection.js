@@ -4,7 +4,7 @@ import { Container, OverlayTrigger, Table, Tooltip as BSTooltip } from 'react-bo
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
-import { getTopOwnersByQuantity } from '../utils/helpers';
+import { getTopOwnersByQuantity, getTokensPerOwner } from '../utils/helpers';
 import { MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
 import solana from '../assets/solana-symbol.png';
@@ -114,6 +114,7 @@ export default class Collection extends React.Component {
     const salesVolume = getSalesVolume(chain, collection);
 
     const whales = getTopOwnersByQuantity(owners, 20);
+    const tokensPerOwner = getTokensPerOwner(owners, 20);
 
     return (
       <Container fluid>
@@ -372,6 +373,43 @@ export default class Collection extends React.Component {
                           <tr>
                             <td style={{ width: '65%' }}>{address}</td>
                             <td className="text-end">{whales[address]}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                )}
+                {!isOwnersLoading && !owners && (
+                  <div className="pb-3">Coming Soon</div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-6">
+            <div className="bg-gray rounded shadow-lg mb-4">
+              <h5 className="text-start px-3 pt-3"># of Tokens Per Owner</h5>
+              <div className="px-3 py-2">
+                {isOwnersLoading && (
+                  <div className="my-5 text-center">
+                    <div className="spinner-border text-light" role="status" />
+                  </div>
+                )}
+                {owners && (
+                  <Table borderless className="tokens-per-owner">
+                    <thead className="text-white">
+                      <tr>
+                        <th scope="col"># of Tokens</th>
+                        <th scope="col" className="text-end"># of Owners</th>
+                        <th scope="col" className="text-end">%</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-white">
+                      {Object.keys(tokensPerOwner).map((tokensCount) => {
+                        return (
+                          <tr>
+                            <td>{tokensCount}</td>
+                            <td className="text-end">{tokensPerOwner[tokensCount]}</td>
+                            <td className="text-end">{`${(tokensPerOwner[tokensCount] / numberOfTokens * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}%`}</td>
                           </tr>
                         );
                       })}
