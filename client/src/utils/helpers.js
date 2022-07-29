@@ -7,20 +7,20 @@ export function currencyToNumber(string) {
 }
 
 export function getTopOwnersByQuantity(owners, ownersCount) {
-  const counts = {};
+  const quantity = {};
 
   Object.values(owners).map((owner) => {
-    counts[owner] = counts[owner] ? counts[owner] + 1 : 1;
+    quantity[owner] = quantity[owner] ? quantity[owner] + 1 : 1;
   });
 
-  const sortedByCount = Object.keys(counts).sort((a, b) => {
-    return counts[b] - counts[a];
+  const sortedByCount = Object.keys(quantity).sort((a, b) => {
+    return quantity[b] - quantity[a];
   });
 
   const topOwners = sortedByCount.slice(0, ownersCount);
 
   return topOwners.reduce((owners, key) => ({
     ...owners,
-    [key]: counts[key],
+    [key]: quantity[key],
   }), {});
 };
