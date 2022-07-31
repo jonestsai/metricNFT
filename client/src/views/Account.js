@@ -36,7 +36,7 @@ export default function Account() {
     }
 
     try {
-      const response = await fetch(`${URLS.api}/magic-eden/wallets/${publicKey.toString()}/activities?offset=0&limit=100`);
+      const response = await fetch(`${URLS.api}/magiceden/wallets/${publicKey.toString()}/activities?offset=0&limit=100`);
       const wallet = await response.json();
 
       setWallet(wallet);
@@ -45,7 +45,7 @@ export default function Account() {
     }
 
     try {
-      const response = await fetch(`${URLS.api}/magic-eden/collections`);
+      const response = await fetch(`${URLS.api}/magiceden/collections`);
       const collections = await response.json();
 
       setCollections(collections);

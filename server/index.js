@@ -27,7 +27,7 @@ app.get('/api/magiceden', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT name, symbol, image
+      SELECT symbol, name, description, image
       FROM magiceden_collection
     ) _magiceden_collection
     LEFT JOIN (
@@ -56,7 +56,7 @@ app.get('/api/opensea', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT name, slug, image_url
+      SELECT slug, name, description, image_url
       FROM opensea_collection
     ) _opensea_collection
     LEFT JOIN (
@@ -83,10 +83,10 @@ app.get('/api/collection/:slug', async (req, res) => {
       SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
       FROM magiceden_snapshot
       LEFT JOIN (
-        SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
+        SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders, url AS howrare_url
         FROM howrare_snapshot
         JOIN (
-          SELECT name, magiceden_symbol
+          SELECT name, magiceden_symbol, url
           FROM howrare_collection
         ) _howrare_collection
         ON howrare_snapshot.name = _howrare_collection.name
@@ -254,7 +254,7 @@ app.post('/api/users/notification/delete', (req, res) => {
   });
 });
 
-app.get('/api/magic-eden/wallets/:walletAddress/tokens', async (req, res) => {
+app.get('/api/magiceden/wallets/:walletAddress/tokens', async (req, res) => {
   const { walletAddress } = req.params;
   const { offset, limit, listedOnly } = req.query;
 
@@ -267,7 +267,7 @@ app.get('/api/magic-eden/wallets/:walletAddress/tokens', async (req, res) => {
   }
 });
 
-app.get('/api/magic-eden/wallets/:walletAddress/activities', async (req, res) => {
+app.get('/api/magiceden/wallets/:walletAddress/activities', async (req, res) => {
   const { walletAddress } = req.params;
   const { offset, limit } = req.query;
 
@@ -280,7 +280,7 @@ app.get('/api/magic-eden/wallets/:walletAddress/activities', async (req, res) =>
   }
 });
 
-app.get('/api/magic-eden/collections', (req, res) => {
+app.get('/api/magiceden/collections', (req, res) => {
   pool.query(`SELECT * FROM magiceden_collection`, (error, results) => {
     if (error) {
       console.log(error);
@@ -291,7 +291,7 @@ app.get('/api/magic-eden/collections', (req, res) => {
 });
 
 // Store collections from Magic Eden API
-app.get('/api/magic-eden/collections/store', async (req, res) => {
+app.get('/api/magiceden/collections/store', async (req, res) => {
   const { offset, limit } = req.query;
 
   try {
@@ -313,6 +313,28 @@ app.get('/api/magic-eden/collections/store', async (req, res) => {
       await new Promise(f => setTimeout(f, 500));
     }
     res.status(200).json(results);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.get('/api/opensea/collections', (req, res) => {
+  pool.query(`SELECT * FROM opensea_collection`, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
+app.get('/api/howrare/collections/:collection/owners', async (req, res) => {
+  const { collection } = req.params;
+
+  try {
+    const response = await fetch(`https://api.howrare.is/v0.1/collections/${collection}/owners`);
+    const { result: { data: { owners } } } = await response.json();
+    res.status(200).json(owners);
   } catch (err) {
     console.log(err);
   }

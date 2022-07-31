@@ -1,9 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import { Container, OverlayTrigger, Tooltip as BSTooltip } from 'react-bootstrap';
+import { Container, OverlayTrigger, Table, Tooltip as BSTooltip } from 'react-bootstrap';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
+import { getTopOwnersByQuantity, getTokensPerOwner } from '../utils/helpers';
 import { MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
 import solana from '../assets/solana-symbol.png';
@@ -15,24 +16,28 @@ export default class Collection extends React.Component {
     super(props);
     this.state = {
       collection: '',
-      isLoading: true,
+      owners: '',
+      isCollectionLoading: true,
+      isOwnersLoading: true,
       watchlist: new Set(JSON.parse(localStorage.getItem('watchlist'))),
     };
   }
 
   async componentDidMount() {
     await this.fetchCollection();
+    await this.fetchOwners();
   };
 
   async componentDidUpdate(prevProps) {
     if (this.props.name !== prevProps.name) {
       await this.fetchCollection();
+      await this.fetchOwners();
     }
   };
 
   fetchCollection = async () => {
-    if (!this.state.isLoading) {
-      this.setState({ isLoading: true });
+    if (!this.state.isCollectionLoading) {
+      this.setState({ isCollectionLoading: true });
     }
 
     const { symbol } = this.props;
@@ -47,7 +52,31 @@ export default class Collection extends React.Component {
     } catch (error) {
       // Do nothing
     } finally {
-      this.setState({ isLoading: false });
+      this.setState({ isCollectionLoading: false });
+    }
+  };
+
+  fetchOwners = async () => {
+    const { collection } = this.state;
+    const [collectionLatest] = collection.slice(-1); // Get the latest record
+    const { howrare_url } = collectionLatest;
+
+    if (!howrare_url) {
+      this.setState({ isOwnersLoading: false });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${URLS.api}/howrare/collections${howrare_url}/owners`);
+      const owners = await response.json();
+
+      this.setState({
+        owners,
+      });
+    } catch (error) {
+      // Do nothing
+    } finally {
+      this.setState({ isOwnersLoading: false });
     }
   };
 
@@ -67,8 +96,8 @@ export default class Collection extends React.Component {
   }
 
   render() {
-    const { chain, name, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, partner } = this.props;
-    const { isLoading, collection, watchlist } = this.state;
+    const { chain, name, description, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, isLoading, partner } = this.props;
+    const { isCollectionLoading, isOwnersLoading, collection, owners, watchlist } = this.state;
 
     let currencySymbol;
     if (chain === 'solana') {
@@ -83,6 +112,9 @@ export default class Collection extends React.Component {
     const ownersCount = getOwnersCount(chain, collection);
     const price = getPrice(chain, collection);
     const salesVolume = getSalesVolume(chain, collection);
+
+    const whales = getTopOwnersByQuantity(owners, 20);
+    const tokensPerOwner = getTokensPerOwner(owners, 20);
 
     return (
       <Container fluid>
@@ -106,7 +138,7 @@ export default class Collection extends React.Component {
                 </span>
               </OverlayTrigger>
             </h2>
-            <h4 className="text-start">{currentPrice} {chain === 'solana' ? 'SOL' : 'ETH'}</h4>
+            <h5 className="text-start text-white-50 pt-2">{description}</h5>
           </div>
         </div>
         <div className="row g-md-4 pb-4">
@@ -114,7 +146,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header"># of Tokens</div>
               <div className="card-body">
-                <h4 className="card-title">{numberOfTokens}</h4>
+                {!isLoading && (
+                  <h4 className="card-title">{numberOfTokens}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -122,7 +161,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header"># of Listings</div>
               <div className="card-body">
-                <h4 className="card-title">{currentListedCount}</h4>
+                {!isLoading && (
+                  <h4 className="card-title">{currentListedCount}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -130,7 +176,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header"># of Owners</div>
               <div className="card-body">
-                <h4 className="card-title">{currentOwnersCount}</h4>
+                {!isLoading && (
+                  <h4 className="card-title">{currentOwnersCount}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -138,7 +191,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">24h Volume</div>
               <div className="card-body">
-                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                {!isLoading && (
+                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -146,7 +206,14 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">Total Volume</div>
               <div className="card-body">
-                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                {!isLoading && (
+                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
@@ -154,12 +221,19 @@ export default class Collection extends React.Component {
             <div className="card bg-gray text-center">
               <div className="card-header">Floor Mkt Cap</div>
               <div className="card-body">
-                <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+                {!isLoading && (
+                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+                )}
+                {isLoading && (
+                  <h4 className="card-title">
+                    <div className="spinner-border text-light" role="status" />
+                  </h4>
+                )}
               </div>
             </div>
           </div>
         </div>
-        {!isLoading && (
+        {!isCollectionLoading && (
           <div>
             <div className="row">
               <div className="col-lg-6">
@@ -215,7 +289,7 @@ export default class Collection extends React.Component {
             </div>
             <div className="row">
               <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-5">
+                <div className="bg-gray rounded shadow-lg mb-4">
                   <h5 className="text-start px-3 pt-3">Price</h5>
                   <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice} SOL`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
@@ -240,7 +314,7 @@ export default class Collection extends React.Component {
                 </div>
               </div>
               <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-5">
+                <div className="bg-gray rounded shadow-lg mb-4">
                   <h5 className="text-start px-3 pt-3">Sales Volume</h5>
                   <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} SOL`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
@@ -270,11 +344,85 @@ export default class Collection extends React.Component {
             </div>
           </div>
         )}
-        {isLoading && (
+        {isCollectionLoading && (
           <div className="my-5 text-center">
             <div className="spinner-border text-light" role="status" />
           </div>
         )}
+        <div className="row">
+          <div className="col-lg-6">
+            <div className="bg-gray rounded shadow-lg mb-4">
+              <h5 className="text-start px-3 pt-3">Top Owners</h5>
+              <div className="px-3 py-2">
+                {isOwnersLoading && (
+                  <div className="my-5 text-center">
+                    <div className="spinner-border text-light" role="status" />
+                  </div>
+                )}
+                {owners && (
+                  <Table borderless className="top-owners">
+                    <thead className="text-white">
+                      <tr>
+                        <th scope="col" style={{ width: '65%' }}>Address</th>
+                        <th scope="col" className="text-end"># of Tokens</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-white">
+                      {Object.keys(whales).map((address) => {
+                        return (
+                          <tr>
+                            <td style={{ width: '65%' }}>{address}</td>
+                            <td className="text-end">{whales[address]}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                )}
+                {!isOwnersLoading && !owners && (
+                  <div className="pb-3">Coming Soon</div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-6">
+            <div className="bg-gray rounded shadow-lg mb-4">
+              <h5 className="text-start px-3 pt-3"># of Tokens Per Owner</h5>
+              <div className="px-3 py-2">
+                {isOwnersLoading && (
+                  <div className="my-5 text-center">
+                    <div className="spinner-border text-light" role="status" />
+                  </div>
+                )}
+                {owners && (
+                  <Table borderless className="tokens-per-owner">
+                    <thead className="text-white">
+                      <tr>
+                        <th scope="col"># of Tokens</th>
+                        <th scope="col" className="text-end"># of Owners</th>
+                        <th scope="col" className="text-end">%</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-white">
+                      {Object.keys(tokensPerOwner).map((tokensCount) => {
+                        return (
+                          <tr>
+                            <td>{tokensCount}</td>
+                            <td className="text-end">{tokensPerOwner[tokensCount]}</td>
+                            <td className="text-end">{`${(tokensPerOwner[tokensCount] / numberOfTokens * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}%`}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                )}
+                {!isOwnersLoading && !owners && (
+                  <div className="pb-3">Coming Soon</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </Container>
     );
   }

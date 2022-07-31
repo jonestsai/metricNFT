@@ -19,7 +19,7 @@ export default function Top(props) {
 
   const getCollections = async () => {
     try {
-      const response = await fetch(`${URLS.api}/magic-eden/collections`);
+      const response = await fetch(`${URLS.api}/magiceden/collections`);
       const collections = await response.json();
       setCollections(collections);
     } catch (error) {
@@ -32,7 +32,7 @@ export default function Top(props) {
   const navigateToCollection = (value) => {
     const collection = collections.find(c => c.name === value);
     if (collection) {
-      navigate(collection.symbol);
+      navigate(`collection/${collection.symbol}`);
     }
   }
 
@@ -57,7 +57,7 @@ export default function Top(props) {
           </datalist>
         </Nav>
         <Nav className="ms-auto">
-          <Nav.Link href="account" className="text-white align-self-center mx-3">Account</Nav.Link>
+          <Nav.Link href="/account" className="text-white align-self-center mx-3">Account</Nav.Link>
           <Nav.Link><WalletMultiButton /></Nav.Link>
         </Nav>
       </Navbar.Collapse>

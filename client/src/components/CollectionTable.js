@@ -87,7 +87,7 @@ export default function CollectionTable(props) {
           const _7dChangeColor = sevenDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
           const handleRowClick = (symbol) => {
             const partnerSearchParams = partner ? `?partner=${partner}` : '';
-            navigate(`${symbol}${partnerSearchParams}`);
+            navigate(`collection/${symbol}${partnerSearchParams}`);
           }
           const handleNotificationClick = (name) => {
             navigate(`account?collection=${name}`);
