@@ -294,7 +294,7 @@ export default class Collection extends React.Component {
               <div className="col-lg-6">
                 <div className="bg-gray rounded shadow-lg mb-4">
                   <h5 className="text-start px-3 pt-3">Price</h5>
-                  <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice} ${currencySymbol}`}</h6>
+                  <h6 className="text-start px-3 pb-2">{`Current: ${Number(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} ${currencySymbol}`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart
                       width={500}
