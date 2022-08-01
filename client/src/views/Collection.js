@@ -99,13 +99,16 @@ export default class Collection extends React.Component {
     const { chain, name, description, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, isLoading, partner } = this.props;
     const { isCollectionLoading, isOwnersLoading, collection, owners, watchlist } = this.state;
 
+    let currencyIcon;
     let currencySymbol;
     if (chain === 'solana') {
-      currencySymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
+      currencyIcon = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
+      currencySymbol = 'SOL';
     }
 
     if (chain === 'ethereum') {
-      currencySymbol = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
+      currencyIcon = <img className="pe-1" src={ethereum} alt="ethereum-logo" height="14" />;
+      currencySymbol = 'ETH';
     }
 
     const listedCount = getListedCount(chain, collection);
@@ -192,7 +195,7 @@ export default class Collection extends React.Component {
               <div className="card-header">24h Volume</div>
               <div className="card-body">
                 {!isLoading && (
-                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencyIcon}{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
                 )}
                 {isLoading && (
                   <h4 className="card-title">
@@ -207,7 +210,7 @@ export default class Collection extends React.Component {
               <div className="card-header">Total Volume</div>
               <div className="card-body">
                 {!isLoading && (
-                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
+                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencyIcon}{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
                 )}
                 {isLoading && (
                   <h4 className="card-title">
@@ -222,7 +225,7 @@ export default class Collection extends React.Component {
               <div className="card-header">Floor Mkt Cap</div>
               <div className="card-body">
                 {!isLoading && (
-                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencySymbol}{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
+                  <h4 className="card-title d-flex align-items-center justify-content-center">{currencyIcon}{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
                 )}
                 {isLoading && (
                   <h4 className="card-title">
@@ -291,7 +294,7 @@ export default class Collection extends React.Component {
               <div className="col-lg-6">
                 <div className="bg-gray rounded shadow-lg mb-4">
                   <h5 className="text-start px-3 pt-3">Price</h5>
-                  <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice} SOL`}</h6>
+                  <h6 className="text-start px-3 pb-2">{`Current: ${currentPrice} ${currencySymbol}`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart
                       width={500}
@@ -316,7 +319,7 @@ export default class Collection extends React.Component {
               <div className="col-lg-6">
                 <div className="bg-gray rounded shadow-lg mb-4">
                   <h5 className="text-start px-3 pt-3">Sales Volume</h5>
-                  <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} SOL`}</h6>
+                  <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} ${currencySymbol}`}</h6>
                   <ResponsiveContainer width="100%" height={300}>
                     <ComposedChart
                       width={500}
