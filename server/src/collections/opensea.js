@@ -118,6 +118,9 @@ const snapshotCollectionStats = async () => {
     if (!listedCount) {
       listedCount = await getOpenseaListings(slug);
     }
+    if (!listedCount) {
+      listedCount = await getOpenseaListings(slug);
+    }
 
     const [{ _1dfloor, _7dfloor }] = await getPastData(slug);
     const oneDayPriceChange = _1dfloor ? (floor_price - _1dfloor) / _1dfloor : 0;
