@@ -122,7 +122,7 @@ export default function Home(props) {
   const filteredResult = collectionsByMC?.filter((collection) => {
     const isChain = chainFilter === collection?.chain || chainFilter === 'all';
 
-    return isChain && collection?.floorPrice && collection?.maxSupply && collection?.uniqueHolders > 50 && collection?.listedCount > 10;
+    return isChain && collection?.floorPrice && collection?.maxSupply && collection?.uniqueHolders > 50 && collection?.listedCount > 15;
   });
 
   const data = filteredResult?.map((collection, index) => {
