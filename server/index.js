@@ -17,7 +17,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: ['https://www.metricnft.com', 'http://198.199.117.248:3000'],
+    origin: ['https://www.metricnft.com', 'http://198.199.117.248:3000', 'http://localhost:3000'],
 }));
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
@@ -122,6 +122,33 @@ app.get('/api/collection/:slug', async (req, res) => {
       }
       res.status(200).json(results.rows);
     });
+  }
+});
+
+app.get('/api/collection/:slug/chart/:resolution', async (req, res) => {
+  const puppeteer = require('puppeteer-extra');
+  const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+  const userAgent = require('user-agents');
+  puppeteer.use(StealthPlugin());
+
+  const { slug, resolution } = req.params;
+
+  const chain = await getCollectionChain(slug);
+
+  if (chain === 'solana') {
+    const browser = await puppeteer.launch({args: ['--no-zygote', '--no-sandbox']});
+    try {
+      const [page] = await browser.pages();
+      await page.setUserAgent(userAgent.toString());
+      await page.goto(`https://api-mainnet.magiceden.io/rpc/getCollectionTimeSeries/${slug}?edge_cache=true&resolution=${resolution}`, { waitUntil: 'networkidle0' });
+      const data = await page.$eval('pre', (element) => element.textContent);
+
+      res.status(200).json(JSON.parse(data));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      await browser.close();
+    }
   }
 });
 

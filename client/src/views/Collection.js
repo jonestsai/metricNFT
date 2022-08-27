@@ -3,6 +3,7 @@ import React from 'react';
 import { Container, OverlayTrigger, Table, Tooltip as BSTooltip } from 'react-bootstrap';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { TradingView } from '../components/TradingView';
 import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
 import { getTopOwnersByQuantity, getTokensPerOwner } from '../utils/helpers';
 import { MAGICEDEN_IMAGE_URL } from '../utils/constants';
@@ -19,6 +20,7 @@ export default class Collection extends React.Component {
       owners: '',
       isCollectionLoading: true,
       isOwnersLoading: true,
+      isPriceLoading: true,
       watchlist: new Set(JSON.parse(localStorage.getItem('watchlist'))),
     };
   }
@@ -26,6 +28,7 @@ export default class Collection extends React.Component {
   async componentDidMount() {
     await this.fetchCollection();
     await this.fetchOwners();
+    await this.fetchPrice(); // Only used for updating isPriceLoading state (fetched data is not used)
   };
 
   async componentDidUpdate(prevProps) {
@@ -80,6 +83,23 @@ export default class Collection extends React.Component {
     }
   };
 
+  fetchPrice = async () => {
+    const { chain, symbol } = this.props;
+
+    if (chain === 'ethereum') {
+      this.setState({ isPriceLoading: false });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${URLS.api}/collection/${symbol}/chart/1d`);
+    } catch (error) {
+      // Do nothing
+    } finally {
+      this.setState({ isPriceLoading: false });
+    }
+  };
+
   handleWatchlistClick = (symbol) => {
     const { watchlist } = this.state;
 
@@ -97,7 +117,7 @@ export default class Collection extends React.Component {
 
   render() {
     const { chain, name, description, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, isLoading, partner } = this.props;
-    const { isCollectionLoading, isOwnersLoading, collection, owners, watchlist } = this.state;
+    const { isCollectionLoading, isPriceLoading, isOwnersLoading, collection, owners, watchlist } = this.state;
 
     let currencyIcon;
     let currencySymbol;
@@ -238,6 +258,77 @@ export default class Collection extends React.Component {
         </div>
         {!isCollectionLoading && (
           <div>
+            {!isPriceLoading && chain === 'solana' && (
+              <div className="row">
+                <TradingView symbolName={`${symbol}:${name}`} />
+              </div>
+            )}
+            {isPriceLoading && chain === 'solana' && (
+              <div className="row">
+                <div className="mb-4">
+                  <div className="d-flex justify-content-center align-items-center" style={{ height: '500px', backgroundColor: '#131722' }}>
+                    <div className="spinner-border text-light" role="status" />
+                  </div>
+                </div>
+              </div>
+            )}
+            {chain === 'ethereum' && (
+              <div className="row">
+                <div className="col-lg-6">
+                  <div className="bg-gray rounded shadow-lg mb-4">
+                    <h5 className="text-start px-3 pt-3">Price</h5>
+                    <h6 className="text-start px-3 pb-2">{`Current: ${Number(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} ${currencySymbol}`}</h6>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart
+                        width={500}
+                        height={300}
+                        data={price}
+                        margin={{
+                          top: 10,
+                          right: 30,
+                          left: 0,
+                          bottom: 0,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                        <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                        <Tooltip content={<PriceTooltip />} />
+                        <Line dataKey="Price" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                <div className="col-lg-6">
+                  <div className="bg-gray rounded shadow-lg mb-4">
+                    <h5 className="text-start px-3 pt-3">Sales Volume</h5>
+                    <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} ${currencySymbol}`}</h6>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <ComposedChart
+                        width={500}
+                        height={300}
+                        data={salesVolume}
+                        barCategoryGap="28%"
+                        margin={{
+                          top: 10,
+                          right: 30,
+                          left: 0,
+                          bottom: 0,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                        {/*<YAxis yAxisId="sales" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />*/}
+                        <YAxis yAxisId="volume" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
+                        <Tooltip content={<SalesVolumeTooltip />} />
+                        <Area yAxisId="volume" dataKey="Volume" type="monotone" isAnimationActive={false} fill="#4b95d1" stroke="#4b95d1" />
+                        {/*<Bar yAxisId="sales" dataKey="Sales" isAnimationActive={false} fill="#61cdbb" />*/}
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="row">
               <div className="col-lg-6">
                 <div className="bg-gray rounded shadow-lg mb-4">
@@ -286,61 +377,6 @@ export default class Collection extends React.Component {
                       <Tooltip content={<OwnersCountTooltip />} />
                       <Line dataKey="Total Owners" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
                     </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-4">
-                  <h5 className="text-start px-3 pt-3">Price</h5>
-                  <h6 className="text-start px-3 pb-2">{`Current: ${Number(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} ${currencySymbol}`}</h6>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart
-                      width={500}
-                      height={300}
-                      data={price}
-                      margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                      }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
-                      <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                      <Tooltip content={<PriceTooltip />} />
-                      <Line dataKey="Price" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="bg-gray rounded shadow-lg mb-4">
-                  <h5 className="text-start px-3 pt-3">Sales Volume</h5>
-                  <h6 className="text-start px-3 pb-2">{`Last 24 hours: ${Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )} ${currencySymbol}`}</h6>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <ComposedChart
-                      width={500}
-                      height={300}
-                      data={salesVolume}
-                      barCategoryGap="28%"
-                      margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                      }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
-                      {/*<YAxis yAxisId="sales" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />*/}
-                      <YAxis yAxisId="volume" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
-                      <Tooltip content={<SalesVolumeTooltip />} />
-                      <Area yAxisId="volume" dataKey="Volume" type="monotone" isAnimationActive={false} fill="#4b95d1" stroke="#4b95d1" />
-                      {/*<Bar yAxisId="sales" dataKey="Sales" isAnimationActive={false} fill="#61cdbb" />*/}
-                    </ComposedChart>
                   </ResponsiveContainer>
                 </div>
               </div>
