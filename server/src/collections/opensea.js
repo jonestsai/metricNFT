@@ -118,6 +118,9 @@ const snapshotCollectionStats = async () => {
     if (!listedCount) {
       listedCount = await getOpenseaListings(slug);
     }
+    if (!listedCount) {
+      listedCount = await getOpenseaListings(slug);
+    }
 
     const [{ _1dfloor, _7dfloor }] = await getPastData(slug);
     const oneDayPriceChange = _1dfloor ? (floor_price - _1dfloor) / _1dfloor : 0;
@@ -156,7 +159,11 @@ const getOpenseaListings = async (slug) => {
   try {
     await page.setUserAgent(userAgent.toString());
     await page.goto(`https://opensea.io/collection/${slug}?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`, { waitUntil: 'networkidle0' });
-    await page.waitForSelector('.fresnel-container');
+    await Promise.race([
+      page.waitForSelector('.fresnel-container'),
+      page.waitFor(60000),
+    ]);
+    console.log('finished waitForSelector');
     const data = await Promise.race([
       page.$eval('*', (element) => element.textContent),
       page.waitFor(60000),
