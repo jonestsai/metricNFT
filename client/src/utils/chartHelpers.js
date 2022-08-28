@@ -1,7 +1,7 @@
 import { LAMPORTS_PER_SOL } from './constants';
 
 export function getListedCount(chain, collection) {
-  return collection.length > 0
+  return collection?.length > 0
   ? collection.reduce((listedCount, detail) => {
     const { start_time, listed_count } = detail;
     const datetime = new Date(start_time);
@@ -18,7 +18,7 @@ export function getListedCount(chain, collection) {
 };
 
 export function getOwnersCount(chain, collection) {
-  return collection.length > 0
+  return collection?.length > 0
   ? collection.reduce((ownersCount, detail) => {
     const { start_time, unique_holders, howrare_holders, num_owners } = detail;
     const datetime = new Date(start_time);
@@ -38,7 +38,7 @@ export function getOwnersCount(chain, collection) {
 export function getPrice(chain, collection) {
   let lastPrice;
   let updatedPrice;
-  return collection.length > 0
+  return collection?.length > 0
   ? collection.reduce((price, detail) => {
     const { start_time, floor_price } = detail;
     const datetime = new Date(start_time);
@@ -62,7 +62,7 @@ export function getPrice(chain, collection) {
 };
 
 export function getSalesVolume(chain, collection) {
-  return collection.length > 0
+  return collection?.length > 0
   ? collection.reduce((salesVolume, detail) => {
     const { start_time, _24hvolume, one_day_volume } = detail;
     const datetime = new Date(start_time);
