@@ -80,8 +80,13 @@ app.get('/api/collection/:slug', async (req, res) => {
 
   if (chain === 'solana') {
     pool.query(`
-      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
+      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, '${chain}' AS chain, name, description, image, floor_price, listed_count, howrare_holders, unique_holders, total_supply, one_day_volume, volume_all
       FROM magiceden_snapshot
+      LEFT JOIN (
+        SELECT symbol, name, description, image
+        FROM magiceden_collection
+      ) _magiceden_collection
+      ON magiceden_snapshot.symbol = _magiceden_collection.symbol
       LEFT JOIN (
         SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders, url AS howrare_url
         FROM howrare_snapshot
@@ -112,8 +117,13 @@ app.get('/api/collection/:slug', async (req, res) => {
     });
   } else {
     pool.query(`
-      SELECT DISTINCT ON (opensea_snapshot.start_time::date) opensea_snapshot.start_time::date, *
+      SELECT DISTINCT ON (opensea_snapshot.start_time::date) opensea_snapshot.start_time::date, '${chain}' AS chain, name, description, image_url AS image, floor_price, listed_count, num_owners, total_supply, one_day_volume, total_volume AS volume_all
       FROM opensea_snapshot
+      LEFT JOIN (
+        SELECT slug, name, description, image_url
+        FROM opensea_collection
+      ) _opensea_collection
+      ON opensea_snapshot.slug = _opensea_collection.slug
       WHERE opensea_snapshot.slug = '${slug}' AND opensea_snapshot.start_time > (NOW() - interval '30 days') AND opensea_snapshot.start_time < NOW()
       ORDER BY opensea_snapshot.start_time::date`, (error, results) => {
       if (error) {
@@ -433,13 +443,18 @@ app.get('/api/dev/:slug', async (req, res) => {
 
   if (chain === 'solana') {
     pool.query(`
-      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
+      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, '${chain}' AS chain, name, description, image, floor_price, listed_count, howrare_holders, unique_holders, total_supply, one_day_volume, volume_all
       FROM magiceden_snapshot
       LEFT JOIN (
-        SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
+        SELECT symbol, name, description, image
+        FROM magiceden_collection
+      ) _magiceden_collection
+      ON magiceden_snapshot.symbol = _magiceden_collection.symbol
+      LEFT JOIN (
+        SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders, url AS howrare_url
         FROM howrare_snapshot
         JOIN (
-          SELECT name, magiceden_symbol
+          SELECT name, magiceden_symbol, url
           FROM howrare_collection
         ) _howrare_collection
         ON howrare_snapshot.name = _howrare_collection.name
@@ -465,8 +480,13 @@ app.get('/api/dev/:slug', async (req, res) => {
     });
   } else {
     pool.query(`
-      SELECT DISTINCT ON (opensea_snapshot.start_time::date) opensea_snapshot.start_time::date, *
+      SELECT DISTINCT ON (opensea_snapshot.start_time::date) opensea_snapshot.start_time::date, '${chain}' AS chain, name, description, image_url AS image, floor_price, listed_count, num_owners, total_supply, one_day_volume, total_volume AS volume_all
       FROM opensea_snapshot
+      LEFT JOIN (
+        SELECT slug, name, description, image_url
+        FROM opensea_collection
+      ) _opensea_collection
+      ON opensea_snapshot.slug = _opensea_collection.slug
       WHERE opensea_snapshot.slug = '${slug}' AND opensea_snapshot.start_time > (NOW() - interval '30 days') AND opensea_snapshot.start_time < NOW()
       ORDER BY opensea_snapshot.start_time::date`, (error, results) => {
       if (error) {

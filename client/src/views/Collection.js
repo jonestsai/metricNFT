@@ -2,17 +2,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState, useEffect } from 'react';
 import { Container, OverlayTrigger, Table, Tooltip as BSTooltip } from 'react-bootstrap';
 import { FaStar, FaRegStar } from 'react-icons/fa';
+import { useParams } from 'react-router-dom';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TradingView } from '../components/TradingView';
 import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
 import { getTopOwnersByQuantity, getTokensPerOwner } from '../utils/helpers';
-import { MAGICEDEN_IMAGE_URL } from '../utils/constants';
+import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import { URLS } from '../Settings';
 import solana from '../assets/solana-symbol.png';
 import ethereum from '../assets/ethereum-symbol.png';
+import imageLoader from '../assets/loader.gif';
 import './Collection.css';
 
 export default function Collection(props) {
+  const { symbol } = useParams();
+
   const [collection, setCollection] = useState();
   const [owners, setOwners] = useState();
   const [isCollectionLoading, setIsCollectionLoading] = useState(true);
@@ -22,11 +26,11 @@ export default function Collection(props) {
 
   useEffect(() => {
     fetchCollection();
-    fetchPrice(); // Only used for updating isPriceLoading state (fetched data is not used)
   }, []);
 
   useEffect(() => {
     fetchOwners();
+    fetchPrice(); // Only used for updating isPriceLoading state (fetched data is not used)
   }, [collection]);
 
   useEffect(() => {
@@ -34,8 +38,6 @@ export default function Collection(props) {
   }, [watchlist]);
 
   const fetchCollection = async () => {
-    const { symbol } = props;
-
     try {
       const response = await fetch(`${URLS.api}/collection/${symbol}`);
       const collection = await response.json();
@@ -49,8 +51,10 @@ export default function Collection(props) {
   };
 
   const fetchOwners = async () => {
-    const [collectionLatest] = collection.slice(-1); // Get the latest record
-    const { howrare_url } = collectionLatest;
+    setIsOwnersLoading(true);
+
+    const [collectionLatest] = collection?.slice(-1) || []; // Get the latest record
+    const { chain, howrare_url } = collectionLatest || {};
 
     if (!howrare_url) {
       setIsOwnersLoading(false);
@@ -70,7 +74,8 @@ export default function Collection(props) {
   };
 
   const fetchPrice = async () => {
-    const { chain, symbol } = props;
+    const [collectionLatest] = collection?.slice(-1) || []; // Get the latest record
+    const { chain } = collectionLatest || {};
 
     if (chain === 'ethereum') {
       setIsPriceLoading(false);
@@ -98,7 +103,14 @@ export default function Collection(props) {
     }
   }
 
-  const { chain, name, description, symbol, image, currentPrice, currentListedCount, currentOwnersCount, numberOfTokens, oneDayVolume, volumeAll, isLoading, partner } = props;
+  const [collectionLatest] = collection?.slice(-1) || []; // Get the latest record
+  const { chain, name, description, image, floor_price, listed_count, howrare_holders, unique_holders, num_owners, total_supply, one_day_volume, volume_all } = collectionLatest || {};
+  const currentPrice = chain === 'solana' ? floor_price / LAMPORTS_PER_SOL : floor_price;
+  const currentListedCount = listed_count;
+  const currentOwnersCount = chain === 'solana' ? (howrare_holders || unique_holders) : num_owners;
+  const numberOfTokens = total_supply;
+  const oneDayVolume = chain === 'solana' ? one_day_volume / LAMPORTS_PER_SOL : one_day_volume;
+  const volumeAll = chain === 'solana' ? volume_all / LAMPORTS_PER_SOL : volume_all;
 
   let currencyIcon;
   let currencySymbol;
@@ -124,7 +136,12 @@ export default function Collection(props) {
     <Container fluid>
       <div className="row py-4 d-flex align-items-center">
         <div className="col-2 col-md-1">
-          <img className = "rounded-circle img-fluid" height="50" src={`${MAGICEDEN_IMAGE_URL}${image}`} />
+          {!isCollectionLoading && (
+            <img className="rounded-circle img-fluid" height="50" src={`${MAGICEDEN_IMAGE_URL}${image}`} />
+          )}
+          {isCollectionLoading && (
+            <img className="rounded-circle img-fluid" height="50" src={imageLoader} />
+          )}
         </div>
         <div className="col-10 col-md-11">
           <h2 className="text-start d-flex align-items-center">
@@ -137,7 +154,7 @@ export default function Collection(props) {
                 </BSTooltip>
               }
             >
-              <span className={`${partner ? 'd-none' : ''} watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center`}>
+              <span className="watchlist mx-3 border border-secondary d-flex align-items-center justify-content-center">
                 {watchlist.has(symbol) ? <FaStar className="m-1" size={18} role="button" color="#fc6" onClick={()=> handleWatchlistClick(symbol)} /> : <FaRegStar className="m-1" size={18} role="button" onClick={()=> handleWatchlistClick(symbol)} />}
               </span>
             </OverlayTrigger>
@@ -150,10 +167,10 @@ export default function Collection(props) {
           <div className="card bg-gray text-center">
             <div className="card-header"># of Tokens</div>
             <div className="card-body">
-              {!isLoading && (
+              {!isCollectionLoading && (
                 <h4 className="card-title">{numberOfTokens}</h4>
               )}
-              {isLoading && (
+              {isCollectionLoading && (
                 <h4 className="card-title">
                   <div className="spinner-border text-light" role="status" />
                 </h4>
@@ -165,10 +182,10 @@ export default function Collection(props) {
           <div className="card bg-gray text-center">
             <div className="card-header"># of Listings</div>
             <div className="card-body">
-              {!isLoading && (
+              {!isCollectionLoading && (
                 <h4 className="card-title">{currentListedCount}</h4>
               )}
-              {isLoading && (
+              {isCollectionLoading && (
                 <h4 className="card-title">
                   <div className="spinner-border text-light" role="status" />
                 </h4>
@@ -180,10 +197,10 @@ export default function Collection(props) {
           <div className="card bg-gray text-center">
             <div className="card-header"># of Owners</div>
             <div className="card-body">
-              {!isLoading && (
+              {!isCollectionLoading && (
                 <h4 className="card-title">{currentOwnersCount}</h4>
               )}
-              {isLoading && (
+              {isCollectionLoading && (
                 <h4 className="card-title">
                   <div className="spinner-border text-light" role="status" />
                 </h4>
@@ -195,10 +212,10 @@ export default function Collection(props) {
           <div className="card bg-gray text-center">
             <div className="card-header">24h Volume</div>
             <div className="card-body">
-              {!isLoading && (
+              {!isCollectionLoading && (
                 <h4 className="card-title d-flex align-items-center justify-content-center">{currencyIcon}{Number(oneDayVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               )}
-              {isLoading && (
+              {isCollectionLoading && (
                 <h4 className="card-title">
                   <div className="spinner-border text-light" role="status" />
                 </h4>
@@ -210,10 +227,10 @@ export default function Collection(props) {
           <div className="card bg-gray text-center">
             <div className="card-header">Total Volume</div>
             <div className="card-body">
-              {!isLoading && (
+              {!isCollectionLoading && (
                 <h4 className="card-title d-flex align-items-center justify-content-center">{currencyIcon}{Number(volumeAll).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</h4>
               )}
-              {isLoading && (
+              {isCollectionLoading && (
                 <h4 className="card-title">
                   <div className="spinner-border text-light" role="status" />
                 </h4>
@@ -225,10 +242,10 @@ export default function Collection(props) {
           <div className="card bg-gray text-center">
             <div className="card-header">Floor Mkt Cap</div>
             <div className="card-body">
-              {!isLoading && (
+              {!isCollectionLoading && (
                 <h4 className="card-title d-flex align-items-center justify-content-center">{currencyIcon}{(numberOfTokens * currentPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
               )}
-              {isLoading && (
+              {isCollectionLoading && (
                 <h4 className="card-title">
                   <div className="spinner-border text-light" role="status" />
                 </h4>
@@ -374,7 +391,7 @@ export default function Collection(props) {
           <div className="bg-gray rounded shadow-lg mb-4">
             <h5 className="text-start px-3 pt-3">Top Owners</h5>
             <div className="px-3 py-2">
-              {isOwnersLoading && (
+              {(isCollectionLoading || isOwnersLoading) && (
                 <div className="my-5 text-center">
                   <div className="spinner-border text-light" role="status" />
                 </div>
@@ -399,7 +416,7 @@ export default function Collection(props) {
                   </tbody>
                 </Table>
               )}
-              {!isOwnersLoading && !owners && (
+              {!isCollectionLoading && !isOwnersLoading && !owners && (
                 <div className="pb-3">Coming Soon</div>
               )}
             </div>
@@ -409,7 +426,7 @@ export default function Collection(props) {
           <div className="bg-gray rounded shadow-lg mb-4">
             <h5 className="text-start px-3 pt-3"># of Tokens Per Owner</h5>
             <div className="px-3 py-2">
-              {isOwnersLoading && (
+              {(isCollectionLoading || isOwnersLoading) && (
                 <div className="my-5 text-center">
                   <div className="spinner-border text-light" role="status" />
                 </div>
@@ -436,7 +453,7 @@ export default function Collection(props) {
                   </tbody>
                 </Table>
               )}
-              {!isOwnersLoading && !owners && (
+              {!isCollectionLoading && !isOwnersLoading && !owners && (
                 <div className="pb-3">Coming Soon</div>
               )}
             </div>
