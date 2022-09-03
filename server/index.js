@@ -80,7 +80,7 @@ app.get('/api/collection/:slug', async (req, res) => {
 
   if (chain === 'solana') {
     pool.query(`
-      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, '${chain}' AS chain, name, description, image, floor_price, listed_count, howrare_holders, unique_holders, total_supply, one_day_volume, volume_all
+      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, '${chain}' AS chain, name, description, image, floor_price, listed_count, howrare_holders, howrare_url, unique_holders, total_supply, one_day_volume, volume_all
       FROM magiceden_snapshot
       LEFT JOIN (
         SELECT symbol, name, description, image
@@ -443,7 +443,7 @@ app.get('/api/dev/:slug', async (req, res) => {
 
   if (chain === 'solana') {
     pool.query(`
-      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, '${chain}' AS chain, name, description, image, floor_price, listed_count, howrare_holders, unique_holders, total_supply, one_day_volume, volume_all
+      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, '${chain}' AS chain, name, description, image, floor_price, listed_count, howrare_holders, howrare_url, unique_holders, total_supply, one_day_volume, volume_all
       FROM magiceden_snapshot
       LEFT JOIN (
         SELECT symbol, name, description, image
