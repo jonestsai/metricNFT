@@ -26,7 +26,7 @@ export default function Collection(props) {
 
   useEffect(() => {
     fetchCollection();
-  }, []);
+  }, [symbol]);
 
   useEffect(() => {
     fetchOwners();
