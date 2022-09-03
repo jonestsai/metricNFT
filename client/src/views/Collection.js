@@ -57,6 +57,7 @@ export default function Collection(props) {
     const { chain, howrare_url } = collectionLatest || {};
 
     if (!howrare_url) {
+      setOwners(null);
       setIsOwnersLoading(false);
       return;
     }
