@@ -77,7 +77,7 @@ export default function Collection(props) {
     const [collectionLatest] = collection?.slice(-1) || []; // Get the latest record
     const { chain } = collectionLatest || {};
 
-    if (chain === 'ethereum') {
+    if (chain !== 'solana') {
       setIsPriceLoading(false);
       return;
     }
