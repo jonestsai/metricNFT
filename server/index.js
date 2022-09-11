@@ -150,7 +150,7 @@ app.get('/api/collection/:slug/chart/:resolution', async (req, res) => {
     try {
       const [page] = await browser.pages();
       await page.setUserAgent(userAgent.toString());
-      await page.goto(`https://api-mainnet.magiceden.io/rpc/getCollectionTimeSeries/${slug}?edge_cache=true&resolution=${resolution}`, { waitUntil: 'networkidle0' });
+      await page.goto(`https://stats-mainnet.magiceden.io/collection_stats/getCollectionTimeSeries/${slug}?edge_cache=true&resolution=${resolution}`, { waitUntil: 'networkidle0' });
       const data = await page.$eval('pre', (element) => element.textContent);
 
       res.status(200).json(JSON.parse(data));
