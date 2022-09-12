@@ -26,24 +26,25 @@ app.get('/api/magiceden', async (req, res) => {
   let leftJoins = '';
 
   pool.query(`
-    SELECT * FROM (
-      SELECT symbol, name, description, image
-      FROM magiceden_collection
-    ) _magiceden_collection
+    SELECT *
+    FROM magiceden_collection
     LEFT JOIN (
       SELECT DISTINCT ON (symbol) *
       FROM magiceden_snapshot
       WHERE start_time::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
       ORDER BY symbol, start_time DESC
     ) _magiceden_snapshot
-    ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
+    ON magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
-      SELECT DISTINCT ON (symbol) symbol as hourly_snapshot_symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
+      SELECT symbol as hourly_snapshot_symbol, start_time, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
-      WHERE start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}'
-      ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
-    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.hourly_snapshot_symbol`, (error, results) => {
+    ON _magiceden_hourly_snapshot.hourly_snapshot_symbol=magiceden_collection.symbol AND _magiceden_hourly_snapshot.start_time = (
+      SELECT MAX(start_time) from magiceden_hourly_snapshot WHERE symbol = magiceden_collection.symbol AND start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}' AND start_time IS NOT NULL
+    )
+    WHERE total_supply IS NOT NULL AND unique_holders > 50 AND (listed_count > 20 OR live_listed_count > 20)
+    ORDER BY _magiceden_snapshot.floor_price * total_supply DESC
+    LIMIT 1000`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -389,24 +390,25 @@ app.get('/api/dev/magiceden', async (req, res) => {
   let leftJoins = '';
 
   pool.query(`
-    SELECT * FROM (
-      SELECT name, symbol, image
-      FROM magiceden_collection
-    ) _magiceden_collection
+    SELECT *
+    FROM magiceden_collection
     LEFT JOIN (
       SELECT DISTINCT ON (symbol) *
       FROM magiceden_snapshot
       WHERE start_time::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
       ORDER BY symbol, start_time DESC
     ) _magiceden_snapshot
-    ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
+    ON magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
-      SELECT DISTINCT ON (symbol) symbol as hourly_snapshot_symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
+      SELECT symbol as hourly_snapshot_symbol, start_time, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
-      WHERE start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}'
-      ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
-    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.hourly_snapshot_symbol`, (error, results) => {
+    ON _magiceden_hourly_snapshot.hourly_snapshot_symbol=magiceden_collection.symbol AND _magiceden_hourly_snapshot.start_time = (
+      SELECT MAX(start_time) from magiceden_hourly_snapshot WHERE symbol = magiceden_collection.symbol AND start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}' AND start_time IS NOT NULL
+    )
+    WHERE total_supply IS NOT NULL AND unique_holders > 50 AND (listed_count > 20 OR live_listed_count > 20)
+    ORDER BY _magiceden_snapshot.floor_price * total_supply DESC
+    LIMIT 1000`, (error, results) => {
     if (error) {
       throw error;
     }
