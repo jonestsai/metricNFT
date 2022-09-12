@@ -66,7 +66,10 @@ app.get('/api/opensea', async (req, res) => {
       WHERE start_time::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
       ORDER BY slug, start_time DESC
     ) _opensea_snapshot
-    ON _opensea_collection.slug = _opensea_snapshot.slug`, (error, results) => {
+    ON _opensea_collection.slug = _opensea_snapshot.slug
+    WHERE total_supply IS NOT NULL AND num_owners > 50 AND listed_count > 20
+    ORDER BY _opensea_snapshot.floor_price * total_supply DESC
+    LIMIT 1000`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -421,7 +424,7 @@ app.get('/api/dev/opensea', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT name, slug, image_url
+      SELECT slug, name, description, image_url
       FROM opensea_collection
     ) _opensea_collection
     LEFT JOIN (
@@ -430,7 +433,10 @@ app.get('/api/dev/opensea', async (req, res) => {
       WHERE start_time::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
       ORDER BY slug, start_time DESC
     ) _opensea_snapshot
-    ON _opensea_collection.slug = _opensea_snapshot.slug`, (error, results) => {
+    ON _opensea_collection.slug = _opensea_snapshot.slug
+    WHERE total_supply IS NOT NULL AND num_owners > 50 AND listed_count > 20
+    ORDER BY _opensea_snapshot.floor_price * total_supply DESC
+    LIMIT 1000`, (error, results) => {
     if (error) {
       throw error;
     }
