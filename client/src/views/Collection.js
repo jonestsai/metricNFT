@@ -257,7 +257,7 @@ export default function Collection(props) {
       </div>
       {!isCollectionLoading && (
         <div>
-          {!isPriceLoading && chain === 'solana' && (
+          {/*{!isPriceLoading && chain === 'solana' && (
             <div className="row">
               <TradingView symbolName={`${symbol}:${name}`} />
             </div>
@@ -271,7 +271,7 @@ export default function Collection(props) {
               </div>
             </div>
           )}
-          {chain === 'ethereum' && (
+          {chain === 'ethereum' && (*/}
             <div className="row">
               <div className="col-lg-6">
                 <div className="bg-gray rounded shadow-lg mb-4">
@@ -327,7 +327,7 @@ export default function Collection(props) {
                 </div>
               </div>
             </div>
-          )}
+          {/*)}*/}
           <div className="row">
             <div className="col-lg-6">
               <div className="bg-gray rounded shadow-lg mb-4">
