@@ -105,14 +105,6 @@ app.get('/api/collection/:slug', async (req, res) => {
         ORDER BY howrare_snapshot.start_time::date
       ) _howrare_snapshot
       ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
-      LEFT JOIN (
-        SELECT DISTINCT ON (start_time::date) start_time::date,
-          volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
-        FROM magiceden_snapshot
-        WHERE symbol = '${slug}'
-        ORDER BY start_time::date
-      ) _24hvolume
-      ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date
       WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
       ORDER BY magiceden_snapshot.start_time::date`, (error, results) => {
       if (error) {
