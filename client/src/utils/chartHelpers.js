@@ -64,13 +64,13 @@ export function getPrice(chain, collection) {
 export function getSalesVolume(chain, collection) {
   return collection?.length > 0
   ? collection.reduce((salesVolume, detail) => {
-    const { start_time, _24hvolume, one_day_volume } = detail;
+    const { start_time, one_day_volume } = detail;
     const datetime = new Date(start_time);
     const date = datetime.getUTCDate();
     const month = datetime.toLocaleString('default', { month: 'short', timeZone: 'UTC' });
 
-    if (_24hvolume !== null) {
-      const oneDayVolume = _24hvolume < 0 ? 0 : _24hvolume;
+    if (one_day_volume !== null) {
+      const oneDayVolume = one_day_volume < 0 ? 0 : one_day_volume;
       const volume = chain === 'solana' ? Number(oneDayVolume / LAMPORTS_PER_SOL) : Number(one_day_volume);
       salesVolume.push({ date: `${date}. ${month}`, 'Volume': volume });
     }
