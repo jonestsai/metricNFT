@@ -66,7 +66,6 @@ const updateInfluencerWallets = async () => {
       values: [listed_nfts, owned_nfts, portfolio_value, sol_name, twitter, num_sold_1day, volume_sold_1day, num_bought_1day, volume_bought_1day, num_bids_1day, bids_made_amount_1day, max_purchase_1day, max_sale_1day, num_minted_1day, minted_amount_1day, wallet_score_1day, max_purchase_item_1day, max_sale_item_1day, num_sold, volume_sold, num_bought, volume_bought, num_bids, bids_made_amount, max_purchase, max_sale, num_minted, minted_amount, wallet_score, max_purchase_item, max_sale_item, rank, address],
     }
 
-    console.log(query);
     pool.query(query, (error, results) => {
       if (error) {
         console.log(error);
