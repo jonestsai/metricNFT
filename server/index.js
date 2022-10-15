@@ -230,6 +230,15 @@ const getOpenseaWatchlist = async (slugs) => {
   return rows;
 }
 
+app.get('/api/influencers', async (req, res) => {
+  pool.query('SELECT * FROM influencer ORDER BY portfolio_value DESC', (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
 app.get('/api/users/:walletAddress', (req, res) => {
   const { walletAddress } = req.params;
   pool.query(`SELECT * FROM users
