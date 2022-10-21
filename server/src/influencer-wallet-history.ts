@@ -26,7 +26,7 @@ async function main() {
   // connection = new Connection(clusterApiUrl('mainnet-beta'));
   connection = customConnection;
 
-  // Get sale transactions and store to sales table
+  // Get sale transactions and store to influencer wallet history table
   await getTransactions('Ez2U27TRScksd6q7xoVgX44gX9HAjviN2cdKAL3cFBFE', null);
 }
 
