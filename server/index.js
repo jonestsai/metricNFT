@@ -239,6 +239,34 @@ app.get('/api/influencers', async (req, res) => {
   });
 });
 
+app.get('/api/influencers/:username', async (req, res) => {
+  const { username } = req.params;
+  const [influencer] = await getInfluencer(username);
+  const wallets = await getWallets(username);
+  
+  res.status(200).json({ ...influencer, wallets });
+});
+
+const getInfluencer = async (username) => {
+  const { rows } = await pool.query(`
+    SELECT * FROM influencer
+    WHERE twitter_username = '${username}'
+  `);
+
+  return rows;
+}
+
+const getWallets = async (username) => {
+  const { rows } = await pool.query(`
+    SELECT * FROM influencer
+    JOIN influencer_wallet
+    ON influencer.twitter_username = influencer_wallet.twitter_username
+    WHERE influencer_wallet.twitter_username = '${username}' AND influencer_wallet.activity IS NOT NULL
+  `);
+
+  return rows;
+}
+
 app.get('/api/users/:walletAddress', (req, res) => {
   const { walletAddress } = req.params;
   pool.query(`SELECT * FROM users
@@ -300,10 +328,10 @@ app.post('/api/users/notification/delete', (req, res) => {
 
 app.get('/api/magiceden/wallets/:walletAddress/tokens', async (req, res) => {
   const { walletAddress } = req.params;
-  const { offset, limit, listedOnly } = req.query;
+  const { offset, limit, listStatus } = req.query;
 
   try {
-    const response = await fetch(`https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/tokens?offset=${offset}&limit=${limit}&listedOnly=${listedOnly}`);
+    const response = await fetch(`https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/tokens?offset=${offset}&limit=${limit}&listStatus=${listStatus}`);
     const tokens = await response.json();
     res.status(200).json(tokens);
   } catch (err) {

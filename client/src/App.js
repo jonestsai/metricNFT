@@ -27,6 +27,7 @@ import Account from './views/Account';
 import Home from './views/Home';
 import Watchlist from './views/Watchlist';
 import Influencers from './views/Influencers';
+import InfluencerDetail from './views/InfluencerDetail';
 import logo from './logo.svg';
 import './App.css';
 
@@ -145,6 +146,7 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
       <Route path='/collection/:symbol' element={<Collection />}></Route>
       <Route path='/watchlist' element={<Watchlist />}></Route>
       <Route path='/influencers' element={<Influencers />}></Route>
+      <Route path='/influencers/:username' element={<InfluencerDetail />}></Route>
       <Route path='/account' element={<Account />}></Route>
       <Route path='/about' element={<About />}></Route>
       <Route path='/contact' element={<Contact />}></Route>
