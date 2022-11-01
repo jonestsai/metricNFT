@@ -54,10 +54,10 @@ export default function InfluencersTable(props) {
           const solanaSymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
           const portfolioValue = <div className="text-nowrap d-flex align-items-center justify-content-end">{solanaSymbol}{Number(portfolio_value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
           const totalSpend = <div className="text-nowrap d-flex align-items-center justify-content-end">{solanaSymbol}{Number(volume_bought).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
-          const highestPurchaseItem = max_purchase_item.name;
+          const highestPurchaseItem = max_purchase_item?.name;
           const highestPurchaseAmount = <div className="text-nowrap d-flex align-items-center justify-content-end">{solanaSymbol}{Number(max_purchase).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
           const totalSales = <div className="text-nowrap d-flex align-items-center justify-content-end">{solanaSymbol}{Number(volume_sold).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
-          const highestSalesItem = max_sale_item.name;
+          const highestSalesItem = max_sale_item?.name;
           const highestSalesAmount = <div className="text-nowrap d-flex align-items-center justify-content-end">{solanaSymbol}{Number(max_sale).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
 
           return (
