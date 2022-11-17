@@ -1,0 +1,4 @@
+select * from influencer_wallet_history 
+where from_addr = '6fHSXivsSUxoLLhPbkk5sv6KUtEFXkP32acrc9TD6w4X'
+or to_addr = '6fHSXivsSUxoLLhPbkk5sv6KUtEFXkP32acrc9TD6w4X'
+order by datetime desc

@@ -1,5 +1,6 @@
 select * from influencer_wallet_history t1 
 where marketplace is null
+and to_addr = 'DSqBS2bZ16qATXZuJ3QMpdaTBSXGUZ3JKz2kBN4dFzjK'
 and to_addr IN (SELECT address from influencer_wallet)
 and from_addr != 'E5GJrYYhcPxgpsTRsdqNcFcS4ZqNWknzYBhBve9jXthf'
 and from_addr != 'DEADDUq3NrfqUqDMwsshpqbsqpPhjtJ4AYvyCoYq2SXo'
@@ -17,3 +18,4 @@ and from_addr NOT IN (SELECT address from influencer_wallet)
 	and exists 
       (select 1 from influencer_wallet_history t2 
        where t1.from_addr = t2.from_addr and t1.signature <> t2.signature) 
+order by datetime desc
