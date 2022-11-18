@@ -242,9 +242,11 @@ app.get('/api/influencers', async (req, res) => {
 app.get('/api/influencers/:username', async (req, res) => {
   const { username } = req.params;
   const [influencer] = await getInfluencer(username);
+  const viewableWallets = await getViewableWallets(username);
   const wallets = await getWallets(username);
+  const activities = await getActivities(username);
   
-  res.status(200).json({ ...influencer, wallets });
+  res.status(200).json({ ...influencer, viewableWallets, wallets, activities });
 });
 
 const getInfluencer = async (username) => {
@@ -256,12 +258,34 @@ const getInfluencer = async (username) => {
   return rows;
 }
 
+const getViewableWallets = async (username) => {
+  const { rows } = await pool.query(`
+    SELECT * FROM influencer
+    JOIN influencer_wallet
+    ON influencer.twitter_username = influencer_wallet.twitter_username
+    WHERE influencer_wallet.twitter_username = '${username}' AND influencer_wallet.view IS NOT NULL
+  `);
+
+  return rows;
+}
+
 const getWallets = async (username) => {
   const { rows } = await pool.query(`
     SELECT * FROM influencer
     JOIN influencer_wallet
     ON influencer.twitter_username = influencer_wallet.twitter_username
-    WHERE influencer_wallet.twitter_username = '${username}' AND influencer_wallet.activity IS NOT NULL
+    WHERE influencer_wallet.twitter_username = '${username}'
+  `);
+
+  return rows;
+}
+
+const getActivities = async (username) => {
+  const { rows } = await pool.query(`
+    SELECT * FROM influencer_wallet_activity
+    WHERE twitter_username = '${username}'
+    ORDER BY blocktime DESC
+    LIMIT 100
   `);
 
   return rows;

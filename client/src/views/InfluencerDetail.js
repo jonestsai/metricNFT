@@ -11,7 +11,6 @@ export default function InfluencerDetail(props) {
   const [influencer, setInfluencer] = useState();
   const [isInfluencerLoading, setIsInfluencerLoading] = useState(true);
   const [tokens, setTokens] = useState([]);
-  const [activities, setActivities] = useState([]);
   const [isWalletLoading, setIsWalletLoading] = useState(true);
 
   useEffect(() => {
@@ -19,7 +18,7 @@ export default function InfluencerDetail(props) {
   }, [username]);
 
   useEffect(() => {
-    fetchWallets();
+    fetchViewableWallets();
   }, [influencer]);
 
   const fetchInfluencer = async () => {
@@ -35,40 +34,27 @@ export default function InfluencerDetail(props) {
     }
   };
 
-  const fetchWallets = async () => {
+  const fetchViewableWallets = async () => {
     if (!influencer) {
       return;
     }
 
     setIsWalletLoading(true);
-    const { wallets } = influencer;
-    const addresses = wallets.map((wallet) => wallet.address);
+    const { viewableWallets } = influencer;
+    const addresses = viewableWallets.map((wallet) => wallet.address);
     for (const address of addresses) {
-      const walletTokens = await fetchWalletTokens(address);
+      const walletTokens = await fetchViewableWalletTokens(address);
       setTokens(prevState => [...prevState, ...walletTokens]);
-      const walletActivities = await fetchWalletActivities(address);
-      setActivities(prevState => [...prevState, ...walletActivities]);
     }
     setIsWalletLoading(false);
   }
 
-  const fetchWalletTokens = async (address) => {
+  const fetchViewableWalletTokens = async (address) => {
     try {
-      const response = await fetch(`${URLS.api}/magiceden/wallets/${address}/tokens?offset=0&limit=500&listStatus=both`);
+      const response = await fetch(`${URLS.api}/magiceden/wallets/${address}/tokens?offset=0&limit=100&listStatus=both`);
       const tokens = await response.json();
 
       return tokens;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const fetchWalletActivities = async (address) => {
-    try {
-      const response = await fetch(`${URLS.api}/magiceden/wallets/${address}/activities?offset=0&limit=500`);
-      const activities = await response.json();
-
-      return activities;
     } catch (error) {
       console.log(error);
     }
@@ -98,7 +84,7 @@ export default function InfluencerDetail(props) {
       )
     }) : null;
 
-  const sortedActivities = activities?.sort((a, b) => b.blockTime - a.blockTime);
+  const sortedActivities = influencer?.activities?.sort((a, b) => b.blockTime - a.blockTime);
   const updatedActivities = sortedActivities?.map((activity) => {
     switch(activity.type) {
       case 'list':
@@ -235,7 +221,7 @@ export default function InfluencerDetail(props) {
             </thead>
             <tbody>
               {sortedActivities?.length > 0 ? sortedActivities?.map((activity) => {
-                const blockTime = new Date(activity.blockTime * 1000);
+                const blockTime = new Date(activity.blocktime * 1000);
                 return (
                   <tr key={`${activity.signature}${activity.type}`}>
                     <td className="text-white-50 text-start align-middle">{activity.collection}</td>
@@ -243,7 +229,7 @@ export default function InfluencerDetail(props) {
                     <td className="text-white-50 align-middle">{activity.type}</td>
                     <td className="text-white-50 align-middle">{blockTime.toLocaleString()}</td>
                     <td className="text-white-50 align-middle">{`${activity.price} SOL`}</td>
-                    <td className="text-white-50 align-middle"><a className="link-secondary" href={`https://solscan.io/token/${activity?.tokenMint}`} target="_blank">{`${activity?.tokenMint?.slice(0, 5)} ... ${activity?.tokenMint?.slice(-3)}`}</a></td>
+                    <td className="text-white-50 align-middle"><a className="link-secondary" href={`https://solscan.io/token/${activity?.token_mint}`} target="_blank">{`${activity?.token_mint?.slice(0, 5)} ... ${activity?.token_mint?.slice(-3)}`}</a></td>
                   </tr>
               )}) : null}
             </tbody>
