@@ -13,6 +13,9 @@ export default function SecondaryMenu(props) {
       <Nav.Item>
         <Nav.Link href="/">Collections</Nav.Link>
       </Nav.Item>
+      <Nav.Item>
+        <Nav.Link href="/influencers">Influencers</Nav.Link>
+      </Nav.Item>
     </Nav>
   )
 };
