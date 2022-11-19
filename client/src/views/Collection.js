@@ -290,10 +290,10 @@ export default function Collection(props) {
                       }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                      <XAxis dataKey="date" interval={12} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
                       <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
                       <Tooltip content={<PriceTooltip />} />
-                      <Line dataKey="Price" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
+                      <Line dataKey="Price" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 1, r: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={1} fill="#2b3035" />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -316,7 +316,7 @@ export default function Collection(props) {
                       }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                      <XAxis dataKey="date" interval={12} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
                       {/*<YAxis yAxisId="sales" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />*/}
                       <YAxis yAxisId="volume" type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
                       <Tooltip content={<SalesVolumeTooltip />} />
@@ -346,10 +346,10 @@ export default function Collection(props) {
                     }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                    <XAxis dataKey="date" interval={12} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
                     <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
                     <Tooltip content={<ListedCountTooltip />} />
-                    <Line dataKey="Total Listed" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
+                    <Line dataKey="Total Listed" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 1, r: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={1} fill="#2b3035" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -371,10 +371,10 @@ export default function Collection(props) {
                     }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" interval={1} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
+                    <XAxis dataKey="date" interval={12} angle={-35} dx={-15} dy={10} tick={{ fontSize: 14 }} height={60} />
                     <YAxis type="number" domain={['auto', 'auto']} tick={{ fontSize: 14 }} />
                     <Tooltip content={<OwnersCountTooltip />} />
-                    <Line dataKey="Total Owners" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={2} fill="#2b3035" />
+                    <Line dataKey="Total Owners" connectNulls dot={{ stroke: '#61cdbb', strokeWidth: 1, r: 2 }} type="monotone" isAnimationActive={false} stroke="#61cdbb" strokeWidth={1} fill="#2b3035" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

@@ -101,11 +101,11 @@ app.get('/api/collection/:slug', async (req, res) => {
           FROM howrare_collection
         ) _howrare_collection
         ON howrare_snapshot.name = _howrare_collection.name
-        WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '30 days') AND start_time < NOW()
+        WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '360 days') AND start_time < NOW()
         ORDER BY howrare_snapshot.start_time::date
       ) _howrare_snapshot
       ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
-      WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
+      WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '360 days') AND magiceden_snapshot.start_time < NOW()
       ORDER BY magiceden_snapshot.start_time::date`, (error, results) => {
       if (error) {
         console.log(error);
@@ -122,7 +122,7 @@ app.get('/api/collection/:slug', async (req, res) => {
         FROM opensea_collection
       ) _opensea_collection
       ON opensea_snapshot.slug = _opensea_collection.slug
-      WHERE opensea_snapshot.slug = '${slug}' AND opensea_snapshot.start_time > (NOW() - interval '30 days') AND opensea_snapshot.start_time < NOW()
+      WHERE opensea_snapshot.slug = '${slug}' AND opensea_snapshot.start_time > (NOW() - interval '360 days') AND opensea_snapshot.start_time < NOW()
       ORDER BY opensea_snapshot.start_time::date`, (error, results) => {
       if (error) {
         console.log(error);
