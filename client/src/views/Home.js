@@ -5,6 +5,7 @@ import { FaStar } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import CollectionTable from '../components/CollectionTable';
 import Pagination from '../components/Pagination';
+import SecondaryMenu from '../components/layout/SecondaryMenu';
 import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import './Home.css';
 
@@ -152,14 +153,7 @@ export default function Home(props) {
 
   return (
     <div>
-      <Nav className={`${partner ? 'd-none' : ''} secondary-menu px-4 border-bottom border-secondary`} variant="tabs" activeKey={location.pathname}>
-        <Nav.Item>
-          <Nav.Link className="d-flex" href="/watchlist"><FaStar className="me-2" size={20} style={{ height: 25 }} role="button" color="#fc6" />Watchlist</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href="/">Collections</Nav.Link>
-        </Nav.Item>
-      </Nav>
+      <SecondaryMenu />
       <Container fluid>
         <h3 className="text-start pt-4 pb-2">NFT Prices by Floor Market Cap</h3>
         <div className="d-flex justify-content-between">
