@@ -50,7 +50,7 @@ const updateInfluencerWalletActivities = async () => {
       }
 
       const query = {
-        text: 'INSERT INTO influencer_wallet_activity(signature, twitter_username, type, source, tokenMint, collection, collectionSymbol, slot, blockTime, buyer, buyerReferral, seller, sellerReferral, price) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) ON CONFLICT (signature) DO NOTHING',
+        text: 'INSERT INTO influencer_wallet_activity(signature, twitter_username, type, source, token_mint, collection, collection_symbol, slot, blocktime, buyer, buyer_referral, seller, seller_referral, price) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) ON CONFLICT (signature) DO NOTHING',
         values: [signature, twitter_username, type, source, tokenMint, collection, collectionSymbol, slot, blockTime, buyer, buyerReferral, seller, sellerReferral, price],
       }
 
