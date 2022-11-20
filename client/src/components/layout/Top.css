@@ -2,13 +2,32 @@
   display: none !important;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.secondary-menu::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.secondary-menu {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.secondary-menu.nav {
+  display: block;
+}
+
+.secondary-menu .nav-item {
+  display: inline-block;
+}
+
 .secondary-menu .nav-link {
   color: var(--bs-gray-500);
   -webkit-transition: none;
   -moz-transition: none;
   -o-transition: none;
   transition: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
 }
 
 .secondary-menu .nav-link:hover {
@@ -16,7 +35,7 @@
   border-top-color: transparent;
   border-right-color: transparent;
   border-left-color: transparent;
-  border-bottom: 2px solid var(--bs-gray-500);
+  border-bottom: 3px solid var(--bs-gray-500);
 }
 
 .secondary-menu .nav-link.active {
@@ -25,7 +44,7 @@
   border-top-color: transparent;
   border-right-color: transparent;
   border-left-color: transparent;
-  border-bottom: 2px solid #61cdbb;
+  border-bottom: 3px solid #61cdbb;
 }
 
 .secondary-menu .nav-link.active:hover {
@@ -33,5 +52,5 @@
   border-top-color: transparent;
   border-right-color: transparent;
   border-left-color: transparent;
-  border-bottom: 2px solid #61cdbb;
+  border-bottom: 3px solid #61cdbb;
 }
