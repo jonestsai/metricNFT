@@ -19,7 +19,7 @@ export function TradingView(props) {
     };
 
     new widget(widgetOptions);
-  }, []);
+  }, [symbolName]);
 
   return (
     <div className="mb-4" id="tv_chart_container" />

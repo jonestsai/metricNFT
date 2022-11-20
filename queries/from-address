@@ -1,0 +1,21 @@
+select * from influencer_wallet_history t1 
+where marketplace is null
+and to_addr = 'DSqBS2bZ16qATXZuJ3QMpdaTBSXGUZ3JKz2kBN4dFzjK'
+and to_addr IN (SELECT address from influencer_wallet)
+and from_addr != 'E5GJrYYhcPxgpsTRsdqNcFcS4ZqNWknzYBhBve9jXthf'
+and from_addr != 'DEADDUq3NrfqUqDMwsshpqbsqpPhjtJ4AYvyCoYq2SXo'
+and from_addr != '5iZSXWvDcxKDqgoeoY57XEEWHWcoVrP71WDmkLhFpk9B'
+and from_addr != '4wWiBoGM3JRtSdhh9Si7YuBAqhFNLHL2hLKN8D3eEDg'
+and from_addr != 'trshC9cTgL3BPXoAbp5w9UfnUMWEJx5G61vUijXPMLH'
+and from_addr != 'uVb43MDDgwjDVSP9Whq53Mzg8qaMUNdnsJEDuPvAkAg'
+and from_addr != 'CjPbkFtA7hQsVTmqngc35bwjCwLZSJzPwpwk5VWV6QMV'
+and from_addr != 'w8tkn5jCQ4yfa9TMVPGV6r9b5JDLXsGeKMmoTAymxER'
+and from_addr != '6EepDuwFCtApkfvcGkrp61Ng1UMEwqPJBm3XyDJ6KGLu'
+and from_addr != '82wg8DFX6Q99PmnfLPKSZUp9r9a4qBh1ieLGDTAuLRMx'
+and from_addr != 'GL6nADxzMtJD9XpYRM7318QXx4Qv1UAiveupPdQsrJdd'
+and from_addr != '73zdy95DynZP4exdpuXTDsexcrWbDJX9TFi2E6CDzXh4'
+and from_addr NOT IN (SELECT address from influencer_wallet)
+	and exists 
+      (select 1 from influencer_wallet_history t2 
+       where t1.from_addr = t2.from_addr and t1.signature <> t2.signature) 
+order by datetime desc

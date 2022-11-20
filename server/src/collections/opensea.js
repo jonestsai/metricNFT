@@ -158,6 +158,7 @@ const getOpenseaListings = async (slug) => {
 
   try {
     await page.setUserAgent(userAgent.toString());
+    await page.setDefaultNavigationTimeout(0);
     await page.goto(`https://opensea.io/collection/${slug}?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`, { waitUntil: 'networkidle0' });
     await Promise.race([
       page.waitForSelector('.fresnel-container'),

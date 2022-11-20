@@ -26,6 +26,8 @@ import Collection from './views/Collection';
 import Account from './views/Account';
 import Home from './views/Home';
 import Watchlist from './views/Watchlist';
+import Influencers from './views/Influencers';
+import InfluencerDetail from './views/InfluencerDetail';
 import logo from './logo.svg';
 import './App.css';
 
@@ -44,24 +46,8 @@ export default function App() {
   useEffect(() => {
     document.body.style.backgroundColor = "#212529";
     document.body.style.color = "white";
-    fetchCollectionsSimple(); // Speed up routes generation for faster collection detail page loading time
     fetchCollections();
   }, []);
-
-  const fetchCollectionsSimple = async () => {
-    try {
-      const [magiceden, opensea] = await Promise.all([
-        fetch(`${URLS.api}/magiceden/collections`),
-        fetch(`${URLS.api}/opensea/collections`),
-      ]);
-      const magicedenCollections = await magiceden.json();
-      const openseaCollections = await opensea.json();
-      setMagicedenCollections(magicedenCollections);
-      setOpenseaCollections(openseaCollections);
-    } catch (error) {
-      // Do nothing
-    }
-  }
 
   const fetchCollections = async () => {
     setIsLoading(true);
@@ -154,74 +140,13 @@ const Contact = () => (
 );
 
 const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) => {
-  const magicedenCollectionsRoutes = magicedenCollections?.map((collection, index) => {
-    const { image, name, description, symbol, floor_price, one_day_price_change, seven_day_price_change, one_day_volume, volume_all, live_floor_price, live_volume_all, total_supply, unique_holders, listed_count, live_listed_count } = collection;
-    const chain = 'solana';
-    const floorPrice = live_floor_price || floor_price;
-    const listedCount = live_listed_count || listed_count;
-    const volumeAll = live_volume_all || volume_all;
-    const maxSupply = total_supply;
-    const ownersCount = unique_holders;
-
-    return (
-      <Route key={collection.id} path={`collection/${symbol}`} element={
-        <Collection
-          chain={chain}
-          name={name}
-          description={description}
-          symbol={symbol}
-          image={image}
-          currentPrice={floorPrice / LAMPORTS_PER_SOL}
-          currentListedCount={listedCount}
-          currentOwnersCount={ownersCount}
-          numberOfTokens={maxSupply}
-          volumeAll={volumeAll / LAMPORTS_PER_SOL}
-          oneDayVolume={one_day_volume / LAMPORTS_PER_SOL}
-          isLoading={isLoading}
-          partner={partner}
-        />
-      }></Route>
-    );
-  });
-
-  const openseaCollectionsRoutes = openseaCollections?.map((collection, index) => {
-    const { image_url, name, description, slug, floor_price, one_day_average_price, one_day_volume, total_volume, total_supply, num_owners, listed_count } = collection;
-    const chain = 'ethereum';
-    const symbol = slug;
-    const image = image_url;
-    const floorPrice = floor_price;
-    const listedCount = listed_count;
-    const volumeAll = total_volume;
-    const maxSupply = total_supply;
-    const ownersCount = num_owners;
-
-    return (
-      <Route key={collection.id} path={`collection/${symbol}`} element={
-        <Collection
-          chain={chain}
-          name={name}
-          description={description}
-          symbol={symbol}
-          image={image}
-          currentPrice={floorPrice}
-          currentListedCount={listedCount}
-          currentOwnersCount={ownersCount}
-          numberOfTokens={maxSupply}
-          volumeAll={volumeAll}
-          oneDayVolume={one_day_volume}
-          isLoading={isLoading}
-          partner={partner}
-        />
-      }></Route>
-    );
-  });
-
   return (
     <Routes>
       <Route path='/' element={<Home magicedenCollections={magicedenCollections} openseaCollections={openseaCollections} isLoading={isLoading} partner={partner} />}></Route>
-      {magicedenCollectionsRoutes}
-      {openseaCollectionsRoutes}
+      <Route path='/collection/:symbol' element={<Collection />}></Route>
       <Route path='/watchlist' element={<Watchlist />}></Route>
+      <Route path='/influencers' element={<Influencers />}></Route>
+      <Route path='/influencers/:username' element={<InfluencerDetail />}></Route>
       <Route path='/account' element={<Account />}></Route>
       <Route path='/about' element={<About />}></Route>
       <Route path='/contact' element={<Contact />}></Route>

@@ -1,0 +1,11 @@
+ul.influencer-detail > li > button {
+  color: white;
+}
+
+ul.influencer-detail > li > button.active {
+  color: var(--bs-gray-700);
+}
+
+ul.influencer-detail > li > button:hover {
+  color: var(--bs-gray-500);
+}

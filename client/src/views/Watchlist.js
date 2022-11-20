@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { ComposedChart, LineChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import solana from '../assets/solana-symbol.png';
 import ethereum from '../assets/ethereum-symbol.png';
+import SecondaryMenu from '../components/layout/SecondaryMenu';
 import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
 import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
 import './Home.css';
@@ -73,14 +74,7 @@ export default function Home(props) {
 
   return (
     <div>
-      <Nav className="secondary-menu px-4 border-bottom border-secondary" variant="tabs" activeKey={location.pathname}>
-        <Nav.Item>
-          <Nav.Link className="d-flex" href="/watchlist"><FaStar className="me-2" size={20} style={{ height: 25 }} role="button" color="#fc6" />Watchlist</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href="/">Collections</Nav.Link>
-        </Nav.Item>
-      </Nav>
+      <SecondaryMenu />
       <Container fluid>
         <div className="text-end">
           <button className="btn btn-secondary mt-4" type="button" onClick={() => setCollapse(!collapse)}>{collapse ? 'Expand All' : 'Collapse All'}<FaChevronDown className="ms-2" size={16} role="button" /></button>

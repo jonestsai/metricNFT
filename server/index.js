@@ -27,7 +27,7 @@ app.get('/api/magiceden', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT symbol, name, description, image
+      SELECT symbol, name, image
       FROM magiceden_collection
     ) _magiceden_collection
     LEFT JOIN (
@@ -38,12 +38,15 @@ app.get('/api/magiceden', async (req, res) => {
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
-      SELECT DISTINCT ON (symbol) symbol as hourly_snapshot_symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
+      SELECT symbol as hourly_snapshot_symbol, start_time, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
-      WHERE start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}'
-      ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
-    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.hourly_snapshot_symbol`, (error, results) => {
+    ON _magiceden_hourly_snapshot.hourly_snapshot_symbol = _magiceden_collection.symbol AND _magiceden_hourly_snapshot.start_time = (
+      SELECT MAX(start_time) from magiceden_hourly_snapshot WHERE symbol = _magiceden_collection.symbol AND start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}' AND start_time IS NOT NULL
+    )
+    WHERE total_supply IS NOT NULL AND unique_holders > 50 AND (listed_count > 20 OR live_listed_count > 20)
+    ORDER BY _magiceden_snapshot.floor_price * total_supply DESC
+    LIMIT 1000`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -56,7 +59,7 @@ app.get('/api/opensea', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT slug, name, description, image_url
+      SELECT slug, name, image_url
       FROM opensea_collection
     ) _opensea_collection
     LEFT JOIN (
@@ -65,7 +68,10 @@ app.get('/api/opensea', async (req, res) => {
       WHERE start_time::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
       ORDER BY slug, start_time DESC
     ) _opensea_snapshot
-    ON _opensea_collection.slug = _opensea_snapshot.slug`, (error, results) => {
+    ON _opensea_collection.slug = _opensea_snapshot.slug
+    WHERE total_supply IS NOT NULL AND num_owners > 50 AND listed_count > 20
+    ORDER BY _opensea_snapshot.floor_price * total_supply DESC
+    LIMIT 1000`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -80,8 +86,13 @@ app.get('/api/collection/:slug', async (req, res) => {
 
   if (chain === 'solana') {
     pool.query(`
-      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
+      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, '${chain}' AS chain, name, description, image, floor_price, listed_count, howrare_holders, howrare_url, unique_holders, total_supply, one_day_volume, volume_all
       FROM magiceden_snapshot
+      LEFT JOIN (
+        SELECT symbol, name, description, image
+        FROM magiceden_collection
+      ) _magiceden_collection
+      ON magiceden_snapshot.symbol = _magiceden_collection.symbol
       LEFT JOIN (
         SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders, url AS howrare_url
         FROM howrare_snapshot
@@ -90,19 +101,11 @@ app.get('/api/collection/:slug', async (req, res) => {
           FROM howrare_collection
         ) _howrare_collection
         ON howrare_snapshot.name = _howrare_collection.name
-        WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '30 days') AND start_time < NOW()
+        WHERE magiceden_symbol = '${slug}' AND start_time > (NOW() - interval '360 days') AND start_time < NOW()
         ORDER BY howrare_snapshot.start_time::date
       ) _howrare_snapshot
       ON magiceden_snapshot.start_time::date = _howrare_snapshot.start_time::date
-      LEFT JOIN (
-        SELECT DISTINCT ON (start_time::date) start_time::date,
-          volume_all - LAG(volume_all) OVER (ORDER BY start_time) AS _24hvolume
-        FROM magiceden_snapshot
-        WHERE symbol = '${slug}'
-        ORDER BY start_time::date
-      ) _24hvolume
-      ON magiceden_snapshot.start_time::date = _24hvolume.start_time::date
-      WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '30 days') AND magiceden_snapshot.start_time < NOW()
+      WHERE magiceden_snapshot.symbol = '${slug}' AND magiceden_snapshot.start_time > (NOW() - interval '360 days') AND magiceden_snapshot.start_time < NOW()
       ORDER BY magiceden_snapshot.start_time::date`, (error, results) => {
       if (error) {
         console.log(error);
@@ -112,9 +115,14 @@ app.get('/api/collection/:slug', async (req, res) => {
     });
   } else {
     pool.query(`
-      SELECT DISTINCT ON (opensea_snapshot.start_time::date) opensea_snapshot.start_time::date, *
+      SELECT DISTINCT ON (opensea_snapshot.start_time::date) opensea_snapshot.start_time::date, '${chain}' AS chain, name, description, image_url AS image, floor_price, listed_count, num_owners, total_supply, one_day_volume, total_volume AS volume_all
       FROM opensea_snapshot
-      WHERE opensea_snapshot.slug = '${slug}' AND opensea_snapshot.start_time > (NOW() - interval '30 days') AND opensea_snapshot.start_time < NOW()
+      LEFT JOIN (
+        SELECT slug, name, description, image_url
+        FROM opensea_collection
+      ) _opensea_collection
+      ON opensea_snapshot.slug = _opensea_collection.slug
+      WHERE opensea_snapshot.slug = '${slug}' AND opensea_snapshot.start_time > (NOW() - interval '360 days') AND opensea_snapshot.start_time < NOW()
       ORDER BY opensea_snapshot.start_time::date`, (error, results) => {
       if (error) {
         console.log(error);
@@ -140,7 +148,7 @@ app.get('/api/collection/:slug/chart/:resolution', async (req, res) => {
     try {
       const [page] = await browser.pages();
       await page.setUserAgent(userAgent.toString());
-      await page.goto(`https://api-mainnet.magiceden.io/rpc/getCollectionTimeSeries/${slug}?edge_cache=true&resolution=${resolution}`, { waitUntil: 'networkidle0' });
+      await page.goto(`https://stats-mainnet.magiceden.io/collection_stats/getCollectionTimeSeries/${slug}?edge_cache=true&resolution=${resolution}&addLastDatum=true`, { waitUntil: 'networkidle0' });
       const data = await page.$eval('pre', (element) => element.textContent);
 
       res.status(200).json(JSON.parse(data));
@@ -222,6 +230,67 @@ const getOpenseaWatchlist = async (slugs) => {
   return rows;
 }
 
+app.get('/api/influencers', async (req, res) => {
+  pool.query('SELECT * FROM influencer ORDER BY portfolio_value DESC', (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
+app.get('/api/influencers/:username', async (req, res) => {
+  const { username } = req.params;
+  const [influencer] = await getInfluencer(username);
+  const viewableWallets = await getViewableWallets(username);
+  const wallets = await getWallets(username);
+  const activities = await getActivities(username);
+  
+  res.status(200).json({ ...influencer, viewableWallets, wallets, activities });
+});
+
+const getInfluencer = async (username) => {
+  const { rows } = await pool.query(`
+    SELECT * FROM influencer
+    WHERE twitter_username = '${username}'
+  `);
+
+  return rows;
+}
+
+const getViewableWallets = async (username) => {
+  const { rows } = await pool.query(`
+    SELECT * FROM influencer
+    JOIN influencer_wallet
+    ON influencer.twitter_username = influencer_wallet.twitter_username
+    WHERE influencer_wallet.twitter_username = '${username}' AND influencer_wallet.view IS NOT NULL
+  `);
+
+  return rows;
+}
+
+const getWallets = async (username) => {
+  const { rows } = await pool.query(`
+    SELECT * FROM influencer
+    JOIN influencer_wallet
+    ON influencer.twitter_username = influencer_wallet.twitter_username
+    WHERE influencer_wallet.twitter_username = '${username}'
+  `);
+
+  return rows;
+}
+
+const getActivities = async (username) => {
+  const { rows } = await pool.query(`
+    SELECT * FROM influencer_wallet_activity
+    WHERE twitter_username = '${username}'
+    ORDER BY blocktime DESC
+    LIMIT 100
+  `);
+
+  return rows;
+}
+
 app.get('/api/users/:walletAddress', (req, res) => {
   const { walletAddress } = req.params;
   pool.query(`SELECT * FROM users
@@ -283,10 +352,10 @@ app.post('/api/users/notification/delete', (req, res) => {
 
 app.get('/api/magiceden/wallets/:walletAddress/tokens', async (req, res) => {
   const { walletAddress } = req.params;
-  const { offset, limit, listedOnly } = req.query;
+  const { offset, limit, listStatus } = req.query;
 
   try {
-    const response = await fetch(`https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/tokens?offset=${offset}&limit=${limit}&listedOnly=${listedOnly}`);
+    const response = await fetch(`https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/tokens?offset=${offset}&limit=${limit}&listStatus=${listStatus}`);
     const tokens = await response.json();
     res.status(200).json(tokens);
   } catch (err) {
@@ -380,7 +449,7 @@ app.get('/api/dev/magiceden', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT name, symbol, image
+      SELECT symbol, name, image
       FROM magiceden_collection
     ) _magiceden_collection
     LEFT JOIN (
@@ -391,12 +460,15 @@ app.get('/api/dev/magiceden', async (req, res) => {
     ) _magiceden_snapshot
     ON _magiceden_collection.symbol = _magiceden_snapshot.symbol
     LEFT JOIN (
-      SELECT DISTINCT ON (symbol) symbol as hourly_snapshot_symbol, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
+      SELECT symbol as hourly_snapshot_symbol, start_time, floor_price AS live_floor_price, one_day_price_change AS live_one_day_price_change, seven_day_price_change AS live_seven_day_price_change, listed_count AS live_listed_count, volume_all AS live_volume_all
       FROM magiceden_hourly_snapshot
-      WHERE start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}'
-      ORDER BY symbol, start_time DESC
     ) _magiceden_hourly_snapshot
-    ON _magiceden_collection.symbol = _magiceden_hourly_snapshot.hourly_snapshot_symbol`, (error, results) => {
+    ON _magiceden_hourly_snapshot.hourly_snapshot_symbol = _magiceden_collection.symbol AND _magiceden_hourly_snapshot.start_time = (
+      SELECT MAX(start_time) from magiceden_hourly_snapshot WHERE symbol = _magiceden_collection.symbol AND start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}' AND start_time IS NOT NULL
+    )
+    WHERE total_supply IS NOT NULL AND unique_holders > 50 AND (listed_count > 20 OR live_listed_count > 20)
+    ORDER BY _magiceden_snapshot.floor_price * total_supply DESC
+    LIMIT 1000`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -409,7 +481,7 @@ app.get('/api/dev/opensea', async (req, res) => {
 
   pool.query(`
     SELECT * FROM (
-      SELECT name, slug, image_url
+      SELECT slug, name, image_url
       FROM opensea_collection
     ) _opensea_collection
     LEFT JOIN (
@@ -418,7 +490,10 @@ app.get('/api/dev/opensea', async (req, res) => {
       WHERE start_time::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
       ORDER BY slug, start_time DESC
     ) _opensea_snapshot
-    ON _opensea_collection.slug = _opensea_snapshot.slug`, (error, results) => {
+    ON _opensea_collection.slug = _opensea_snapshot.slug
+    WHERE total_supply IS NOT NULL AND num_owners > 50 AND listed_count > 20
+    ORDER BY _opensea_snapshot.floor_price * total_supply DESC
+    LIMIT 1000`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -433,13 +508,18 @@ app.get('/api/dev/:slug', async (req, res) => {
 
   if (chain === 'solana') {
     pool.query(`
-      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, *
+      SELECT DISTINCT ON (magiceden_snapshot.start_time::date) magiceden_snapshot.start_time::date, '${chain}' AS chain, name, description, image, floor_price, listed_count, howrare_holders, howrare_url, unique_holders, total_supply, one_day_volume, volume_all
       FROM magiceden_snapshot
       LEFT JOIN (
-        SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders
+        SELECT symbol, name, description, image
+        FROM magiceden_collection
+      ) _magiceden_collection
+      ON magiceden_snapshot.symbol = _magiceden_collection.symbol
+      LEFT JOIN (
+        SELECT DISTINCT ON (howrare_snapshot.start_time::date) howrare_snapshot.start_time::date, holders AS howrare_holders, url AS howrare_url
         FROM howrare_snapshot
         JOIN (
-          SELECT name, magiceden_symbol
+          SELECT name, magiceden_symbol, url
           FROM howrare_collection
         ) _howrare_collection
         ON howrare_snapshot.name = _howrare_collection.name
@@ -465,8 +545,13 @@ app.get('/api/dev/:slug', async (req, res) => {
     });
   } else {
     pool.query(`
-      SELECT DISTINCT ON (opensea_snapshot.start_time::date) opensea_snapshot.start_time::date, *
+      SELECT DISTINCT ON (opensea_snapshot.start_time::date) opensea_snapshot.start_time::date, '${chain}' AS chain, name, description, image_url AS image, floor_price, listed_count, num_owners, total_supply, one_day_volume, total_volume AS volume_all
       FROM opensea_snapshot
+      LEFT JOIN (
+        SELECT slug, name, description, image_url
+        FROM opensea_collection
+      ) _opensea_collection
+      ON opensea_snapshot.slug = _opensea_collection.slug
       WHERE opensea_snapshot.slug = '${slug}' AND opensea_snapshot.start_time > (NOW() - interval '30 days') AND opensea_snapshot.start_time < NOW()
       ORDER BY opensea_snapshot.start_time::date`, (error, results) => {
       if (error) {

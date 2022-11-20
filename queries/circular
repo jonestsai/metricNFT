@@ -1,0 +1,19 @@
+WITH RECURSIVE graph AS (
+   SELECT from_addr AS id, to_addr AS from_addr  -- simplify join condition
+        , ARRAY[from_addr, to_addr] AS path
+        , (from_addr = to_addr) AS cycle    -- simplify if short-circuit impossible
+   FROM   influencer_wallet_history
+	where to_addr = 'EKkKqyegBw3uSqWdM2VewBGeJUfaRGddx1BKX7UC8Yxb'
+	or from_addr = 'EKkKqyegBw3uSqWdM2VewBGeJUfaRGddx1BKX7UC8Yxb'
+   UNION ALL
+   SELECT d.from_addr, d.to_addr
+        , path || d.to_addr, d.to_addr = ANY(path)
+   FROM   graph g
+   JOIN   influencer_wallet_history   d USING (from_addr)
+   where to_addr = 'EKkKqyegBw3uSqWdM2VewBGeJUfaRGddx1BKX7UC8Yxb'
+	or from_addr = 'EKkKqyegBw3uSqWdM2VewBGeJUfaRGddx1BKX7UC8Yxb'
+	AND NOT g.cycle
+   )
+SELECT DISTINCT id
+FROM   graph
+WHERE  cycle;
