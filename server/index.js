@@ -29,7 +29,7 @@ app.get('/api/magiceden', async (req, res) => {
     SELECT * FROM home
     WHERE chain = 'solana' AND datetime::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
     ORDER BY floor_market_cap DESC
-    LIMIT 1000`, (error, results) => {
+    LIMIT 300`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -44,7 +44,7 @@ app.get('/api/opensea', async (req, res) => {
     SELECT * FROM home
     WHERE chain = 'ethereum' AND datetime::date > '${moment().subtract(2, 'days').format('YYYY-MM-DD')}'
     ORDER BY floor_market_cap DESC
-    LIMIT 1000`, (error, results) => {
+    LIMIT 300`, (error, results) => {
     if (error) {
       throw error;
     }
