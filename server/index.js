@@ -350,7 +350,7 @@ app.get('/api/magiceden/wallets/:walletAddress/activities', async (req, res) => 
 });
 
 app.get('/api/magiceden/collections', (req, res) => {
-  pool.query(`SELECT * FROM magiceden_collection`, (error, results) => {
+  pool.query(`SELECT symbol, name FROM magiceden_collection`, (error, results) => {
     if (error) {
       console.log(error);
       throw error;
