@@ -57,16 +57,16 @@ export default function Home(props) {
   const { magicedenCollections, openseaCollections, isLoading, partner } = props;
 
   const updatedMagicedenCollections = magicedenCollections?.map((magicedenCollection) => {
-    const { name, symbol, image, floor_price, live_floor_price, one_day_volume, one_day_price_change, live_one_day_price_change, seven_day_price_change, live_seven_day_price_change, total_supply, unique_holders, listed_count, live_listed_count } = magicedenCollection;
-    const chain = 'solana';
-    const floorPrice = (live_floor_price || floor_price) / LAMPORTS_PER_SOL * exchangeRates?.['solana/usd'];
-    const oneDayPriceChange = live_one_day_price_change || one_day_price_change;
-    const sevenDayPriceChange = live_seven_day_price_change || seven_day_price_change;
-    const oneDayVolume = one_day_volume / LAMPORTS_PER_SOL * exchangeRates?.['solana/usd'] || 0;
+    const { symbol, name, image, chain, datetime, floor_price, one_day_price_change, seven_day_price_change, one_day_volume, floor_market_cap, total_supply, unique_holders, listed_count } = magicedenCollection;
+    
+    const floorPrice = floor_price * exchangeRates?.['solana/usd'];
+    const oneDayPriceChange = one_day_price_change;
+    const sevenDayPriceChange = seven_day_price_change;
+    const oneDayVolume = one_day_volume * exchangeRates?.['solana/usd'] || 0;
+    const floorMarketCap = floor_market_cap * exchangeRates?.['solana/usd'];
     const maxSupply = total_supply;
     const uniqueHolders = unique_holders;
-    const listedCount = live_listed_count || listed_count;
-    const floorMarketCap = floorPrice * maxSupply;
+    const listedCount = listed_count;
 
     return {
       chain,
@@ -85,18 +85,16 @@ export default function Home(props) {
   });
 
   const updatedOpenseaCollections = openseaCollections?.map((openseaCollection) => {
-    const { name, slug, image_url, floor_price, one_day_average_price, one_day_volume, one_day_price_change, seven_day_price_change, total_supply, num_owners, listed_count } = openseaCollection;
-    const chain = 'ethereum';
-    const image = image_url;
-    const symbol = slug;
+    const { symbol, name, image, chain, datetime, floor_price, one_day_price_change, seven_day_price_change, one_day_volume, floor_market_cap, total_supply, unique_holders, listed_count } = openseaCollection;
+    
     const floorPrice = floor_price * exchangeRates?.['ethereum/usd'];
     const oneDayPriceChange = one_day_price_change;
     const sevenDayPriceChange = seven_day_price_change;
-    const oneDayVolume = one_day_volume * exchangeRates?.['ethereum/usd'];
+    const oneDayVolume = one_day_volume * exchangeRates?.['ethereum/usd'] || 0;
+    const floorMarketCap = floor_market_cap * exchangeRates?.['ethereum/usd'];
     const maxSupply = total_supply;
-    const uniqueHolders = num_owners;
+    const uniqueHolders = unique_holders;
     const listedCount = listed_count;
-    const floorMarketCap = floorPrice * maxSupply;
 
     return {
       chain,
