@@ -190,6 +190,36 @@ export default function InfluencerDetail(props) {
             </div>
           </div>
         </div>
+        <div className="col-md-6">
+          <div className="card bg-gray text-center">
+            <div className="card-header">Highest Purchase</div>
+            <div className="card-body">
+              {!isInfluencerLoading && (
+                <h4 className="card-title">{highestPurchaseItem}<br/><span className="text-secondary">{highestPurchaseAmount}</span></h4>
+              )}
+              {isInfluencerLoading && (
+                <h4 className="card-title">
+                  <div className="spinner-border text-light" role="status" />
+                </h4>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="col-md-6">
+          <div className="card bg-gray text-center">
+            <div className="card-header">Highest Sales</div>
+            <div className="card-body">
+              {!isInfluencerLoading && (
+                <h4 className="card-title">{highestSalesItem}<br/><span className="text-secondary">{highestSalesAmount}</span></h4>
+              )}
+              {isInfluencerLoading && (
+                <h4 className="card-title">
+                  <div className="spinner-border text-light" role="status" />
+                </h4>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
       {isWalletLoading && (
         <div className="my-5 text-center">
