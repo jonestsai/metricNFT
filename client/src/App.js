@@ -15,6 +15,7 @@ import {
 import { clusterApiUrl } from '@solana/web3.js';
 import React, { useState, useEffect, useMemo } from 'react';
 import ReactGA from 'react-ga';
+import { hotjar } from 'react-hotjar';
 import { NavLink, Routes, Route, useLocation, useSearchParams } from 'react-router-dom';
 
 import Top from './components/layout/Top';
@@ -46,6 +47,7 @@ export default function App() {
   useEffect(() => {
     document.body.style.backgroundColor = "#212529";
     document.body.style.color = "white";
+    hotjar.initialize('3261893', '6');
     fetchCollections();
   }, []);
 
