@@ -397,6 +397,32 @@ app.get('/api/opensea/collections', (req, res) => {
   });
 });
 
+app.get('/api/hyperspace/get-wallet-stats/:address', async (req, res) => {
+  const { address } = req.params;
+
+  try {
+    const response = await fetch('https://beta.api.solanalysis.com/rest/get-wallet-stats', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: process.env.HYPERSPACE_API_KEY,
+      },
+      body: JSON.stringify({
+        condition: {
+          time_period: 'ALL',
+          search_address: address,
+          include_user_rank: true,
+        }
+      }),
+    });
+    const { wallet_stats } = await response.json();
+    const [stats] = wallet_stats;
+    res.status(200).json(stats);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 app.get('/api/howrare/collections/:collection/owners', async (req, res) => {
   const { collection } = req.params;
 
