@@ -63,6 +63,7 @@ export default function InfluencerDetail(props) {
   const { twitter_username, twitter_display, image, portfolio_value, owned_nfts, volume_bought, max_purchase_item, max_purchase, volume_sold, max_sale_item, max_sale } = influencer || {};
   const solanaSymbol = <img className="pe-1" src={solana} alt="solana-logo" height="11" />;
   const portfolioValue = <div className="text-nowrap d-flex align-items-center justify-content-center">{solanaSymbol}{Number(portfolio_value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
+  const ownedNFTs = owned_nfts || 0;
   const totalSpend = <div className="text-nowrap d-flex align-items-center justify-content-center">{solanaSymbol}{Number(volume_bought).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
   const highestPurchaseItem = max_purchase_item?.name;
   const highestPurchaseAmount = <div className="text-nowrap d-flex align-items-center justify-content-center">{solanaSymbol}{Number(max_purchase).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
@@ -150,7 +151,7 @@ export default function InfluencerDetail(props) {
             <div className="card-header">NFTs Owned</div>
             <div className="card-body">
               {!isInfluencerLoading && (
-                <h4 className="card-title">{owned_nfts}</h4>
+                <h4 className="card-title">{ownedNFTs}</h4>
               )}
               {isInfluencerLoading && (
                 <h4 className="card-title">
