@@ -358,39 +358,39 @@ export default function Account() {
             onSelect={(k) => setKey(k)}
             className="account my-5"
           >
-          <Tab eventKey="notifications" title="Notifications">
-            <form className="py-5" onSubmit={handleSaveNotification}>
-              <div className="row input-group mb-3">
-                <div className="col-12 col-md-7 mb-1">
-                  <input className="form-control" list="datalistOptions" value={collectionOption} placeholder="Type to search..." onChange={e => setCollectionOption(e.target.value)} />
-                  <datalist id="datalistOptions">
-                    {collectionOptions}
-                  </datalist>
-                </div>
-                <div className="col-5 col-md-2">
-                  <span className="input-group-text">Price</span>
-                </div>
-                <div className="col-2 col-md-1">
-                  <DropdownButton variant="light" title={sign} onSelect={e => setSign(e)}>
-                    <Dropdown.Item eventKey=">">{'>'}</Dropdown.Item>
-                    <Dropdown.Item eventKey="<">{'<'}</Dropdown.Item>
-                  </DropdownButton>
-                </div>
-                <div className="col-5 col-md-2">
-                  <div className="input-group">
-                    <input type="text" aria-label="Price" className="form-control" onChange={e => setPrice(e.target.value)} />
-                    <span className="input-group-text">SOL</span>
+            <Tab eventKey="notifications" title="Notifications">
+              <form className="py-5" onSubmit={handleSaveNotification}>
+                <div className="row input-group mb-3">
+                  <div className="col-12 col-md-7 mb-1">
+                    <input className="form-control" list="datalistOptions" value={collectionOption} placeholder="Type to search..." onChange={e => setCollectionOption(e.target.value)} />
+                    <datalist id="datalistOptions">
+                      {collectionOptions}
+                    </datalist>
+                  </div>
+                  <div className="col-5 col-md-2">
+                    <span className="input-group-text">Price</span>
+                  </div>
+                  <div className="col-2 col-md-1">
+                    <DropdownButton variant="light" title={sign} onSelect={e => setSign(e)}>
+                      <Dropdown.Item eventKey=">">{'>'}</Dropdown.Item>
+                      <Dropdown.Item eventKey="<">{'<'}</Dropdown.Item>
+                    </DropdownButton>
+                  </div>
+                  <div className="col-5 col-md-2">
+                    <div className="input-group">
+                      <input type="text" aria-label="Price" className="form-control" onChange={e => setPrice(e.target.value)} />
+                      <span className="input-group-text">SOL</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-1">
-                  <button type="submit" className="btn btn-primary">Save</button>
-                  {isNotificationSaved && (
-                    <div className="text-success my-1">Saved!</div>
-                  )}
+                <div className="row">
+                  <div className="col-md-1">
+                    <button type="submit" className="btn btn-primary">Save</button>
+                    {isNotificationSaved && (
+                      <div className="text-success my-1">Saved!</div>
+                    )}
+                  </div>
                 </div>
-              </div>
               </form>
               {(publicKey && !isLoading) && (
                 <Table variant="dark" hover>
