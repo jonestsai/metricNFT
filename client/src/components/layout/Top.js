@@ -58,8 +58,8 @@ export default function Top(props) {
           </datalist>
         </div>
         <div className="ms-auto navbar-nav">
-          <a href="/account" className="text-white align-self-center mx-3 nav-link">Account</a>
-          <a role="button" className="nav-link">
+          <a href="/account" className="text-white align-self-center mx-3 mt-3 mb-2 nav-link">Account</a>
+          <a role="button" className="align-self-center nav-link">
             <WalletMultiButton />
           </a>
         </div>
