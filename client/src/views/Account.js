@@ -447,7 +447,7 @@ export default function Account() {
             <Tab eventKey="settings" title="Settings">
               <div className="py-5">
                 <div className="row justify-content-md-center">
-                  <div className="col-md-4">
+                  <div className="col-md-6">
                     <FloatingLabel
                       controlId="floatingInput"
                       label="Email address"
@@ -463,7 +463,7 @@ export default function Account() {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-md-4 offset-md-4 d-flex justify-content-between">
+                  <div className="col-md-6 offset-md-3 d-flex justify-content-between">
                     <button type="button" className="btn btn-primary" onClick={() => handleEmail('connect')}>Save</button>
                     {isEmailSaved && (
                       <div className="text-success my-1">Saved!</div>
