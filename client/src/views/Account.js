@@ -445,7 +445,7 @@ export default function Account() {
               </Table>
             </Tab>
             <Tab eventKey="settings" title="Settings">
-              <form className="py-5" onSubmit={e => e.preventDefault()}>
+              <div className="py-5">
                 <div className="row justify-content-md-center">
                   <div className="col-md-4">
                     <FloatingLabel
@@ -471,7 +471,7 @@ export default function Account() {
                     <button type="button" className="btn btn-outline-danger" onClick={() => handleEmail('disconnect')}>Disconnect Email</button>
                   </div>
                 </div>
-              </form>
+              </div>
             </Tab>
           </Tabs>
         </div>
