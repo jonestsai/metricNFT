@@ -18,23 +18,24 @@ export default function Notification({ notifications, email }) {
   useEffect(() => {
     setUserNotifications(notifications);
   }, [notifications]);
-  
+
   useEffect(() => {
-    fetchCollections();
-  }, [publicKey]);
+    let getCollectionsTimeout = setTimeout(() => {
+      getCollections(collectionOption);
+    }, 500);
 
-  const fetchCollections = async () => {
-    setIsLoading(true);
+    return () => {
+      clearTimeout(getCollectionsTimeout);
+    };
+  }, [collectionOption]);
 
+  const getCollections = async (value) => {
     try {
-      const response = await fetch(`${URLS.api}/magiceden/collections`);
+      const response = await fetch(`${URLS.api}/collection/search/${value}`);
       const collections = await response.json();
-
       setCollections(collections);
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -143,8 +144,8 @@ export default function Notification({ notifications, email }) {
       <form className="py-5" onSubmit={handleSaveNotification}>
         <div className="row input-group mb-3">
           <div className="col-12 col-md-7 mb-1">
-            <input className="form-control" list="datalistOptions" value={collectionOption} placeholder="Type to search..." onChange={e => setCollectionOption(e.target.value)} />
-            <datalist id="datalistOptions">
+            <input className="form-control" list="datalistNotificationOptions" value={collectionOption} placeholder="Type to search..." onChange={e => setCollectionOption(e.target.value)} />
+            <datalist id="datalistNotificationOptions">
               {collectionOptions}
             </datalist>
           </div>
