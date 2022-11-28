@@ -12,26 +12,30 @@ export default function Top(props) {
   const navigate = useNavigate();
   const [collections, setCollections] = useState();
 
-  useEffect(() => {
-    getCollections();
-  }, []);
+  const { partner } = props;
 
-  const getCollections = async () => {
+  let getCollectionsTimeout;
+
+  const navigateToCollection = async (value) => {
+    clearTimeout(getCollectionsTimeout);
+
+    getCollectionsTimeout = setTimeout(async () => {
+      await getCollections(value);
+    }, 500);
+
+    const collection = collections.find(c => c.name === value);
+    if (collection) {
+      navigate(`collection/${collection.symbol}`);
+    }
+  }
+
+  const getCollections = async (value) => {
     try {
-      const response = await fetch(`${URLS.api}/magiceden/collections`);
+      const response = await fetch(`${URLS.api}/collection/search/${value}`);
       const collections = await response.json();
       setCollections(collections);
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  const { partner } = props;
-
-  const navigateToCollection = (value) => {
-    const collection = collections.find(c => c.name === value);
-    if (collection) {
-      navigate(`collection/${collection.symbol}`);
     }
   }
 
