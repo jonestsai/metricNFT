@@ -16,11 +16,11 @@ export default function Top(props) {
 
   let getCollectionsTimeout;
 
-  const navigateToCollection = async (value) => {
+  const navigateToCollection = (value) => {
     clearTimeout(getCollectionsTimeout);
 
-    getCollectionsTimeout = setTimeout(async () => {
-      await getCollections(value);
+    getCollectionsTimeout = setTimeout(() => {
+      getCollections(value);
     }, 500);
 
     const collection = collections.find(c => c.name === value);
