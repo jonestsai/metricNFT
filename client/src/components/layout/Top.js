@@ -3,7 +3,6 @@ import {
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 import React, { useState, useEffect } from 'react';
-import { Navbar, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { URLS } from '../../Settings';
 import logo from '../../assets/logo.png';
@@ -13,26 +12,30 @@ export default function Top(props) {
   const navigate = useNavigate();
   const [collections, setCollections] = useState();
 
-  useEffect(() => {
-    getCollections();
-  }, []);
+  const { partner } = props;
 
-  const getCollections = async () => {
+  let getCollectionsTimeout;
+
+  const navigateToCollection = (value) => {
+    clearTimeout(getCollectionsTimeout);
+
+    getCollectionsTimeout = setTimeout(() => {
+      getCollections(value);
+    }, 500);
+
+    const collection = collections.find(c => c.name === value);
+    if (collection) {
+      navigate(`collection/${collection.symbol}`);
+    }
+  }
+
+  const getCollections = async (value) => {
     try {
-      const response = await fetch(`${URLS.api}/magiceden/collections`);
+      const response = await fetch(`${URLS.api}/collection/search/${value}`);
       const collections = await response.json();
       setCollections(collections);
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  const { partner } = props;
-
-  const navigateToCollection = (value) => {
-    const collection = collections.find(c => c.name === value);
-    if (collection) {
-      navigate(`collection/${collection.symbol}`);
     }
   }
 
@@ -43,24 +46,28 @@ export default function Top(props) {
   }) : null;
 
   return (
-    <Navbar expand="lg" bg="dark" variant="dark" className={`${partner ? 'd-none' : ''} px-4 border-bottom border-secondary`}>
-      <Navbar.Brand className="me-5" href="/">
+    <nav className=" px-4 border-bottom border-secondary navbar navbar-expand-lg navbar-dark bg-dark">
+      <a href="/" className="me-5 navbar-brand">
         <img className="my-3 pe-3" src={logo} alt="Logo" height="50" />
         <span className="display-6 align-middle"><strong>MetricNFT</strong></span>
-      </Navbar.Brand>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse>
-        <Nav style={{ minWidth: "50%" }}>
+      </a>
+      <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span className="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div className="navbar-nav" style={{ minWidth: "50%" }}>
           <input className="form-control" list="datalistOptions" placeholder="Search collections..." onChange={e => navigateToCollection(e.target.value)} />
           <datalist id="datalistOptions">
             {collectionOptions}
           </datalist>
-        </Nav>
-        <Nav className="ms-auto">
-          <Nav.Link href="/account" className="text-white align-self-center mx-3">Account</Nav.Link>
-          <Nav.Link><WalletMultiButton /></Nav.Link>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
+        </div>
+        <div className="ms-auto navbar-nav">
+          <a href="/account" className="text-white align-self-center mx-3 mt-3 mb-2 nav-link">Account</a>
+          <a role="button" className="align-self-center nav-link">
+            <WalletMultiButton />
+          </a>
+        </div>
+      </div>
+    </nav>
   )
 };

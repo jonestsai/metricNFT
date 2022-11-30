@@ -143,6 +143,18 @@ const getCollectionChain = async (slug) => {
   return 'ethereum';
 }
 
+app.get('/api/collection/search/:query', async (req, res) => {
+  const { query } = req.params;
+
+  pool.query(`SELECT symbol, name FROM magiceden_collection WHERE REPLACE(name, ' ', '') ILIKE REPLACE('%${query}%', ' ', '')`, (error, results) => {
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
+
 app.get('/api/users/watchlist', async (req, res) => {
   const { symbol } = req.query;
   const symbols = symbol.toString();
@@ -395,6 +407,32 @@ app.get('/api/opensea/collections', (req, res) => {
     }
     res.status(200).json(results.rows);
   });
+});
+
+app.get('/api/hyperspace/get-wallet-stats/:address', async (req, res) => {
+  const { address } = req.params;
+
+  try {
+    const response = await fetch('https://beta.api.solanalysis.com/rest/get-wallet-stats', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: process.env.HYPERSPACE_API_KEY,
+      },
+      body: JSON.stringify({
+        condition: {
+          time_period: 'ALL',
+          search_address: address,
+          include_user_rank: true,
+        }
+      }),
+    });
+    const { wallet_stats } = await response.json();
+    const [stats] = wallet_stats;
+    res.status(200).json(stats);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.get('/api/howrare/collections/:collection/owners', async (req, res) => {
