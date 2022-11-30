@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Container, FloatingLabel, Form, Table, Tab, Tabs } from 'react-bootstrap';
 import Notification from './account/Notification';
 import Profile from './account/Profile';
+import Settings from './account/Settings';
 import { URLS } from '../Settings';
 import './Account.css';
 
@@ -17,7 +18,6 @@ export default function Account() {
   const [isLoading, setIsLoading] = useState(false);
   const [key, setKey] = useState('notifications');
   const [email, setEmail] = useState();
-  const [isEmailSaved, setIsEmailSaved] = useState(false);
 
   useEffect(() => {
     fetchWallet();
@@ -48,42 +48,6 @@ export default function Account() {
       setEmail(email);
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  
-  const handleEmail = async (action) => {
-    const data = {
-      wallet_address: publicKey,
-      email: action === 'connect' ? email : null,
-    };
-
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${URLS.api}/users/create`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.status >= 200 && response.status < 300) {
-        if (action === 'connect') {
-          setIsEmailSaved(true);
-        }
-
-        if (action === 'disconnect') {
-          setEmail('');
-          setIsEmailSaved(false);
-        }
-      } else {
-        throw new Error(response.statusText);
-      }
-    } catch (error) {
-      // Fail silently. This action is not important enough to interrupt the user's workflow.
-      // alert('There was an issue saving. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -135,33 +99,7 @@ export default function Account() {
               </Table>
             </Tab>
             <Tab eventKey="settings" title="Settings">
-              <div className="py-5">
-                <div className="row justify-content-md-center">
-                  <div className="col-md-6">
-                    <FloatingLabel
-                      controlId="floatingInput"
-                      label="Email address"
-                      className="mb-3"
-                    >
-                      <Form.Control
-                        required
-                        type="email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                      />
-                    </FloatingLabel>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6 offset-md-3 d-flex justify-content-between">
-                    <button type="button" className="btn btn-primary" onClick={() => handleEmail('connect')}>Save</button>
-                    {isEmailSaved && (
-                      <div className="text-success my-1">Saved!</div>
-                    )}
-                    <button type="button" className="btn btn-outline-danger" onClick={() => handleEmail('disconnect')}>Disconnect Email</button>
-                  </div>
-                </div>
-              </div>
+              <Settings publicKey={publicKey} email={email} setEmail={setEmail} />
             </Tab>
           </Tabs>
         </div>
