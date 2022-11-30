@@ -4,15 +4,12 @@ import { URLS } from '../../Settings';
 
 export default function Activities({ publicKey }) {
   const [activities, setActivities] = useState();
-  const [isActivitiesLoading, setIsActivitiesLoading] = useState();
 
   useEffect(() => {
     fetchActivities();
   }, [publicKey]);
   
   const fetchActivities = async () => {
-    setIsActivitiesLoading(true);
-
     if (!publicKey) {
       return;
     }
@@ -24,8 +21,6 @@ export default function Activities({ publicKey }) {
       setActivities(activities);
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsActivitiesLoading(false);
     }
   }
 

@@ -1,8 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import React, { useState, useEffect } from 'react';
-import { Button, Container, FloatingLabel, Form, Tab, Tabs } from 'react-bootstrap';
+import { Container, Tab, Tabs } from 'react-bootstrap';
 import Activities from './account/Activities';
 import Notification from './account/Notification';
 import Profile from './account/Profile';
@@ -11,7 +10,6 @@ import { URLS } from '../Settings';
 import './Account.css';
 
 export default function Account() {
-  // if (!publicKey) throw new WalletNotConnectedError();
   const { publicKey } = useWallet();
 
   const [userNotifications, setUserNotifications] = useState();
