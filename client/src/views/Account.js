@@ -6,7 +6,7 @@ import { FaChevronRight, FaRegAddressCard, FaRegBell } from 'react-icons/fa';
 import { FiActivity, FiSettings } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 import Activities from './account/Activities';
-import Notification from './account/Notification';
+import Notifications from './account/Notifications';
 import Profile from './account/Profile';
 import Settings from './account/Settings';
 import imageLoader from '../assets/loader.gif';
@@ -133,7 +133,7 @@ export default function Account() {
               className="account my-5"
             >
               <Tab eventKey="notifications" title="Notifications">
-                <Notification notifications={userNotifications} email={email} />
+                <Notifications notifications={userNotifications} email={email} />
               </Tab>
               <Tab eventKey="activities" title="Activities">
                 <Activities publicKey={publicKey} />

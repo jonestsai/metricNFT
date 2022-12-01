@@ -26,7 +26,7 @@ import { LAMPORTS_PER_SOL } from './utils/constants';
 import Collection from './views/Collection';
 import Account from './views/Account';
 import Activities from './views/account/Activities';
-import Notification from './views/account/Notification';
+import Notifications from './views/account/Notifications';
 import Profile from './views/account/Profile';
 import Settings from './views/account/Settings';
 import Home from './views/Home';
@@ -155,7 +155,7 @@ const Main = ({ magicedenCollections, openseaCollections, isLoading, partner }) 
       <Route path='/influencers/:username' element={<InfluencerDetail />}></Route>
       <Route path='/account' element={<Account />}></Route>
       <Route path='/account/profile' element={<Profile />}></Route>
-      <Route path='/account/notifications' element={<Notification />}></Route>
+      <Route path='/account/notifications' element={<Notifications />}></Route>
       <Route path='/account/activities' element={<Activities />}></Route>
       <Route path='/account/settings' element={<Settings />}></Route>
       <Route path='/about' element={<About />}></Route>

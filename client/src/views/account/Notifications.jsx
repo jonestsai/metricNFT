@@ -4,7 +4,7 @@ import { Dropdown, DropdownButton, Table } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import { URLS } from '../../Settings';
 
-export default function Notification({ notifications, email }) {
+export default function Notifications({ notifications, email }) {
   const { publicKey } = useWallet();
   const [collections, setCollections] = useState();
   const [userNotifications, setUserNotifications] = useState(notifications);
