@@ -1,0 +1,7 @@
+.border-gray {
+  border-color: var(--bs-gray-800)!important;
+}
+
+.active-icon {
+  color: #61cdbb;
+}
