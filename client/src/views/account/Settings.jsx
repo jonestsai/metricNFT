@@ -39,7 +39,7 @@ export default function Settings({ publicKey, email, setEmail }) {
   }
 
   return (
-    <div className="py-5">
+    <div className="container-fluid py-5 px-sm-0">
       <div className="row justify-content-md-center">
         <div className="col-md-6">
           <FloatingLabel

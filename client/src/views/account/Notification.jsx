@@ -140,7 +140,7 @@ export default function Notification({ notifications, email }) {
   }
 
   return (
-    <div>
+    <div className="container-fluid px-sm-0">
       <form className="py-5" onSubmit={handleSaveNotification}>
         <div className="row input-group mb-3">
           <div className="col-12 col-md-7 mb-1">

@@ -45,7 +45,7 @@ export default function Profile() {
   const highestSalesAmount = <div className="text-nowrap d-flex align-items-center justify-content-center">{solanaSymbol}{Number(max_sale).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2} )}</div>;
 
   return (
-    <div>
+    <div className="container-fluid px-sm-0">
       <div className="row py-4 d-flex align-items-center">
         <div className="col-2 col-md-1">
           <img className="rounded-circle img-fluid" height="50" src={imageLoader} />
