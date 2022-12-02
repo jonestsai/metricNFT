@@ -5,6 +5,7 @@ import { FaRegStar, FaRegUser } from 'react-icons/fa';
 import { FiSearch, FiSettings } from "react-icons/fi";
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
+import { getCurrentPage } from '../../utils/helpers';
 import './Bottom.css';
 
 export default function Bottom(props) {
@@ -13,16 +14,7 @@ export default function Bottom(props) {
 
   const { partner } = props;
 
-  const getPage = (page) => {
-    if (page === '' || page === 'collection') {
-      return 'collections';
-    }
-
-    return page;
-  }
-
-  const url = pathname.split('/');
-  const page = getPage(url[1]);
+  const page = getCurrentPage(pathname);
 
   const handleWatchlistClick = () => {
     navigate('watchlist');
@@ -84,20 +76,20 @@ export default function Bottom(props) {
       <div className="d-sm-none mb-5">&nbsp;</div>
       <div className="row fixed-bottom mx-auto py-2 d-sm-none bg-dark border-top border-gray text-center text-muted">
         <div className="col-3 pt-1" role="button" onClick={()=> handleWatchlistClick()}>
-          <FaRegStar className={`${page === 'watchlist' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
-          <small className={`${page === 'watchlist' ? 'text-white' : ''}`}>Watchlist</small>
+          <FaRegStar className={`${page.primary === 'watchlist' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
+          <small className={`${page.primary === 'watchlist' ? 'text-white' : ''}`}>Watchlist</small>
         </div>
         <div className="col-3 pt-1" role="button" onClick={()=> handleCollectionsClick()}>
-          <FiSearch className={`${page === 'collections' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
-          <small className={`${page === 'collections' ? 'text-white' : ''}`}>Collections</small>
+          <FiSearch className={`${page.primary === 'collections' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
+          <small className={`${page.primary === 'collections' ? 'text-white' : ''}`}>Collections</small>
         </div>
         <div className="col-3 pt-1" role="button" onClick={()=> handleInfluencersClick()}>
-          <FaRegUser className={`${page === 'influencers' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
-          <small className={`${page === 'influencers' ? 'text-white' : ''}`}>Influencers</small>
+          <FaRegUser className={`${page.primary === 'influencers' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
+          <small className={`${page.primary === 'influencers' ? 'text-white' : ''}`}>Influencers</small>
         </div>
         <div className="col-3 pt-1" role="button" onClick={()=> handleAccountClick()}>
-          <FiSettings className={`${page === 'account' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
-          <small className={`${page === 'account' ? 'text-white' : ''}`}>Account</small>
+          <FiSettings className={`${page.primary === 'account' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
+          <small className={`${page.primary === 'account' ? 'text-white' : ''}`}>Account</small>
         </div>
       </div>
     </div>
