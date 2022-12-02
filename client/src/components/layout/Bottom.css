@@ -1,3 +1,7 @@
+.copyright {
+  margin-bottom: 8em;
+}
+
 .border-gray {
   border-color: var(--bs-gray-800)!important;
 }
