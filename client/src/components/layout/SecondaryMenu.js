@@ -6,7 +6,7 @@ export default function SecondaryMenu(props) {
   const location = useLocation();
 
   return (
-    <Nav className="secondary-menu px-4 border-bottom border-secondary overflow-auto text-nowrap" variant="tabs" activeKey={location.pathname}>
+    <Nav className="secondary-menu d-none d-sm-block px-4 border-bottom border-secondary overflow-auto text-nowrap" variant="tabs" activeKey={location.pathname}>
       <Nav.Item>
         <Nav.Link href="/watchlist"><FaStar className="me-2" size={20} style={{ height: 20 }} role="button" color="#fc6" />Watchlist</Nav.Link>
       </Nav.Item>
