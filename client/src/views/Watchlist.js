@@ -76,8 +76,10 @@ export default function Home(props) {
     <div>
       <SecondaryMenu />
       <Container fluid>
+        <h1 className="d-sm-none pt-5 pb-4">Watchlist</h1>
+        <h3 className="d-none d-sm-block text-start pt-4 pb-3">Watchlist</h3>
         <div className="text-end">
-          <button className="btn btn-secondary mt-4" type="button" onClick={() => setCollapse(!collapse)}>{collapse ? 'Expand All' : 'Collapse All'}<FaChevronDown className="ms-2" size={16} role="button" /></button>
+          <button className="btn btn-secondary" type="button" onClick={() => setCollapse(!collapse)}>{collapse ? 'Expand All' : 'Collapse All'}<FaChevronDown className="ms-2" size={16} role="button" /></button>
         </div>
         <div className="table-responsive-sm">
           <Table variant="dark" className="my-4">

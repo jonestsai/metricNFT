@@ -73,7 +73,7 @@ export default function Account() {
       {publicKey && (
         <div>
           <div className="d-block d-sm-none px-3">
-            <h1 className="pt-4 pb-3">Account</h1>
+            <h1 className="pt-5 pb-4">Account</h1>
             <div className="row pt-4 pb-1 align-items-center" role="button" onClick={()=> handleProfileClick()}>
               <div className="col-3">
                 <img className="rounded-circle img-fluid" src={imageLoader} />
