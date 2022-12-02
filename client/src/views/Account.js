@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import React, { useState, useEffect } from 'react';
 import { Container, Tab, Tabs } from 'react-bootstrap';
 import { FaChevronRight, FaRegAddressCard, FaRegBell } from 'react-icons/fa';
@@ -68,7 +69,12 @@ export default function Account() {
   return (
     <Container fluid>
       {!publicKey && (
-        <h5 className="py-5 text-center">Connect wallet to see your profile page.</h5>
+        <div className="mx-auto navbar-nav">
+          <h5 className="pt-5 pb-4 text-center">Connect wallet to see your profile page.</h5>
+          <a role="button" className="align-self-center nav-link">
+            <WalletMultiButton />
+          </a>
+        </div>
       )}
       {publicKey && (
         <div>
@@ -122,6 +128,11 @@ export default function Account() {
               <div className="col-2 text-end">
                 <FaChevronRight size={20} />
               </div>
+            </div>
+            <div className="py-4 mx-auto mt-3 navbar-nav">
+              <a role="button" className="align-self-center nav-link">
+                <WalletMultiButton children="Log out" />
+              </a>
             </div>
           </div>
           <div className="d-none d-sm-block">
