@@ -77,19 +77,19 @@ export default function Bottom(props) {
       <div className="row fixed-bottom mx-auto py-2 d-sm-none bg-dark border-top border-gray text-center text-muted">
         <div className="col-3 pt-1" role="button" onClick={()=> handleWatchlistClick()}>
           <FaRegStar className={`${page.primary === 'watchlist' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
-          <small className={`${page.primary === 'watchlist' ? 'text-white' : ''}`}>Watchlist</small>
+          <div className={`${page.primary === 'watchlist' ? 'text-white' : ''} mt-1 fw-bold menu`}>Watchlist</div>
         </div>
         <div className="col-3 pt-1" role="button" onClick={()=> handleCollectionsClick()}>
           <FiSearch className={`${page.primary === 'collections' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
-          <small className={`${page.primary === 'collections' ? 'text-white' : ''}`}>Collections</small>
+          <div className={`${page.primary === 'collections' ? 'text-white' : ''} mt-1 fw-bold menu`}>Collections</div>
         </div>
         <div className="col-3 pt-1" role="button" onClick={()=> handleInfluencersClick()}>
           <FaRegUser className={`${page.primary === 'influencers' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
-          <small className={`${page.primary === 'influencers' ? 'text-white' : ''}`}>Influencers</small>
+          <div className={`${page.primary === 'influencers' ? 'text-white' : ''} mt-1 fw-bold menu`}>Influencers</div>
         </div>
         <div className="col-3 pt-1" role="button" onClick={()=> handleAccountClick()}>
           <FiSettings className={`${page.primary === 'account' ? 'active-icon' : ''} d-block mx-auto`} size={25} />
-          <small className={`${page.primary === 'account' ? 'text-white' : ''}`}>Account</small>
+          <div className={`${page.primary === 'account' ? 'text-white' : ''} mt-1 fw-bold menu`}>Account</div>
         </div>
       </div>
     </div>
