@@ -1,3 +1,7 @@
+.border-gray {
+  border-color: var(--bs-gray-800)!important;
+}
+
 [list]::-webkit-calendar-picker-indicator {
   display: none !important;
 }
