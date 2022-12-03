@@ -5,6 +5,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import { FaChevronLeft } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
+import CollectionSearchBar from '../CollectionSearchBar';
 import { URLS } from '../../Settings';
 import logo from '../../assets/logo.png';
 import { getCurrentPage } from '../../utils/helpers';
@@ -13,42 +14,10 @@ import './Top.css';
 export default function Top(props) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [collections, setCollections] = useState();
 
   const { partner } = props;
 
   const page = getCurrentPage(pathname);
-
-  let getCollectionsTimeout;
-
-  const navigateToCollection = (value) => {
-    clearTimeout(getCollectionsTimeout);
-
-    getCollectionsTimeout = setTimeout(() => {
-      getCollections(value);
-    }, 500);
-
-    const collection = collections.find(c => c.name === value);
-    if (collection) {
-      navigate(`collection/${collection.symbol}`);
-    }
-  }
-
-  const getCollections = async (value) => {
-    try {
-      const response = await fetch(`${URLS.api}/collection/search/${value}`);
-      const collections = await response.json();
-      setCollections(collections);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const collectionOptions = collections?.length > 0 ? collections.map((collection) => {
-    return (
-      <option key={collection.symbol} value={collection.name} />
-    )
-  }) : null;
 
   return (
     <div>
@@ -73,10 +42,7 @@ export default function Top(props) {
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <div className="navbar-nav" style={{ minWidth: "50%" }}>
-              <input className="form-control" list="datalistOptions" placeholder="Search collections..." onChange={e => navigateToCollection(e.target.value)} />
-              <datalist id="datalistOptions">
-                {collectionOptions}
-              </datalist>
+              <CollectionSearchBar />
             </div>
             <div className="ms-auto navbar-nav">
               <a href="/account" className="text-white align-self-center mx-3 mt-3 mb-2 nav-link">Account</a>
