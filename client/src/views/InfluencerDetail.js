@@ -239,32 +239,34 @@ export default function InfluencerDetail(props) {
           </div>
         </Tab>
         <Tab eventKey="activities" title="Activities">
-          <Table variant="dark" hover>
-            <thead>
-              <tr className="table-secondary">
-                <th scope="col">Collection</th>
-                <th scope="col">Transaction ID</th>
-                <th scope="col">Transaction Type</th>
-                <th scope="col">Time</th>
-                <th scope="col">Total Amount</th>
-                <th scope="col">Mint Address</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedActivities?.length > 0 ? sortedActivities?.map((activity) => {
-                const blockTime = new Date(activity.blocktime * 1000);
-                return (
-                  <tr key={`${activity.signature}${activity.type}`}>
-                    <td className="text-white-50 text-start align-middle">{activity.collection}</td>
-                    <td className="text-white-50 align-middle"><a className="link-secondary" href={`https://solscan.io/tx/${activity?.signature}`} target="_blank">{`${activity?.signature?.slice(0, 5)} ... ${activity?.signature?.slice(-3)}`}</a></td>
-                    <td className="text-white-50 align-middle">{activity.type}</td>
-                    <td className="text-white-50 align-middle">{blockTime.toLocaleString()}</td>
-                    <td className="text-white-50 align-middle">{`${activity.price} SOL`}</td>
-                    <td className="text-white-50 align-middle"><a className="link-secondary" href={`https://solscan.io/token/${activity?.token_mint}`} target="_blank">{`${activity?.token_mint?.slice(0, 5)} ... ${activity?.token_mint?.slice(-3)}`}</a></td>
-                  </tr>
-              )}) : null}
-            </tbody>
-          </Table>
+          <div className="table-responsive">
+            <Table variant="dark" hover>
+              <thead>
+                <tr className="table-secondary">
+                  <th scope="col">Collection</th>
+                  <th scope="col">Transaction ID</th>
+                  <th scope="col">Transaction Type</th>
+                  <th scope="col">Time</th>
+                  <th scope="col">Total Amount</th>
+                  <th scope="col">Mint Address</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedActivities?.length > 0 ? sortedActivities?.map((activity) => {
+                  const blockTime = new Date(activity.blocktime * 1000);
+                  return (
+                    <tr key={`${activity.signature}${activity.type}`}>
+                      <td className="text-white-50 text-start align-middle">{activity.collection}</td>
+                      <td className="text-white-50 align-middle"><a className="link-secondary" href={`https://solscan.io/tx/${activity?.signature}`} target="_blank">{`${activity?.signature?.slice(0, 5)} ... ${activity?.signature?.slice(-3)}`}</a></td>
+                      <td className="text-white-50 align-middle">{activity.type}</td>
+                      <td className="text-white-50 align-middle">{blockTime.toLocaleString()}</td>
+                      <td className="text-white-50 align-middle">{`${activity.price} SOL`}</td>
+                      <td className="text-white-50 align-middle"><a className="link-secondary" href={`https://solscan.io/token/${activity?.token_mint}`} target="_blank">{`${activity?.token_mint?.slice(0, 5)} ... ${activity?.token_mint?.slice(-3)}`}</a></td>
+                    </tr>
+                )}) : null}
+              </tbody>
+            </Table>
+          </div>
         </Tab>
       </Tabs>
       )}

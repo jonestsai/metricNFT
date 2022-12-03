@@ -25,7 +25,7 @@ export default function Activities({ publicKey }) {
   }
 
   return (
-    <div className="container-fluid px-sm-0">
+    <div className="container-fluid px-sm-0 table-responsive">
       <Table variant="dark" hover>
         <thead>
           <tr className="table-secondary">

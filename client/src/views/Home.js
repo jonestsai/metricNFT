@@ -185,7 +185,7 @@ export default function Home(props) {
             )}
           </DropdownButton>
         </div>
-        <div className="table-responsive-sm">
+        <div className="table-responsive">
           <CollectionTable
             collections={data}
             exchangeRates={exchangeRates}
