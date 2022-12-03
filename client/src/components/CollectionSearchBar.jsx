@@ -15,7 +15,7 @@ export default function CollectionSearchBar(props) {
       getCollections(value);
     }, 500);
 
-    const collection = collections.find(c => c.name === value);
+    const collection = collections?.find(c => c.name === value);
     if (collection) {
       navigate(`collection/${collection.symbol}`);
     }
