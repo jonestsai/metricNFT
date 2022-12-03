@@ -42,7 +42,7 @@ export default function Top(props) {
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <div className="navbar-nav" style={{ minWidth: "50%" }}>
-              <CollectionSearchBar />
+              <CollectionSearchBar datalistKey="desktopSearchBar" />
             </div>
             <div className="ms-auto navbar-nav">
               <a href="/account" className="text-white align-self-center mx-3 mt-3 mb-2 nav-link">Account</a>

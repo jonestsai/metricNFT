@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { URLS } from '../Settings';
 
-export default function CollectionSearchBar(props) {
+export default function CollectionSearchBar({ datalistKey }) {
   const navigate = useNavigate();
   const [collections, setCollections] = useState();
 
@@ -39,8 +39,8 @@ export default function CollectionSearchBar(props) {
 
   return (
     <div className="w-100">
-      <input className="form-control" list="datalistOptions" placeholder="Search collections..." onChange={e => navigateToCollection(e.target.value)} />
-      <datalist id="datalistOptions">
+      <input className="form-control" list={datalistKey} placeholder="Search collections..." onChange={e => navigateToCollection(e.target.value)} />
+      <datalist id={datalistKey}>
         {collectionOptions}
       </datalist>
     </div>
