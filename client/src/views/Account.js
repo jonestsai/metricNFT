@@ -93,7 +93,7 @@ export default function Account() {
               </div>
             </div>
             <hr />
-            <div className="row py-4 align-items-center" role="button" onClick={()=> handleWalletsClick()}>
+            {/*<div className="row py-4 align-items-center" role="button" onClick={()=> handleWalletsClick()}>
               <div className="col-2 text-start">
                 <FaRegAddressCard size={25} />
               </div>
@@ -101,7 +101,7 @@ export default function Account() {
               <div className="col-2 text-end">
                 <FaChevronRight size={20} />
               </div>
-            </div>
+            </div>*/}
             <div className="row py-4 align-items-center" role="button" onClick={()=> handleNotificationsClick()}>
               <div className="col-2 text-start">
                 <FaRegBell size={25} />
