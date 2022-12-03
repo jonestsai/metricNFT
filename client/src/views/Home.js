@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Dropdown, DropdownButton, Nav } from 'react-bootstrap';
 import { FaStar } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
+import CollectionSearchBar from '../components/CollectionSearchBar';
 import CollectionTable from '../components/CollectionTable';
 import Pagination from '../components/Pagination';
 import SecondaryMenu from '../components/layout/SecondaryMenu';
@@ -153,7 +154,10 @@ export default function Home(props) {
     <div>
       <SecondaryMenu />
       <Container fluid>
-        <h1 className="d-sm-none pt-5 pb-4">NFTs by Floor Market Cap</h1>
+        <div className="d-sm-none pt-4">
+          <CollectionSearchBar datalistKey="mobileSearchBar" />
+        </div>
+        <h1 className="d-sm-none pt-4 pb-4">NFTs by Floor Market Cap</h1>
         <h3 className="d-none d-sm-block text-start pt-4 pb-3">NFTs by Floor Market Cap</h3>
         <div className="d-flex justify-content-between">
           <div className="btn-group mb-3" role="group">
