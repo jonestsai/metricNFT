@@ -153,10 +153,7 @@ export default function Home(props) {
     <div>
       <SecondaryMenu />
       <Container fluid>
-        <div className="d-sm-none pt-4">
-          <CollectionSearchBar datalistKey="mobileSearchBar" />
-        </div>
-        <h1 className="d-sm-none pt-4 pb-4">NFTs by Floor Market Cap</h1>
+        <h1 className="d-sm-none pt-5 pb-4">NFTs by Floor Market Cap</h1>
         <h3 className="d-none d-sm-block text-start pt-4 pb-3">NFTs by Floor Market Cap</h3>
         <div className="d-flex justify-content-between">
           <div className="btn-group mb-3" role="group">

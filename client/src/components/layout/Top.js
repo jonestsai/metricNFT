@@ -22,13 +22,18 @@ export default function Top(props) {
   return (
     <div>
       <div className="row fixed-top d-sm-none bg-dark border-bottom border-gray text-center">
+        {page.primary === 'collections' && page.secondary === undefined && (
+          <div className="p-4">
+            <CollectionSearchBar datalistKey="mobileSearchBar" />
+          </div>
+        )}
         {page.secondary && (
           <div className="col-3 p-4 text-center" role="button" onClick={()=> navigate(-1)}>
             <FaChevronLeft size={20} />
           </div>
         )}
       </div>
-      {page.secondary && (
+      {(page.secondary || page.primary === 'collections') && (
         <div className="d-sm-none pt-5">&nbsp;</div>
       )}
       <div className="d-none d-sm-block">
