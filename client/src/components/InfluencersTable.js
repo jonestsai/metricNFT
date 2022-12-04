@@ -15,7 +15,7 @@ export default function InfluencersTable(props) {
   const navigate = useNavigate();
 
   return (
-    <table className="table table-dark table-hover freeze-third-column">
+    <table className="table table-dark table-hover freeze-second-column">
       <thead className="sortable">
         <tr className="table-secondary">
           <th scope="col" className="ps-3">#</th>

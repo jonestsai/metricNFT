@@ -6,6 +6,12 @@ thead.sortable th.descending::after {
   content: '▴';
 }
 
+.table.freeze-second-column th:nth-child(-n + 2),
+.table.freeze-second-column td:nth-child(-n + 2) {
+  position: sticky;
+  left: 0;
+}
+
 .table.freeze-third-column th:nth-child(-n + 3),
 .table.freeze-third-column td:nth-child(-n + 3) {
   position: sticky;
