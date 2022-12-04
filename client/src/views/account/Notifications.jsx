@@ -192,32 +192,30 @@ export default function Notifications() {
           </div>
         </div>
       </form>
-      {(publicKey && !isLoading) && (
-        <div className="table-responsive">
-          <table className="table table-dark table-hover">
-            <thead>
-              <tr className="table-secondary">
-                <th scope="col">Name</th>
-                <th scope="col">Condition</th>
-                <th scope="col">Sent</th>
-                <th scope="col">Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {userNotifications?.map((notification) => {
-                return (
-                  <tr key={notification.collection_symbol}>
-                    <td className="text-white-50 text-start align-middle">{notification.collection_name}</td>
-                    <td className="text-white-50 align-middle">{`Price ${notification.sign} ${notification.price} SOL`}</td>
-                    <td className="text-white-50 align-middle">{notification.sent_at || 'No'}</td>
-                    <td className="text-white-50 align-middle"><button type="button" className="btn btn-outline-danger" onClick={() => handleDeleteNotification(notification.id)}>✕</button></td>
-                  </tr>
-              )})}
-            </tbody>
-          </table>
-        </div>
-      )}
-      {(publicKey && isLoading) && (
+      <div className="table-responsive">
+        <table className="table table-dark table-hover">
+          <thead>
+            <tr className="table-secondary">
+              <th scope="col">Name</th>
+              <th scope="col">Condition</th>
+              <th scope="col">Sent</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userNotifications?.map((notification) => {
+              return (
+                <tr key={notification.collection_symbol}>
+                  <td className="text-white-50 text-start align-middle">{notification.collection_name}</td>
+                  <td className="text-white-50 align-middle">{`Price ${notification.sign} ${notification.price} SOL`}</td>
+                  <td className="text-white-50 align-middle">{notification.sent_at || 'No'}</td>
+                  <td className="text-white-50 align-middle"><button type="button" className="btn btn-outline-danger" onClick={() => handleDeleteNotification(notification.id)}>✕</button></td>
+                </tr>
+            )})}
+          </tbody>
+        </table>
+      </div>
+      {isLoading && (
         <div className="my-5 text-center">
           <div className="spinner-border text-light" role="status" />
         </div>
