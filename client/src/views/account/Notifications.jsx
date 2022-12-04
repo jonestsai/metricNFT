@@ -4,20 +4,38 @@ import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import { URLS } from '../../Settings';
 
-export default function Notifications({ notifications, email }) {
+export default function Notifications() {
   const { publicKey } = useWallet();
   const [collections, setCollections] = useState();
-  const [userNotifications, setUserNotifications] = useState(notifications);
+  const [userNotifications, setUserNotifications] = useState();
+  const [email, setEmail] = useState();
   const [searchParams] = useSearchParams();
   const [collectionOption, setCollectionOption] = useState(searchParams.get('collection') || '');
   const [sign, setSign] = useState('>');
   const [price, setPrice] = useState();
   const [isNotificationSaved, setIsNotificationSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   useEffect(() => {
-    setUserNotifications(notifications);
-  }, [notifications]);
+    fetchUser();
+  }, [publicKey]);
+
+  const fetchUser = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${URLS.api}/users/${publicKey.toString()}`);
+      const userNotifications = await response.json();
+
+      const email = userNotifications[0]?.email || '';
+      setUserNotifications(userNotifications);
+      setEmail(email);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
     let getCollectionsTimeout = setTimeout(() => {
@@ -197,6 +215,11 @@ export default function Notifications({ notifications, email }) {
               )})}
             </tbody>
           </table>
+        </div>
+      )}
+      {(publicKey && isLoading) && (
+        <div className="my-5 text-center">
+          <div className="spinner-border text-light" role="status" />
         </div>
       )}
     </div>

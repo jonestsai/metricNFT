@@ -1,8 +1,11 @@
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import { URLS } from '../../Settings';
 
-export default function Activities({ publicKey }) {
+export default function Activities() {
+  const { publicKey } = useWallet();
   const [activities, setActivities] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchActivities();
@@ -13,6 +16,8 @@ export default function Activities({ publicKey }) {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const response = await fetch(`${URLS.api}/magiceden/wallets/${publicKey.toString()}/activities?offset=0&limit=100`);
       const activities = await response.json();
@@ -20,6 +25,8 @@ export default function Activities({ publicKey }) {
       setActivities(activities);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -53,6 +60,11 @@ export default function Activities({ publicKey }) {
           </tbody>
         </table>
       </div>
+      {(publicKey && isLoading) && (
+        <div className="my-5 text-center">
+          <div className="spinner-border text-light" role="status" />
+        </div>
+      )}
     </div>
   );
 }

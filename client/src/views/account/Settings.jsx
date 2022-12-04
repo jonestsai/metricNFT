@@ -1,11 +1,35 @@
-import { useState } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useState, useEffect } from 'react';
 import { FloatingLabel, Form } from 'react-bootstrap';
 import { URLS } from '../../Settings';
 
-export default function Settings({ publicKey, email, setEmail }) {
+export default function Settings() {
+  const { publicKey } = useWallet();
+  const [email, setEmail] = useState();
   const [isEmailSaved, setIsEmailSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchUser();
+  }, [publicKey]);
+
+  const fetchUser = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${URLS.api}/users/${publicKey.toString()}`);
+      const userNotifications = await response.json();
+
+      const email = userNotifications[0]?.email || '';
+      setEmail(email);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
   
-  const handleEmail = async (action, publicKey, email) => {
+  const handleEmail = async (action) => {
     const data = {
       wallet_address: publicKey,
       email: action === 'connect' ? email : null,
@@ -58,13 +82,18 @@ export default function Settings({ publicKey, email, setEmail }) {
       </div>
       <div className="row">
         <div className="col-md-6 offset-md-3 d-flex justify-content-between">
-          <button type="button" className="btn btn-primary" onClick={() => handleEmail('connect', publicKey, email)}>Save</button>
+          <button type="button" className="btn btn-primary" onClick={() => handleEmail('connect')}>Save</button>
           {isEmailSaved && (
             <div className="text-success my-1">Saved!</div>
           )}
-          <button type="button" className="btn btn-outline-danger" onClick={() => handleEmail('disconnect', publicKey, email)}>Disconnect Email</button>
+          <button type="button" className="btn btn-outline-danger" onClick={() => handleEmail('disconnect')}>Disconnect Email</button>
           </div>
       </div>
+      {(publicKey && isLoading) && (
+        <div className="my-5 text-center">
+          <div className="spinner-border text-light" role="status" />
+        </div>
+      )}
     </div>
   );
 }

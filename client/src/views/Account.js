@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Tab, Tabs } from 'react-bootstrap';
 import { FaChevronRight, FaRegAddressCard, FaRegBell } from 'react-icons/fa';
 import { FiActivity, FiSettings } from "react-icons/fi";
@@ -18,31 +18,7 @@ export default function Account() {
   const { publicKey } = useWallet();
   const navigate = useNavigate();
 
-  const [userNotifications, setUserNotifications] = useState();
-  const [isLoading, setIsLoading] = useState(false);
   const [key, setKey] = useState('notifications');
-  const [email, setEmail] = useState();
-
-  useEffect(() => {
-    fetchUser();
-  }, [publicKey]);
-
-  const fetchUser = async () => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(`${URLS.api}/users/${publicKey.toString()}`);
-      const userNotifications = await response.json();
-
-      const email = userNotifications[0]?.email || '';
-      setUserNotifications(userNotifications);
-      setEmail(email);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   const handleProfileClick = () => {
     navigate('profile');
@@ -144,21 +120,16 @@ export default function Account() {
               className="account my-5"
             >
               <Tab eventKey="notifications" title="Notifications">
-                <Notifications notifications={userNotifications} email={email} />
+                <Notifications />
               </Tab>
               <Tab eventKey="activities" title="Activities">
-                <Activities publicKey={publicKey} />
+                <Activities />
               </Tab>
               <Tab eventKey="settings" title="Settings">
-                <Settings publicKey={publicKey} email={email} setEmail={setEmail} />
+                <Settings />
               </Tab>
             </Tabs>
           </div>
-        </div>
-      )}
-      {(publicKey && isLoading) && (
-        <div className="my-5 text-center">
-          <div className="spinner-border text-light" role="status" />
         </div>
       )}
     </Container>
