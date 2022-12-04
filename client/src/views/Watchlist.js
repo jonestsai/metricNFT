@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "bootstrap/js/src/collapse.js";
 import React, { useState, useEffect } from 'react';
-import { Container, Nav, OverlayTrigger, Table, Tooltip as BSTooltip } from 'react-bootstrap';
+import { Container, Nav, OverlayTrigger, Tooltip as BSTooltip } from 'react-bootstrap';
 import { FaStar, FaRegStar, FaChevronDown } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import { ComposedChart, LineChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -81,7 +81,7 @@ export default function Home(props) {
           <button className="btn btn-secondary" type="button" onClick={() => setCollapse(!collapse)}>{collapse ? 'Expand All' : 'Collapse All'}<FaChevronDown className="ms-2" size={16} role="button" /></button>
         </div>
         <div className="table-responsive">
-          <Table variant="dark" className="my-4">
+          <table className="table table-dark table-hover my-4">
             <thead>
               <tr className="table-secondary">
                 <th scope="col" className="ps-3"></th>
@@ -247,7 +247,7 @@ export default function Home(props) {
                 )
               }))}
             </tbody>
-          </Table>
+          </table>
         </div>
         {isLoading && (
           <div className="my-5 text-center">

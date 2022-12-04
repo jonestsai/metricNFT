@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Table, Tab, Tabs } from 'react-bootstrap';
+import { Container, Tab, Tabs } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { URLS } from '../Settings';
 import imageLoader from '../assets/loader.gif';
@@ -240,7 +240,7 @@ export default function InfluencerDetail(props) {
         </Tab>
         <Tab eventKey="activities" title="Activities">
           <div className="table-responsive">
-            <Table variant="dark" hover>
+            <table className="table table-dark table-hover">
               <thead>
                 <tr className="table-secondary">
                   <th scope="col">Collection</th>
@@ -265,7 +265,7 @@ export default function InfluencerDetail(props) {
                     </tr>
                 )}) : null}
               </tbody>
-            </Table>
+            </table>
           </div>
         </Tab>
       </Tabs>

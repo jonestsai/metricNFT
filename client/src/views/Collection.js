@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState, useEffect } from 'react';
-import { Container, OverlayTrigger, Table, Tooltip as BSTooltip } from 'react-bootstrap';
+import { Container, OverlayTrigger, Tooltip as BSTooltip } from 'react-bootstrap';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import { ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -398,7 +398,7 @@ export default function Collection(props) {
                 </div>
               )}
               {owners && (
-                <Table borderless className="top-owners">
+                <table class="top-owners table table-borderless">
                   <thead className="text-white">
                     <tr>
                       <th scope="col" style={{ width: '65%' }}>Address</th>
@@ -415,7 +415,7 @@ export default function Collection(props) {
                       );
                     })}
                   </tbody>
-                </Table>
+                </table>
               )}
               {!isCollectionLoading && !isOwnersLoading && !owners && (
                 <div className="pb-3">Coming Soon</div>
@@ -433,7 +433,7 @@ export default function Collection(props) {
                 </div>
               )}
               {owners && (
-                <Table borderless className="tokens-per-owner">
+                <table class="tokens-per-owner table table-borderless">
                   <thead className="text-white">
                     <tr>
                       <th scope="col"># of Tokens</th>
@@ -452,7 +452,7 @@ export default function Collection(props) {
                       );
                     })}
                   </tbody>
-                </Table>
+                </table>
               )}
               {!isCollectionLoading && !isOwnersLoading && !owners && (
                 <div className="pb-3">Coming Soon</div>

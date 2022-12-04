@@ -1,6 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
-import { Dropdown, DropdownButton, Table } from 'react-bootstrap';
+import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import { URLS } from '../../Settings';
 
@@ -176,7 +176,7 @@ export default function Notifications({ notifications, email }) {
       </form>
       {(publicKey && !isLoading) && (
         <div className="table-responsive">
-          <Table variant="dark" hover>
+          <table className="table table-dark table-hover">
             <thead>
               <tr className="table-secondary">
                 <th scope="col">Name</th>
@@ -196,7 +196,7 @@ export default function Notifications({ notifications, email }) {
                   </tr>
               )})}
             </tbody>
-          </Table>
+          </table>
         </div>
       )}
     </div>
