@@ -29,7 +29,7 @@ export default function Top(props) {
         )}
       </div>
       {page.secondary && (
-        <div className="pt-5">&nbsp;</div>
+        <div className="d-sm-none pt-5">&nbsp;</div>
       )}
       <div className="d-none d-sm-block">
         <nav className="px-4 border-bottom border-secondary navbar navbar-expand-lg navbar-dark bg-dark">
