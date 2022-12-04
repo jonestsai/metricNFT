@@ -1,13 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
-import { Table } from 'react-bootstrap';
 import { FaStar, FaRegStar, FaRegBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import solana from '../assets/solana-symbol.png';
 import ethereum from '../assets/ethereum-symbol.png';
 import { COLLECTIONS_PER_PAGE } from '../utils/constants';
 import { isCurrencyString, currencyToNumber } from '../utils/helpers';
-import './CollectionTable.css';
 
 export default function CollectionTable(props) {
   const { collections, exchangeRates, currency, currentPage, partner } = props;
@@ -44,8 +42,8 @@ export default function CollectionTable(props) {
   );
 
   return (
-    <Table variant="dark" hover>
-      <thead>
+    <table className="table table-dark table-hover freeze-third-column">
+      <thead className="sortable">
         <tr className="table-secondary">
           <th scope="col" className={`${partner ? 'd-none' : ''} ps-3`}></th>
           <th scope="col" className={`${partner ? '' : 'ps-0'}`}>#</th>
@@ -153,7 +151,7 @@ export default function CollectionTable(props) {
            </tr>
          )})}
       </tbody>
-    </Table>
+    </table>
   );
 };
 

@@ -1,5 +1,0 @@
-.table th:nth-child(-n + 3),
-.table td:nth-child(-n + 3) {
-  position: sticky;
-  left: 0;
-}

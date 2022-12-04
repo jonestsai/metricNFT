@@ -8,7 +8,6 @@ import CollectionTable from '../components/CollectionTable';
 import Pagination from '../components/Pagination';
 import SecondaryMenu from '../components/layout/SecondaryMenu';
 import { LAMPORTS_PER_SOL, COLLECTIONS_PER_PAGE, MAGICEDEN_IMAGE_URL } from '../utils/constants';
-import './Home.css';
 
 export default function Home(props) {
   const location = useLocation();

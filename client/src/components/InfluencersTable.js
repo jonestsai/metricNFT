@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import solana from '../assets/solana-symbol.png';
 import { isCurrencyString, currencyToNumber } from '../utils/helpers';
@@ -16,8 +15,8 @@ export default function InfluencersTable(props) {
   const navigate = useNavigate();
 
   return (
-    <Table variant="dark" hover>
-      <thead>
+    <table className="table table-dark table-hover freeze-third-column">
+      <thead className="sortable">
         <tr className="table-secondary">
           <th scope="col" className="ps-3">#</th>
           <th scope="col"></th>
@@ -74,7 +73,7 @@ export default function InfluencersTable(props) {
            </tr>
          )})}
       </tbody>
-    </Table>
+    </table>
   );
 };
 

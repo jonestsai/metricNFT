@@ -35,6 +35,7 @@ import Influencers from './views/Influencers';
 import InfluencerDetail from './views/InfluencerDetail';
 import logo from './logo.svg';
 import './App.css';
+import './components/Table.css';
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');

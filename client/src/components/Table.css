@@ -1,0 +1,13 @@
+thead.sortable th.ascending::after {
+  content: '▾';
+}
+
+thead.sortable th.descending::after {
+  content: '▴';
+}
+
+.table.freeze-third-column th:nth-child(-n + 3),
+.table.freeze-third-column td:nth-child(-n + 3) {
+  position: sticky;
+  left: 0;
+}

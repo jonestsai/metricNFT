@@ -10,7 +10,6 @@ import ethereum from '../assets/ethereum-symbol.png';
 import SecondaryMenu from '../components/layout/SecondaryMenu';
 import { getListedCount, getOwnersCount, getPrice, getSalesVolume, ListedCountTooltip, OwnersCountTooltip, PriceTooltip, SalesVolumeTooltip } from '../utils/chartHelpers';
 import { LAMPORTS_PER_SOL, MAGICEDEN_IMAGE_URL } from '../utils/constants';
-import './Home.css';
 
 export default function Home(props) {
   const location = useLocation();
