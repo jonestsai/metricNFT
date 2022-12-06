@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { URLS } from '../Settings';
 import imageLoader from '../assets/loader.gif';
 import solana from '../assets/solana-symbol.png';
+import { formatWalletActivities } from '../utils/helpers';
 import './InfluencerDetail.css';
 
 export default function InfluencerDetail(props) {
@@ -86,32 +87,8 @@ export default function InfluencerDetail(props) {
     }) : null;
 
   const sortedActivities = influencer?.activities?.sort((a, b) => b.blockTime - a.blockTime);
-  const updatedActivities = sortedActivities?.map((activity) => {
-    switch(activity.type) {
-      case 'list':
-        activity.type = 'Listing';
-        break;
-      case 'delist':
-        activity.type = 'Delisting';
-        break;
-      case 'bid':
-        activity.type = 'Offer Made';
-        break;
-      case 'cancelBid':
-        activity.type = 'Offer Canceled';
-        break;
-      case 'buyNow':
-        const { wallets } = influencer;
-        const addresses = wallets.map((wallet) => wallet.address);
-        if (addresses.includes(activity.buyer)) {
-          activity.type = 'Purchase';
-        }
-        if (addresses.includes(activity.seller)) {
-          activity.type = 'Sale';
-        }
-        break;
-    }
-  });
+  const addresses = influencer?.wallets?.map((wallet) => wallet.address);
+  const formattedActivities = formatWalletActivities(sortedActivities, addresses);
   
   return (
     <Container fluid>
@@ -252,7 +229,7 @@ export default function InfluencerDetail(props) {
                 </tr>
               </thead>
               <tbody>
-                {sortedActivities?.length > 0 ? sortedActivities?.map((activity) => {
+                {formattedActivities?.length > 0 ? formattedActivities?.map((activity) => {
                   const blockTime = new Date(activity.blocktime * 1000);
                   return (
                     <tr key={`${activity.signature}${activity.type}`}>

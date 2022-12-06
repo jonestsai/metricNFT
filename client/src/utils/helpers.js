@@ -53,3 +53,38 @@ export function getTokensPerOwner(owners, rows) {
     [tokenCount]: tokensPerOwner[tokenCount],
   }), {});
 }
+
+export function formatWalletActivities(activities, addresses) {
+  if (!activities || !addresses) {
+    return;
+  }
+
+  const updatedActivities = activities?.map((activity) => {
+    switch(activity.type) {
+      case 'list':
+        activity.type = 'Listing';
+        break;
+      case 'delist':
+        activity.type = 'Delisting';
+        break;
+      case 'bid':
+        activity.type = 'Offer Made';
+        break;
+      case 'cancelBid':
+        activity.type = 'Offer Canceled';
+        break;
+      case 'buyNow':
+        if (addresses.includes(activity.buyer)) {
+          activity.type = 'Purchase';
+        }
+        if (addresses.includes(activity.seller)) {
+          activity.type = 'Sale';
+        }
+        break;
+    }
+
+    return activity;
+  });
+
+  return updatedActivities;
+}
