@@ -32,9 +32,9 @@ export default function Activities() {
 
   return (
     <div className="container-fluid px-sm-0">
-      <div className="table-responsive">
+      <div className="table-responsive d-lg-table w-100">
         <table className="table table-dark table-hover">
-          <thead>
+          <thead className="sticky-top">
             <tr className="table-secondary">
               <th scope="col">Collection</th>
               <th scope="col">Transaction ID</th>

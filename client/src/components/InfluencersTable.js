@@ -16,7 +16,7 @@ export default function InfluencersTable(props) {
 
   return (
     <table className="table table-dark table-hover freeze-second-column">
-      <thead className="sortable">
+      <thead className="sortable sticky-top">
         <tr className="table-secondary">
           <th scope="col" className="ps-3">#</th>
           <th scope="col"></th>

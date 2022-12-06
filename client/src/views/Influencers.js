@@ -35,7 +35,7 @@ export default function Influencers(props) {
       <Container fluid>
         <h1 className="d-sm-none pt-5 pb-4">Influencers</h1>
         <h3 className="d-none d-sm-block text-start pt-4 pb-3">Influencers by Portfolio Value</h3>
-        <div className="table-responsive">
+        <div className="table-responsive d-lg-table w-100">
           <InfluencersTable
             influencers={influencers}
           />

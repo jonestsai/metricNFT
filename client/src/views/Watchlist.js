@@ -80,9 +80,9 @@ export default function Home(props) {
         <div className="text-end">
           <button className="btn btn-secondary" type="button" onClick={() => setCollapse(!collapse)}>{collapse ? 'Expand All' : 'Collapse All'}<FaChevronDown className="ms-2" size={16} role="button" /></button>
         </div>
-        <div className="table-responsive">
+        <div className="table-responsive d-lg-table w-100">
           <table className="table table-dark table-hover my-4">
-            <thead>
+            <thead className="sticky-top">
               <tr className="table-secondary">
                 <th scope="col" className="ps-3"></th>
                 <th scope="col" className="ps-0">#</th>

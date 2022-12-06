@@ -43,7 +43,7 @@ export default function CollectionTable(props) {
 
   return (
     <table className="table table-dark table-hover freeze-third-column">
-      <thead className="sortable">
+      <thead className="sortable sticky-top">
         <tr className="table-secondary">
           <th scope="col" className={`${partner ? 'd-none' : ''} ps-3`}></th>
           <th scope="col" className={`${partner ? '' : 'ps-0'}`}>#</th>
