@@ -1,6 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import { URLS } from '../../Settings';
+import { formatWalletActivities } from '../../utils/helpers';
 
 export default function Activities() {
   const { publicKey } = useWallet();
@@ -10,7 +11,7 @@ export default function Activities() {
   useEffect(() => {
     fetchActivities();
   }, [publicKey]);
-  
+
   const fetchActivities = async () => {
     if (!publicKey) {
       return;
@@ -19,7 +20,7 @@ export default function Activities() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${URLS.api}/magiceden/wallets/${publicKey.toString()}/activities?offset=0&limit=100`);
+      const response = await fetch(`${URLS.api}/magiceden/wallets/${publicKey?.toString()}/activities?offset=0&limit=100`);
       const activities = await response.json();
 
       setActivities(activities);
@@ -29,6 +30,8 @@ export default function Activities() {
       setIsLoading(false);
     }
   }
+
+  const formattedActivities = formatWalletActivities(activities, [publicKey?.toString()]);
 
   return (
     <div className="container-fluid px-sm-0">
@@ -45,7 +48,7 @@ export default function Activities() {
             </tr>
           </thead>
           <tbody>
-            {activities?.length > 0 ? activities?.map((activity) => {
+            {formattedActivities?.length > 0 ? formattedActivities?.map((activity) => {
               const blockTime = new Date(activity.blockTime * 1000);
               return (
                 <tr key={`${activity.signature}${activity.type}`}>
