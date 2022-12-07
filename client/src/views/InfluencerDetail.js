@@ -219,7 +219,7 @@ export default function InfluencerDetail(props) {
           <div className="table-responsive">
             <table className="table table-dark table-hover">
               <thead>
-                <tr className="table-secondary">
+                <tr className="border-secondary border-top">
                   <th scope="col">Collection</th>
                   <th scope="col">Transaction ID</th>
                   <th scope="col">Transaction Type</th>
@@ -228,7 +228,7 @@ export default function InfluencerDetail(props) {
                   <th scope="col">Mint Address</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="border-top-0">
                 {formattedActivities?.length > 0 ? formattedActivities?.map((activity) => {
                   const blockTime = new Date(activity.blocktime * 1000);
                   return (

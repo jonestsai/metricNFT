@@ -83,7 +83,7 @@ export default function Home(props) {
         <div className="table-responsive d-lg-table w-100">
           <table className="table table-dark table-hover my-4">
             <thead className="sticky-top">
-              <tr className="table-secondary">
+              <tr className="border-secondary border-top">
                 <th scope="col" className="ps-3"></th>
                 <th scope="col" className="ps-0">#</th>
                 <th scope="col"></th>
@@ -99,7 +99,7 @@ export default function Home(props) {
                 <th scope="col" className="text-end pe-3"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="border-top-0">
               {!isLoading && collections && (Object.keys(collections).map((symbol, index) => {
                 const [collection] = collections[symbol].slice(-1); // Get the latest record
                 const image = collection.image || collection.image_url;

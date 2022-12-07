@@ -17,7 +17,7 @@ export default function InfluencersTable(props) {
   return (
     <table className="table table-dark table-hover freeze-second-column">
       <thead className="sortable sticky-top">
-        <tr className="table-secondary">
+        <tr className="border-secondary border-top">
           <th scope="col" className="ps-3">#</th>
           <th scope="col"></th>
           <th scope="col" role="button"
@@ -43,7 +43,7 @@ export default function InfluencersTable(props) {
             className={`text-end pe-4 ${getClassNamesFor('max_sale')}`}>Highest Sales</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className="border-top-0">
         {items?.map((item, index) => {
           const row = index + 1;
           const { twitter_username, twitter_display, image, portfolio_value, owned_nfts, volume_bought, max_purchase_item, max_purchase, volume_sold, max_sale_item, max_sale } = item;

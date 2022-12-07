@@ -195,14 +195,14 @@ export default function Notifications() {
       <div className="table-responsive">
         <table className="table table-dark table-hover">
           <thead>
-            <tr className="table-secondary">
+            <tr className="border-secondary border-top">
               <th scope="col">Name</th>
               <th scope="col">Condition</th>
               <th scope="col">Sent</th>
               <th scope="col">Delete</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="border-top-0">
             {userNotifications?.map((notification) => {
               return (
                 <tr key={notification.collection_symbol}>

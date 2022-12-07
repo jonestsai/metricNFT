@@ -38,7 +38,7 @@ export default function Activities() {
       <div className="table-responsive d-lg-table w-100">
         <table className="table table-dark table-hover">
           <thead className="sticky-top">
-            <tr className="table-secondary">
+            <tr className="border-secondary border-top">
               <th scope="col">Collection</th>
               <th scope="col">Transaction ID</th>
               <th scope="col">Transaction Type</th>
@@ -47,7 +47,7 @@ export default function Activities() {
               <th scope="col">Mint Address</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="border-top-0">
             {formattedActivities?.length > 0 ? formattedActivities?.map((activity) => {
               const blockTime = new Date(activity.blockTime * 1000);
               return (

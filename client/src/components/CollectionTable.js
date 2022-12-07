@@ -44,7 +44,7 @@ export default function CollectionTable(props) {
   return (
     <table className="table table-dark table-hover freeze-third-column">
       <thead className="sortable sticky-top">
-        <tr className="table-secondary">
+        <tr className="border-secondary border-top">
           <th scope="col" className={`${partner ? 'd-none' : ''} ps-3`}></th>
           <th scope="col" className={`${partner ? '' : 'ps-0'}`}>#</th>
           <th scope="col"></th>
@@ -78,7 +78,7 @@ export default function CollectionTable(props) {
           <th scope="col" className={`${partner ? 'd-none' : ''} text-end pe-3`}></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className="border-top-0">
         {paginatedResult?.map((item) => {
           const { row, image, chain, name, symbol, floorPrice, oneDayPriceChangePct, sevenDayPriceChangePct, oneDayVolume, floorMarketCap, maxSupply, holders, listedCount} = item;
           const _24hChangeColor = oneDayPriceChangePct < 0 ? 'text-danger' : 'text-success';
