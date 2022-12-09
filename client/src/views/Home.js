@@ -170,6 +170,7 @@ export default function Home(props) {
             title={currency}
             className="text-end mb-3"
             onSelect={handleCurrencySelect}
+            style={{ 'z-index': '1030' }}
           >
             <Dropdown.Item eventKey="Currency" active={!!(currency === 'Currency')}>Currency</Dropdown.Item>
             {!isRatesLoading && (
