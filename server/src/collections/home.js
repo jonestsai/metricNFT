@@ -44,7 +44,7 @@ const getMagicedenCollections = async () => {
       ON _magiceden_hourly_snapshot.hourly_snapshot_symbol = _magiceden_collection.symbol AND _magiceden_hourly_snapshot.live_start_time = (
         SELECT MAX(start_time) from magiceden_hourly_snapshot WHERE symbol = _magiceden_collection.symbol AND start_time > '${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}' AND start_time IS NOT NULL
       )
-      WHERE (total_supply IS NOT NULL AND unique_holders > 50 AND (listed_count > 20 OR live_listed_count > 20)) OR display IS TRUE
+      WHERE ((total_supply IS NOT NULL AND unique_holders > 50 AND (listed_count > 20 OR live_listed_count > 20)) OR display IS TRUE) AND display IS NOT FALSE
       ORDER BY _magiceden_snapshot.floor_price * total_supply DESC
       LIMIT 1000`
     );
